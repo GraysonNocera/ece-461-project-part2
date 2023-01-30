@@ -8,6 +8,6 @@ Poject-1
 
 ## Running TypeScript Files
 
-Compile by typing tsc in terminal\n
-A .js file is generated\n
-run the .js file by typing "node [File]" where File is the .js file\n 
+Compile by typing tsc in terminal__
+A .js file is generated__
+run the .js file by typing "node [File]" where File is the .js file__
