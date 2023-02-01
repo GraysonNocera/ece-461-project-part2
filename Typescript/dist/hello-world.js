@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hello = void 0;
 function hello() {
-    console.log('Hello, World!');
+    console.log(process.env.GITHUB_TOKEN);
     return 'Hello, World!';
 }
 exports.hello = hello;

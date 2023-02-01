@@ -1,5 +1,5 @@
 export function hello(): string {
-    console.log('Hello, World!')
+    console.log(process.env.GITHUB_TOKEN)
     return 'Hello, World!'
   }
 
