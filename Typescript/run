@@ -21,6 +21,10 @@ else
     node dist/hello-world.js
     exit 1
   else 
-    echo "Invalid Input. Try install, build, test, or inputting URLS."
+    echo "Invalid Input. Here's a list of valid inputs:"
+    echo "./run install"
+    echo "./run build"
+    echo "./run test"
+    echo "./run URL_FILE"
   fi
 fi
