@@ -15,20 +15,21 @@ then
 else
   if [[ $1 == "install" ]];
   then
-    exit 1
+    exit 0
   elif [[ $1 == "build" ]];
   then
     tsc
-    exit 1
+    exit 0
   elif [[ $1 == "test" ]];
   then
     node dist/hello-world.js
-    exit 1
+    exit 0
   else 
     echo "Invalid Input. Here's a list of valid inputs:"
     echo "./run install"
     echo "./run build"
     echo "./run test"
     echo "./run URL_FILE"
+    exit 1
   fi
 fi
