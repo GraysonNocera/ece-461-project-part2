@@ -1,5 +1,5 @@
 #!/bin/sh
-# Code adapted from https://w.ww.redhat.com/sysadmin/process-script-inputs
+# Code adapted from https://www.redhat.com/sysadmin/process-script-inputs
 if [ $# -eq 0 ];
 then
   echo "$0: No arguments. Here's a list of valid inputs:"
