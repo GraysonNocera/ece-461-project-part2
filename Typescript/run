@@ -1,0 +1,30 @@
+#!/bin/sh
+# Code adapted from https://www.redhat.com/sysadmin/process-script-inputs
+if [ $# -eq 0 ];
+then
+  echo "$0: No arguments"
+  exit 1
+elif [ $# -gt 1 ];
+then
+  echo "$0: Too many arguments: $@"
+  exit 1
+else
+  if [[ $1 == "install" ]];
+  then
+    exit 1
+  elif [[ $1 == "build" ]];
+  then
+    tsc
+    exit 1
+  elif [[ $1 == "test" ]];
+  then
+    node dist/hello-world.js
+    exit 1
+  else 
+    echo "Invalid Input. Here's a list of valid inputs:"
+    echo "./run install"
+    echo "./run build"
+    echo "./run test"
+    echo "./run URL_FILE"
+  fi
+fi
