@@ -45,11 +45,6 @@ function main() {
             wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
         }
         console.log(wordList);
-        var chopped;
-        for (var word in wordList) {
-            chopped += word.split('/');
-        }
-        console.log(chopped);
     });
 }
 main();
