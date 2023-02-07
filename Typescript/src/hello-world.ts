@@ -20,8 +20,10 @@ async function runPythonScript(argument: string) {
 
 async function main() {
   try {
-    const result = await runPythonScript("Hello, Python");
-    console.log(`Result: ${result}`);
+    const result = await runPythonScript("downloads");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
   } catch (error) {
     console.error(error);
   }

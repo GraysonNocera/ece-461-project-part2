@@ -29,8 +29,10 @@ function runPythonScript(argument) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield runPythonScript("Hello, Python");
-            console.log(`Result: ${result}`);
+            const result = yield runPythonScript("downloads");
+            console.log(`${result}`);
+            var val = Number(result);
+            console.log((val * 2).toString());
         }
         catch (error) {
             console.error(error);
