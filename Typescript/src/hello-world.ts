@@ -18,9 +18,11 @@ async function runPythonScript(argument: string) {
   });
 }
 
+
+
 async function main() {
   try {
-    const result = await runPythonScript("downloads");
+    const result = await runPythonScript("has_downloads");
     console.log(`${result}`);
     var val: number = Number(result)
     console.log((val*2).toString())

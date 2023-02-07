@@ -29,7 +29,7 @@ function runPythonScript(argument) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield runPythonScript("downloads");
+            const result = yield runPythonScript("has_downloads");
             console.log(`${result}`);
             var val = Number(result);
             console.log((val * 2).toString());
