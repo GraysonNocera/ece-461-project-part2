@@ -8,7 +8,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const { spawn } = require("child_process");
+const fs_1 = require("fs");
 function runPythonScript(argument) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -37,6 +39,10 @@ function main() {
         catch (error) {
             console.error(error);
         }
+        const file = (0, fs_1.readFileSync)('/Users/haleyhuntington/Desktop/Project-1/Sample IO/Sample Url File.txt', 'utf-8');
+        console.log(file);
+        const wordList = file.split('\r\n');
+        console.log(wordList);
     });
 }
 main();
