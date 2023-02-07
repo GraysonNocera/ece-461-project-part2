@@ -40,9 +40,16 @@ function main() {
             console.error(error);
         }
         const file = (0, fs_1.readFileSync)('/Users/haleyhuntington/Desktop/Project-1/Sample IO/Sample Url File.txt', 'utf-8');
-        console.log(file);
-        const wordList = file.split('\r\n');
+        const wordList = file.split('\n');
+        for (let i = 0; i < wordList.length; i++) {
+            wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
+        }
         console.log(wordList);
+        var chopped;
+        for (var word in wordList) {
+            chopped += word.split('/');
+        }
+        console.log(chopped);
     });
 }
 main();
