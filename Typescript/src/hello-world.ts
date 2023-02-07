@@ -1,4 +1,5 @@
 const { spawn } = require("child_process");
+import { readFileSync } from 'fs';
 
 async function runPythonScript(argument: string) {
   return new Promise((resolve, reject) => {
@@ -29,6 +30,19 @@ async function main() {
   } catch (error) {
     console.error(error);
   }
+
+  // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
+  const file = readFileSync('/Users/haleyhuntington/Desktop/Project-1/Sample IO/Sample Url File.txt', 'utf-8');
+  // console.log(file)
+
+  const wordList = file.split('\n');
+  // console.log(wordList)
+
+  //https://www.tutorialsteacher.com/typescript/for-loop\
+  for (let i = 0; i < wordList.length; i++) {
+    wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
+  }
+  console.log(wordList)
 }
 
 main();

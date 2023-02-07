@@ -26,6 +26,11 @@ else
   then
     node dist/hello-world.js
     exit 0
+  elif [[ $1 == "haley" ]];
+  then
+    tsc
+    node dist/hello-world.js
+    exit 0
   else 
     echo "Invalid Input. Here's a list of valid inputs:"
     echo "./run install"
