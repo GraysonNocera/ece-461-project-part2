@@ -28,6 +28,18 @@ function runPythonScript(argument) {
         });
     });
 }
+function getData() {
+    const file = (0, fs_1.readFileSync)('SampleUrlFile.txt', 'utf-8');
+    return file;
+}
+function cleanData(data) {
+    const wordList = data.split('\n');
+    console.log(wordList);
+    for (let i = 0; i < wordList.length; i++) {
+        wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
+    }
+    return wordList;
+}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -39,11 +51,9 @@ function main() {
         catch (error) {
             console.error(error);
         }
-        const file = (0, fs_1.readFileSync)('Sample Url File.txt', 'utf-8');
-        const wordList = file.split('\n');
-        for (let i = 0; i < wordList.length; i++) {
-            wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
-        }
+        let data = getData();
+        console.log(data);
+        let wordList = cleanData(data);
         console.log(wordList);
     });
 }

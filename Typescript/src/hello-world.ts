@@ -19,6 +19,21 @@ async function runPythonScript(argument: string) {
   });
 }
 
+function getData():string{
+  // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
+  const file = readFileSync('SampleUrlFile.txt', 'utf-8');
+  return file
+}
+
+function cleanData(data):string[]{
+  const wordList = data.split('\n');
+  console.log(wordList)
+  //https://www.tutorialsteacher.com/typescript/for-loop\
+  for (let i = 0; i < wordList.length; i++) {
+    wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
+  }
+  return wordList
+}
 
 
 async function main() {
@@ -31,17 +46,9 @@ async function main() {
     console.error(error);
   }
 
-  // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
-  const file = readFileSync('Sample Url File.txt', 'utf-8');
-  // console.log(file)
-
-  const wordList = file.split('\n');
-  // console.log(wordList)
-
-  //https://www.tutorialsteacher.com/typescript/for-loop\
-  for (let i = 0; i < wordList.length; i++) {
-    wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
-  }
+  let data = getData()
+  console.log(data)
+  let wordList = cleanData(data)
   console.log(wordList)
 }
 
