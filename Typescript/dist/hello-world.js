@@ -39,17 +39,12 @@ function main() {
         catch (error) {
             console.error(error);
         }
-        const file = (0, fs_1.readFileSync)('/Users/haleyhuntington/Desktop/Project-1/Sample IO/Sample Url File.txt', 'utf-8');
+        const file = (0, fs_1.readFileSync)('Sample Url File.txt', 'utf-8');
         const wordList = file.split('\n');
         for (let i = 0; i < wordList.length; i++) {
             wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
         }
         console.log(wordList);
-        var chopped;
-        for (var word in wordList) {
-            chopped += word.split('/');
-        }
-        console.log(chopped);
     });
 }
 main();

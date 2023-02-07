@@ -32,7 +32,7 @@ async function main() {
   }
 
   // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
-  const file = readFileSync('/Users/haleyhuntington/Desktop/Project-1/Sample IO/Sample Url File.txt', 'utf-8');
+  const file = readFileSync('Sample Url File.txt', 'utf-8');
   // console.log(file)
 
   const wordList = file.split('\n');
