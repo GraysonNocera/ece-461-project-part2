@@ -31,7 +31,8 @@ async function main() {
 
   // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
   // Ask if we need to specify path
-  const file = readFileSync('SampleUrlFile.txt', 'utf-8'); 
+  console.log(process.argv.slice(2))
+  const file = readFileSync('Sample Url File.txt', 'utf-8'); 
   // console.log(file)
 
   const wordList = file.split('\n');

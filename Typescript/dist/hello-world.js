@@ -39,6 +39,7 @@ function main() {
         catch (error) {
             console.error(error);
         }
+        console.log(process.argv.slice(2));
         const file = (0, fs_1.readFileSync)('Sample Url File.txt', 'utf-8');
         const wordList = file.split('\n');
         for (let i = 0; i < wordList.length; i++) {
