@@ -29,8 +29,12 @@ function runPythonScript(argument) {
     });
 }
 function getData() {
-    console.log(process.argv.slice(2));
-    const file = (0, fs_1.readFileSync)('Sample Url File.txt', 'utf-8');
+    let Input = '';
+    for (let i = 0; i < process.argv.slice(2).length; i++) {
+        Input += process.argv.slice(2)[i] + ' ';
+    }
+    Input = Input.trim();
+    const file = (0, fs_1.readFileSync)(Input, 'utf-8');
     return file;
 }
 function cleanData(data) {
