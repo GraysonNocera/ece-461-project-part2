@@ -26,7 +26,7 @@ def main():
         result = get_license()
     else:
         result = "invalid input"
-    print(result)
+    print(result) # Don't print to communicate with TS
     
 def get_downloads():
     return "1"
