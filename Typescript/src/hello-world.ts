@@ -62,6 +62,7 @@ for(var word in wordList){
     console.error(error);
   }
 
+
   try {
     const result = await runPythonScript("get_collaborators");
     console.log(`${result}`);
