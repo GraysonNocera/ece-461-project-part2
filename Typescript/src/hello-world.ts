@@ -22,11 +22,14 @@ async function runPythonScript(argument: string) {
 function getData():string{
   // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
   // https://stackoverflow.com/questions/59178648/how-to-retrieve-command-line-args-which-was-passed-during-building-custom-build
-  console.log(process.argv.slice(2))
-  const file = readFileSync('Sample Url File.txt', 'utf-8');
+  let Input: string = '';
+  for(let i = 0; i < process.argv.slice(2).length; i++) {
+    Input += process.argv.slice(2)[i] + ' ';
+  }
+  Input = Input.trim();
+  const file = readFileSync(Input, 'utf-8');
   return file
 }
-
 function cleanData(data):string[]{
   const wordList = data.split('\n');
   console.log(wordList)
