@@ -30,6 +30,7 @@ function getData():string{
   const file = readFileSync(Input, 'utf-8');
   return file
 }
+
 function cleanData(data):string[]{
   const wordList = data.split('\n');
   console.log(wordList)
