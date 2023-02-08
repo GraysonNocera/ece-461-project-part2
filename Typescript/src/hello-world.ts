@@ -19,7 +19,68 @@ async function runPythonScript(argument: string) {
   });
 }
 
+function getData():string{
+  // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
+  const file = readFileSync('SampleUrlFile.txt', 'utf-8');
+  return file
+}
+
+function cleanData(data):string[]{
+  const wordList = data.split('\n');
+  console.log(wordList)
+  //https://www.tutorialsteacher.com/typescript/for-loop\
+  for (let i = 0; i < wordList.length; i++) {
+    wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
+  }
+  return wordList
+}
+
 async function main() {
+let data = getData()
+console.log(data)
+let wordList = cleanData(data)
+console.log(wordList)
+
+for(var word in wordList){
+  // let netscore = 0;
+  console.log(word)
+  // var 
+  try {
+    const result = await runPythonScript("get_downloads");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+  try {
+    const result = await runPythonScript("get_issues");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
+
+  try {
+    const result = await runPythonScript("get_collaborators");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const result = await runPythonScript("get_contributors");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
   try {
     const result = await runPythonScript("has_downloads");
     console.log(`${result}`);
@@ -29,20 +90,24 @@ async function main() {
     console.error(error);
   }
 
-  // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
-  // Ask if we need to specify path
-  console.log(process.argv.slice(2))
-  const file = readFileSync('Sample Url File.txt', 'utf-8'); 
-  // console.log(file)
-
-  const wordList = file.split('\n');
-  // console.log(wordList)
-
-  //https://www.tutorialsteacher.com/typescript/for-loop\
-  for (let i = 0; i < wordList.length; i++) {
-    wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
+  try {
+    const result = await runPythonScript("get_pulls");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
   }
-  console.log(wordList)
+
+  try {
+    const result = await runPythonScript("get_license");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+}
 }
 
 main();
