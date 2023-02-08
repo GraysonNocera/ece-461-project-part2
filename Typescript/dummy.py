@@ -22,7 +22,7 @@ def main():
         result = has_downloads()
     elif func=="get_pulls":
         result = get_pulls()
-    elif func=="get_pulls":
+    elif func=="get_license":
         result = get_license()
     else:
         result = "invalid input"

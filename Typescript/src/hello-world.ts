@@ -35,8 +35,51 @@ function cleanData(data):string[]{
   return wordList
 }
 
-
 async function main() {
+let data = getData()
+console.log(data)
+let wordList = cleanData(data)
+console.log(wordList)
+
+for(var word in wordList){
+  // let netscore = 0;
+  console.log(word)
+  // var 
+  try {
+    const result = await runPythonScript("get_downloads");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+  try {
+    const result = await runPythonScript("get_issues");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const result = await runPythonScript("get_collaborators");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const result = await runPythonScript("get_contributors");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
   try {
     const result = await runPythonScript("has_downloads");
     console.log(`${result}`);
@@ -46,10 +89,24 @@ async function main() {
     console.error(error);
   }
 
-  let data = getData()
-  console.log(data)
-  let wordList = cleanData(data)
-  console.log(wordList)
+  try {
+    const result = await runPythonScript("get_pulls");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    const result = await runPythonScript("get_license");
+    console.log(`${result}`);
+    var val: number = Number(result)
+    console.log((val*2).toString())
+  } catch (error) {
+    console.error(error);
+  }
+}
 }
 
 main();
