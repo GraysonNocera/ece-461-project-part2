@@ -21,7 +21,9 @@ async function runPythonScript(argument: string) {
 
 function getData():string{
   // https://stackoverflow.com/questions/33643107/read-and-write-a-text-file-in-typescript
-  const file = readFileSync('SampleUrlFile.txt', 'utf-8');
+  // https://stackoverflow.com/questions/59178648/how-to-retrieve-command-line-args-which-was-passed-during-building-custom-build
+  console.log(process.argv.slice(2))
+  const file = readFileSync('Sample Url File.txt', 'utf-8');
   return file
 }
 

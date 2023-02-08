@@ -29,7 +29,8 @@ function runPythonScript(argument) {
     });
 }
 function getData() {
-    const file = (0, fs_1.readFileSync)('SampleUrlFile.txt', 'utf-8');
+    console.log(process.argv.slice(2));
+    const file = (0, fs_1.readFileSync)('Sample Url File.txt', 'utf-8');
     return file;
 }
 function cleanData(data) {
