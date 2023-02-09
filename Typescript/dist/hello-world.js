@@ -48,69 +48,83 @@ function cleanData(data) {
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let data = getData();
-        console.log(data);
         let wordList = cleanData(data);
         console.log(wordList);
         for (var word in wordList) {
             console.log(word);
             try {
-                const result = yield runPythonScript("get_downloads");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("get_downloads");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
             }
             catch (error) {
                 console.error(error);
             }
             try {
-                const result = yield runPythonScript("get_issues");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("get_issues");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
             }
             catch (error) {
                 console.error(error);
             }
             try {
-                const result = yield runPythonScript("get_collaborators");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("get_collaborators");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
             }
             catch (error) {
                 console.error(error);
             }
             try {
-                const result = yield runPythonScript("get_contributors");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("get_contributors");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((val * 2).toString());
                 console.log((val * 2).toString());
             }
             catch (error) {
                 console.error(error);
             }
             try {
-                const result = yield runPythonScript("has_downloads");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("has_downloads");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
             }
             catch (error) {
                 console.error(error);
             }
             try {
-                const result = yield runPythonScript("get_pulls");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("get_pulls");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
             }
             catch (error) {
                 console.error(error);
             }
             try {
-                const result = yield runPythonScript("get_license");
-                console.log(`${result}`);
-                var val = Number(result);
+                yield runPythonScript("get_license");
+                const path = require('path');
+                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                console.log(jsonstring);
+                var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
             }
             catch (error) {
