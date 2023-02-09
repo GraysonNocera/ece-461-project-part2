@@ -39,7 +39,6 @@ function getData() {
 }
 function cleanData(data) {
     const wordList = data.split('\n');
-    console.log(wordList);
     for (let i = 0; i < wordList.length; i++) {
         wordList[i] = wordList[i].replace("https://", "").replace("www.", "").replace(".com", "");
     }
@@ -49,14 +48,23 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let data = getData();
         let wordList = cleanData(data);
-        for (var word in wordList) {
+        console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
+        for (let i = 0; i < wordList.length; i++) {
+            console.log(wordList[i]);
+            var downloads = 0;
+            var issues = 0;
+            var contributors = 0;
+            var collaborators = 0;
+            var has_downloads = 0;
+            var pulls = 0;
+            var license = 0;
             try {
                 yield runPythonScript("get_downloads");
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
+                var downloads = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((downloads * 2).toString());
             }
             catch (error) {
                 console.error(error);
@@ -66,8 +74,8 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
+                var issues = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((issues * 2).toString());
             }
             catch (error) {
                 console.error(error);
@@ -77,8 +85,8 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/collaborators.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
+                var collaborators = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((collaborators * 2).toString());
             }
             catch (error) {
                 console.error(error);
@@ -88,9 +96,8 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/contributors.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
-                console.log((val * 2).toString());
+                var contributors = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((contributors * 2).toString());
             }
             catch (error) {
                 console.error(error);
@@ -98,10 +105,10 @@ function main() {
             try {
                 yield runPythonScript("has_downloads");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/has_downloads.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
+                var has_downloads = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((has_downloads * 2).toString());
             }
             catch (error) {
                 console.error(error);
@@ -111,8 +118,8 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
+                var pulls = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((pulls * 2).toString());
             }
             catch (error) {
                 console.error(error);
@@ -122,8 +129,8 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/license.json'));
                 console.log(jsonstring);
-                var val = +jsonstring.charAt(jsonstring.length - 1);
-                console.log((val * 2).toString());
+                var license = +jsonstring.charAt(jsonstring.length - 1);
+                console.log((license * 2).toString());
             }
             catch (error) {
                 console.error(error);
