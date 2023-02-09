@@ -45,13 +45,6 @@ function cleanData(data) {
     }
     return wordList;
 }
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = 0;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let data = getData();
@@ -62,8 +55,7 @@ function main() {
             try {
                 yield runPythonScript("get_downloads");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout1.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -74,8 +66,7 @@ function main() {
             try {
                 yield runPythonScript("get_issues");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout2.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -86,8 +77,7 @@ function main() {
             try {
                 yield runPythonScript("get_collaborators");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout3.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -98,8 +88,7 @@ function main() {
             try {
                 yield runPythonScript("get_contributors");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout4.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -111,8 +100,7 @@ function main() {
             try {
                 yield runPythonScript("has_downloads");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout5.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -123,8 +111,7 @@ function main() {
             try {
                 yield runPythonScript("get_pulls");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout6.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -135,8 +122,7 @@ function main() {
             try {
                 yield runPythonScript("get_license");
                 const path = require('path');
-                sleep(2000);
-                let jsonstring = require(path.join(__dirname, '../', '/pyout.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pyout7.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());

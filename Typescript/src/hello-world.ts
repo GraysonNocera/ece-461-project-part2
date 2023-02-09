@@ -55,7 +55,7 @@ for(var word in wordList){
     await runPythonScript("get_downloads");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout1.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
@@ -67,7 +67,7 @@ for(var word in wordList){
     await runPythonScript("get_issues");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout2.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
@@ -79,7 +79,7 @@ for(var word in wordList){
     await runPythonScript("get_collaborators");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout3.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
@@ -91,7 +91,7 @@ for(var word in wordList){
     await runPythonScript("get_contributors");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout4.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
@@ -104,7 +104,7 @@ for(var word in wordList){
     await runPythonScript("has_downloads");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout5.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
@@ -116,7 +116,7 @@ for(var word in wordList){
     await runPythonScript("get_pulls");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout6.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
@@ -128,7 +128,7 @@ for(var word in wordList){
     await runPythonScript("get_license");
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pyout.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout7.json'));
     console.log(jsonstring);
     var val: number = +jsonstring.charAt(jsonstring.length - 1);
     console.log((val*2).toString());
