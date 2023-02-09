@@ -49,13 +49,11 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         let data = getData();
         let wordList = cleanData(data);
-        console.log(wordList);
         for (var word in wordList) {
-            console.log(word);
             try {
                 yield runPythonScript("get_downloads");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout1.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -66,7 +64,7 @@ function main() {
             try {
                 yield runPythonScript("get_issues");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout2.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -77,7 +75,7 @@ function main() {
             try {
                 yield runPythonScript("get_collaborators");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout3.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/collaborators.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -88,7 +86,7 @@ function main() {
             try {
                 yield runPythonScript("get_contributors");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout4.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/contributors.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -100,7 +98,7 @@ function main() {
             try {
                 yield runPythonScript("has_downloads");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout5.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -111,7 +109,7 @@ function main() {
             try {
                 yield runPythonScript("get_pulls");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout6.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());
@@ -122,7 +120,7 @@ function main() {
             try {
                 yield runPythonScript("get_license");
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pyout7.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/license.json'));
                 console.log(jsonstring);
                 var val = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((val * 2).toString());

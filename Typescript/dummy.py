@@ -11,25 +11,25 @@ def main():
     func = sys.argv[1]
     if func=="get_downloads":
         result = get_downloads()
-        open("pyout1.json","w").write(json.dumps(f'{func}: {result}'))
+        open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues()
-        open("pyout2.json","w").write(json.dumps(f'{func}: {result}'))
+        open("issues.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_collaborators":
         result = get_collaborators()
-        open("pyout3.json","w").write(json.dumps(f'{func}: {result}'))
+        open("collaborators.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_contributors":
         result = get_contributors()
-        open("pyout4.json","w").write(json.dumps(f'{func}: {result}'))
+        open("contributors.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="has_downloads":
         result = has_downloads()
-        open("pyout5.json","w").write(json.dumps(f'{func}: {result}'))
+        open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_pulls":
         result = get_pulls()
-        open("pyout6.json","w").write(json.dumps(f'{func}: {result}'))
+        open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license()
-        open("pyout7.json","w").write(json.dumps(f'{func}: {result}'))
+        open("license.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
 
