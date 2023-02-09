@@ -1,5 +1,5 @@
 import sys
-
+import json
 
 # RAMP_UP: get_downloads
 # CORRECTNESS_SCORE: get_issues
@@ -7,26 +7,34 @@ import sys
 # RESPONSIVE_MAINTAINER: get_collaborators or has_downloads or get_pulls
 # LICENSE: get_license
 
-
 def main():
     func = sys.argv[1]
     if func=="get_downloads":
         result = get_downloads()
+        open("pyout1.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues()
+        open("pyout2.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_collaborators":
         result = get_collaborators()
+        open("pyout3.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_contributors":
         result = get_contributors()
+        open("pyout4.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="has_downloads":
         result = has_downloads()
+        open("pyout5.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_pulls":
         result = get_pulls()
-    elif func=="get_pulls":
+        open("pyout6.json","w").write(json.dumps(f'{func}: {result}'))
+    elif func=="get_license":
         result = get_license()
+        open("pyout7.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
-    print(result) # Don't print to communicate with TS
+
+    # open("pyout.json","w").write(json.dumps(f'{func}: {result}'))
+    # print(result) # Don't print to communicate with TS
     
 def get_downloads():
     return "1"

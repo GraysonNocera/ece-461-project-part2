@@ -43,7 +43,7 @@ function cleanData(data):string[]{
 
 async function main() {
 let data = getData()
-console.log(data)
+//console.log(data)
 let wordList = cleanData(data)
 console.log(wordList)
 
@@ -52,64 +52,86 @@ for(var word in wordList){
   console.log(word)
   // var 
   try {
-    const result = await runPythonScript("get_downloads");
-    console.log(`${result}`);
-    var val: number = Number(result)
-    console.log((val*2).toString())
-  } catch (error) {
-    console.error(error);
-  }
-  try {
-    const result = await runPythonScript("get_issues");
-    console.log(`${result}`);
-    var val: number = Number(result)
-    console.log((val*2).toString())
-  } catch (error) {
-    console.error(error);
-  }
-
-
-  try {
-    const result = await runPythonScript("get_collaborators");
-    console.log(`${result}`);
-    var val: number = Number(result)
-    console.log((val*2).toString())
+    await runPythonScript("get_downloads");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout1.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    const result = await runPythonScript("get_contributors");
-    console.log(`${result}`);
-    var val: number = Number(result)
-    console.log((val*2).toString())
+    await runPythonScript("get_issues");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout2.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    const result = await runPythonScript("has_downloads");
-    console.log(`${result}`);
-    var val: number = Number(result)
-    console.log((val*2).toString())
+    await runPythonScript("get_collaborators");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout3.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    const result = await runPythonScript("get_pulls");
-    console.log(`${result}`);
-    var val: number = Number(result)
+    await runPythonScript("get_contributors");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout4.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
     console.log((val*2).toString())
   } catch (error) {
     console.error(error);
   }
 
   try {
-    const result = await runPythonScript("get_license");
-    console.log(`${result}`);
-    var val: number = Number(result)
-    console.log((val*2).toString())
+    await runPythonScript("has_downloads");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout5.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await runPythonScript("get_pulls");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout6.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await runPythonScript("get_license");
+    // console.log(`${result}`);
+    const path = require('path');
+    let jsonstring: string  = require(path.join(__dirname,'../','/pyout7.json'));
+    console.log(jsonstring);
+    var val: number = +jsonstring.charAt(jsonstring.length - 1);
+    console.log((val*2).toString());
   } catch (error) {
     console.error(error);
   }
