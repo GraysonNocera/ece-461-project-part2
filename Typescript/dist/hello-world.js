@@ -14,7 +14,7 @@ const fs_1 = require("fs");
 function runPythonScript(argument) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
-            const process = spawn("python", ["dummy.py", argument]);
+            const process = spawn("python3", ["dummy.py", argument]);
             let result = "";
             process.stdout.on("data", (data) => {
                 result += data.toString();

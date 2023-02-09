@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 
 async function runPythonScript(argument: string) {
   return new Promise((resolve, reject) => {
-    const process = spawn("python", ["dummy.py", argument]);
+    const process = spawn("python3", ["dummy.py", argument]);
     let result = "";
   
     process.stdout.on("data", (data) => {
