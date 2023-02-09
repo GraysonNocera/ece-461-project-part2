@@ -135,7 +135,7 @@ for(var word in wordList){
   } catch (error) {
     console.error(error);
   }
-}
+  }
 }
 
 main();
