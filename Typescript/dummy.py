@@ -23,7 +23,7 @@ def main():
         open("contributors.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="has_downloads":
         result = has_downloads()
-        open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
+        open("has_downloads.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_pulls":
         result = get_pulls()
         open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
