@@ -33,7 +33,7 @@ def main():
     else:
         result = "invalid input"
 
-    open("pyout.json","w").write(json.dumps(f'{func}: {result}'))
+    # open("pyout.json","w").write(json.dumps(f'{func}: {result}'))
     # print(result) # Don't print to communicate with TS
     
 def get_downloads():
