@@ -1,1 +1,3 @@
 https://github.com/nullivex/nodist
+https://github.com/lodash/lodash
+https://github.com/cloudinary/cloudinary_npm
