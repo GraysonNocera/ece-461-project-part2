@@ -26,7 +26,7 @@ def main():
         result = get_downloads(user, repo, token)
         open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
-        result = get_issues()
+        result = get_issues(user, repo, token)
         open("issues.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_collaborators":
         result = get_collaborators()
@@ -73,8 +73,26 @@ def get_downloads(user_id, repo, git_token):
 
     return str(num_downloads)
 
-def get_issues():
-    return "2"
+def get_issues(user_id, repo, git_token):
+    total_count = 0
+
+    # Setting up API
+    open_issues_url = f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}%20is:issue%20is:open&per_page=1"
+    closed_issues_url = f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}%20is:issue%20is:closed&per_page=1"
+    headers = {"Authorization": f"{git_token}"}
+
+    open_issues_request = requests.get(open_issues_url, headers=headers)
+    closed_issues_request = requests.get(closed_issues_url, headers=headers)
+
+    # Calculating total number of issues
+    try:
+        if open_issues_request.status_code == 200 and closed_issues_request.status_code == 200:
+            total_count = int(open_issues_request.json()["total_count"]) + int(closed_issues_request.json()["total_count"])
+    except:
+        total_count = 0
+
+    return str(total_count)
+
 def get_collaborators():
     return "3"
 def get_contributors():
