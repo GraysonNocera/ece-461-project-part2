@@ -22,7 +22,7 @@ def main():
     argv3 = sys.argv[3]
 
     if func=="get_downloads":
-        result = get_downloads(argv2, argv3)
+        result = get_downloads()
         open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues()
@@ -64,7 +64,7 @@ def get_downloads(user_id, repo):
         for i in range(0, num_releases - 1):
             num_downloads += int(releases[i]["assets"][0]["download_count"])
 
-    return num_downloads
+    return "f{num_downloads}"
 
 def get_issues():
     return "2"

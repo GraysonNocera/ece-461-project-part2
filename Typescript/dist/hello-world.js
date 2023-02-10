@@ -50,7 +50,6 @@ function main() {
         let wordList = cleanData(data);
         console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
         for (let i = 0; i < wordList.length; i++) {
-            console.log(wordList[i]);
             let user = wordList[i].split('/')[1];
             let repo = wordList[i].split('/')[2];
             var downloads = 0;
@@ -65,7 +64,7 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
                 console.log(jsonstring);
-                var downloads = +jsonstring.charAt(jsonstring.length - 1);
+                downloads = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((downloads * 2).toString());
             }
             catch (error) {
@@ -76,7 +75,7 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
                 console.log(jsonstring);
-                var issues = +jsonstring.charAt(jsonstring.length - 1);
+                issues = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((issues * 2).toString());
             }
             catch (error) {
@@ -87,7 +86,7 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/collaborators.json'));
                 console.log(jsonstring);
-                var collaborators = +jsonstring.charAt(jsonstring.length - 1);
+                collaborators = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((collaborators * 2).toString());
             }
             catch (error) {
@@ -98,7 +97,7 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/contributors.json'));
                 console.log(jsonstring);
-                var contributors = +jsonstring.charAt(jsonstring.length - 1);
+                contributors = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((contributors * 2).toString());
             }
             catch (error) {
@@ -109,7 +108,7 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/has_downloads.json'));
                 console.log(jsonstring);
-                var has_downloads = +jsonstring.charAt(jsonstring.length - 1);
+                has_downloads = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((has_downloads * 2).toString());
             }
             catch (error) {
@@ -131,7 +130,7 @@ function main() {
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/license.json'));
                 console.log(jsonstring);
-                var license = +jsonstring.charAt(jsonstring.length - 1);
+                license = +jsonstring.charAt(jsonstring.length - 1);
                 console.log((license * 2).toString());
             }
             catch (error) {
