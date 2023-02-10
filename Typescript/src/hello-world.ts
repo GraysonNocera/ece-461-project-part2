@@ -3,7 +3,7 @@ import { readFileSync } from 'fs';
 
 async function runPythonScript(argument: string) {
   return new Promise((resolve, reject) => {
-    const process = spawn("python3", ["dummy.py", argument]);
+    const process = spawn("python3", ["metrics.py", argument]);
     let result = "";
   
     process.stdout.on("data", (data) => {
@@ -51,6 +51,11 @@ for(let i = 0; i < wordList.length; i++){
   // let netscore = 0;
   console.log(wordList[i]);
 
+  let user = wordList[i].split('/')[1];
+  let repo = wordList[i].split('/')[1];
+  // console.log(user);
+  // console.log(repo);
+  
   var downloads: number = 0;
   var issues: number = 0;
   var contributors: number = 0;
