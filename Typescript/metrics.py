@@ -2,6 +2,7 @@ import sys
 import json
 import os
 import requests
+import git
 
 # RAMP_UP: get_downloads
 # CORRECTNESS_SCORE: get_issues
@@ -41,7 +42,7 @@ def main():
         result = get_pulls()
         open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
-        result = get_license(user_id, repo)
+        result = get_license(user, repo)
         open("license.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
