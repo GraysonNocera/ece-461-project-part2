@@ -1,6 +1,7 @@
 import sys
 import json
 import os
+import requests
 
 # RAMP_UP: get_downloads
 # CORRECTNESS_SCORE: get_issues
@@ -12,12 +13,14 @@ git_token = os.environ.get('GITHUB_TOKEN')
 
 def main():
 
-    if(sys.argc != 3)
-        print("Wrong number of arguments. ")
-        return 1
+    if(len(sys.argv) != 3):
+        print("Invalid length of arguments")
+        return 1 
+    
     func = sys.argv[1]
     argv2 = sys.argv[2]
     argv3 = sys.argv[3]
+
     if func=="get_downloads":
         result = get_downloads(argv2, argv3)
         open("downloads.json","w").write(json.dumps(f'{func}: {result}'))

@@ -14,11 +14,7 @@ const fs_1 = require("fs");
 function runPythonScript(argument, user, repo) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
-<<<<<<< Updated upstream
-            const process = spawn("python3", ["dummy.py", argument]);
-=======
             const process = spawn("python3", ["metrics.py", argument, user, repo]);
->>>>>>> Stashed changes
             let result = "";
             process.stdout.on("data", (data) => {
                 result += data.toString();
@@ -55,11 +51,8 @@ function main() {
         console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
         for (let i = 0; i < wordList.length; i++) {
             console.log(wordList[i]);
-<<<<<<< Updated upstream
-=======
             let user = wordList[i].split('/')[1];
-            let repo = wordList[i].split('/')[1];
->>>>>>> Stashed changes
+            let repo = wordList[i].split('/')[2];
             var downloads = 0;
             var issues = 0;
             var contributors = 0;

@@ -3,11 +3,7 @@ import { readFileSync } from 'fs';
 
 async function runPythonScript(argument: string, user: string, repo: string) {
   return new Promise((resolve, reject) => {
-<<<<<<< Updated upstream
-    const process = spawn("python3", ["dummy.py", argument]);
-=======
     const process = spawn("python3", ["metrics.py", argument, user, repo]);
->>>>>>> Stashed changes
     let result = "";
   
     process.stdout.on("data", (data) => {
@@ -54,6 +50,12 @@ console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESP
 for(let i = 0; i < wordList.length; i++){
   // let netscore = 0;
   console.log(wordList[i]);
+
+  let user = wordList[i].split('/')[1];
+  let repo = wordList[i].split('/')[2];
+
+  // console.log(user);
+  // console.log(repo);
 
   var downloads: number = 0;
   var issues: number = 0;
