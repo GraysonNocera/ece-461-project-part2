@@ -11,10 +11,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const { spawn } = require("child_process");
 const fs_1 = require("fs");
-function runPythonScript(argument) {
+function runPythonScript(argument, user, repo) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
+<<<<<<< Updated upstream
             const process = spawn("python3", ["dummy.py", argument]);
+=======
+            const process = spawn("python3", ["metrics.py", argument, user, repo]);
+>>>>>>> Stashed changes
             let result = "";
             process.stdout.on("data", (data) => {
                 result += data.toString();
@@ -51,6 +55,11 @@ function main() {
         console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
         for (let i = 0; i < wordList.length; i++) {
             console.log(wordList[i]);
+<<<<<<< Updated upstream
+=======
+            let user = wordList[i].split('/')[1];
+            let repo = wordList[i].split('/')[1];
+>>>>>>> Stashed changes
             var downloads = 0;
             var issues = 0;
             var contributors = 0;
@@ -59,7 +68,7 @@ function main() {
             var pulls = 0;
             var license = 0;
             try {
-                yield runPythonScript("get_downloads");
+                yield runPythonScript("get_downloads", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
                 console.log(jsonstring);
@@ -70,7 +79,7 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("get_issues");
+                yield runPythonScript("get_issues", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
                 console.log(jsonstring);
@@ -81,7 +90,7 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("get_collaborators");
+                yield runPythonScript("get_collaborators", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/collaborators.json'));
                 console.log(jsonstring);
@@ -92,7 +101,7 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("get_contributors");
+                yield runPythonScript("get_contributors", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/contributors.json'));
                 console.log(jsonstring);
@@ -103,7 +112,7 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("has_downloads");
+                yield runPythonScript("has_downloads", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/has_downloads.json'));
                 console.log(jsonstring);
@@ -114,7 +123,7 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("get_pulls");
+                yield runPythonScript("get_pulls", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
                 console.log(jsonstring);
@@ -125,7 +134,7 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("get_license");
+                yield runPythonScript("get_license", user, repo);
                 const path = require('path');
                 let jsonstring = require(path.join(__dirname, '../', '/license.json'));
                 console.log(jsonstring);

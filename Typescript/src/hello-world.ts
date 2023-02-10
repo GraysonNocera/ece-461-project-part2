@@ -1,9 +1,13 @@
 const { spawn } = require("child_process");
 import { readFileSync } from 'fs';
 
-async function runPythonScript(argument: string) {
+async function runPythonScript(argument: string, user: string, repo: string) {
   return new Promise((resolve, reject) => {
+<<<<<<< Updated upstream
     const process = spawn("python3", ["dummy.py", argument]);
+=======
+    const process = spawn("python3", ["metrics.py", argument, user, repo]);
+>>>>>>> Stashed changes
     let result = "";
   
     process.stdout.on("data", (data) => {
@@ -60,7 +64,7 @@ for(let i = 0; i < wordList.length; i++){
   var license: number = 0;
 
   try {
-    await runPythonScript("get_downloads");
+    await runPythonScript("get_downloads", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
@@ -72,7 +76,7 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("get_issues");
+    await runPythonScript("get_issues", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
@@ -84,7 +88,7 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("get_collaborators");
+    await runPythonScript("get_collaborators", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/collaborators.json'));
@@ -96,7 +100,7 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("get_contributors");
+    await runPythonScript("get_contributors", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/contributors.json'));
@@ -108,7 +112,7 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("has_downloads");
+    await runPythonScript("has_downloads", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/has_downloads.json'));
@@ -120,7 +124,7 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("get_pulls");
+    await runPythonScript("get_pulls", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
@@ -132,7 +136,7 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("get_license");
+    await runPythonScript("get_license", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));

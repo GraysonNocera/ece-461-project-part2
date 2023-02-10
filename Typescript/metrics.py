@@ -8,10 +8,18 @@ import os
 # RESPONSIVE_MAINTAINER: get_collaborators or has_downloads or get_pulls
 # LICENSE: get_license
 
+git_token = os.environ.get('GITHUB_TOKEN')
+
 def main():
+
+    if(sys.argc != 3)
+        print("Wrong number of arguments. ")
+        return 1
     func = sys.argv[1]
+    argv2 = sys.argv[2]
+    argv3 = sys.argv[3]
     if func=="get_downloads":
-        result = get_downloads()
+        result = get_downloads(argv2, argv3)
         open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues()
@@ -37,8 +45,24 @@ def main():
     # open("pyout.json","w").write(json.dumps(f'{func}: {result}'))
     # print(result) # Don't print to communicate with TS
     
-def get_downloads():
-    return "1"
+def get_downloads(user_id, repo):
+    num_downloads = 0
+
+    # Setting up API
+    downloads_url = f"https://api.github.com/repos/{user_id}/{repo}/releases"
+    headers = {"Authorization": f"{git_token}"}
+
+    downloads_request = requests.get(downloads_url, headers=headers)
+    releases = downloads_request.json()
+    num_releases = len(releases)
+
+    # Calculating total number of downloads
+    if downloads_request.status_code == 200 and "download_count" in releases[0]["assets"][0]:
+        for i in range(0, num_releases - 1):
+            num_downloads += int(releases[i]["assets"][0]["download_count"])
+
+    return num_downloads
+
 def get_issues():
     return "2"
 def get_collaborators():
