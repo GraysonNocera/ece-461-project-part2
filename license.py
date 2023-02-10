@@ -1,46 +1,25 @@
-import requests
-import base64
-import re
-from bs4 import BeautifulSoup
-
-def get_repo_from_nongithub_url(url):
-    # Get the content of the website at the URL
-    response = requests.get(url)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, "html.parser")
-
-        # Find the link to the GitHub repository
-        for link in soup.find_all("a"):
-            href = link.get("href")
-            if href and re.search(r"github.com/[^/]+/[^/]+", href):
-                return href.split("/")[-2] + "/" + href.split("/")[-1]
-
-    return None
+import git
+import os
 
 
-def get_license(repo):
-    print(repo)
-    url = f"https://api.github.com/repos/{repo}/license"
-    response = requests.get(url)
+def get_license(user_id, repo):
+    repo_url = f"https://github.com/{user_id}/{repo}.git"
 
-    if response.status_code == 200:
-        license = response.json()["content"]
-        return base64.b64decode(license).decode()
+    # Clone the repository
+    git.Repo.clone_from(repo_url, repo)
+
+    license_file = os.path.join(repo, "LICENSE.txt")
+    readme_file = os.path.join(repo, "README.txt")
+
+    # Read the contents of the license and readme files
+    if os.path.exists(license_file):
+        return 1
+    elif os.path.exists(readme_file):
+        with open(readme_file, "r") as f:
+            readme_content = f.read()
+            if "License" in readme_content or "Licensing" in readme_content or "licensing" in readme_content:
+                return 1
+            else:
+                return 0
     else:
-        return None
-
-
-url = "https://www.npmjs.com/package/express"
-if "github.com" in url:
-    repo = url[19:]
-else:
-    repo = get_repo_from_nongithub_url(url)
-
-if repo:
-    license = get_license(repo)
-    if license:
-        print(license)
-    else:
-        print("Could not retrieve license")
-else:
-    print("Invalid URL")
+        return 0
