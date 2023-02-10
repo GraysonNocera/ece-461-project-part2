@@ -71,7 +71,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
     console.log(jsonstring);
-    downloads = +jsonstring.charAt(jsonstring.length - 1);
+    downloads = +jsonstring.split(':')[1];
     console.log((downloads*2).toString());
   } catch (error) {
     console.error(error);
@@ -83,7 +83,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
     console.log(jsonstring);
-    issues = +jsonstring.charAt(jsonstring.length - 1);
+    issues = +jsonstring.split(':')[1];
     console.log((issues*2).toString());
   } catch (error) {
     console.error(error);
@@ -95,7 +95,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/collaborators.json'));
     console.log(jsonstring);
-    collaborators = +jsonstring.charAt(jsonstring.length - 1);
+    collaborators = +jsonstring.split(':')[1];
     console.log((collaborators*2).toString());
   } catch (error) {
     console.error(error);
@@ -107,7 +107,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/contributors.json'));
     console.log(jsonstring);
-    contributors = +jsonstring.charAt(jsonstring.length - 1);
+    contributors = +jsonstring.split(':')[1];
     console.log((contributors*2).toString());
   } catch (error) {
     console.error(error);
@@ -119,7 +119,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/has_downloads.json'));
     console.log(jsonstring);
-    has_downloads = +jsonstring.charAt(jsonstring.length - 1);
+    has_downloads = +jsonstring.split(':')[1];
     console.log((has_downloads*2).toString());
   } catch (error) {
     console.error(error);
@@ -131,7 +131,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
     console.log(jsonstring);
-    var pulls: number = +jsonstring.charAt(jsonstring.length - 1);
+    pulls = +jsonstring.split(':')[1];
     console.log((pulls*2).toString());
   } catch (error) {
     console.error(error);
@@ -143,7 +143,7 @@ for(let i = 0; i < wordList.length; i++){
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));
     console.log(jsonstring);
-    license = +jsonstring.charAt(jsonstring.length - 1);
+    license = +jsonstring.split(':')[1];
     console.log((license*2).toString());
   } catch (error) {
     console.error(error);
