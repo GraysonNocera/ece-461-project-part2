@@ -66,7 +66,7 @@ def get_downloads(user_id, repo, git_token):
         for i in range(0, num_releases - 1):
             num_downloads += int(releases[i]["assets"][0]["download_count"])
 
-    return num_downloads
+    return str(num_downloads)
 
 def get_issues():
     return "2"
