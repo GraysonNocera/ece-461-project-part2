@@ -2,7 +2,6 @@ import sys
 import json
 import os
 import requests
-import Github
 
 # RAMP_UP: get_downloads
 # CORRECTNESS_SCORE: get_issues
