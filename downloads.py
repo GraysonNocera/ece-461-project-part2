@@ -16,10 +16,12 @@ def get_downloads(user_id, repo, git_token):
     num_releases = len(releases)
 
     # Calculating total number of downloads
-    if downloads_request.status_code == 200 and "download_count" in releases[0]["assets"][0]:
-        for i in range(0, num_releases - 1):
-            num_downloads += int(releases[i]["assets"][0]["download_count"])
+    try:
+        if downloads_request.status_code == 200 and "download_count" in releases[0]["assets"][0]:
+            for i in range(0, num_releases - 1):
+                num_downloads += int(releases[i]["assets"][0]["download_count"])
+    except:
+        num_downloads = 0
 
     return num_downloads
-
 
