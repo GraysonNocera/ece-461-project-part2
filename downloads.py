@@ -1,8 +1,6 @@
 import requests
 import os
 
-owner = "nullivex"
-repo_name = "nodist"
 token = os.environ.get('GITHUB_TOKEN')
 
 
@@ -22,8 +20,6 @@ def get_downloads(user_id, repo, git_token):
         for i in range(0, num_releases - 1):
             num_downloads += int(releases[i]["assets"][0]["download_count"])
 
-    print(num_downloads)
     return num_downloads
 
 
-get_downloads(owner, repo_name, token)

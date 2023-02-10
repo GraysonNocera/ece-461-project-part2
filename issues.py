@@ -1,8 +1,6 @@
 import os
 import requests
 
-owner = "nullivex"
-repo_name = "nodist"
 token = os.environ.get('GITHUB_TOKEN')
 
 
@@ -21,8 +19,6 @@ def get_issues(user_id, repo, git_token):
     if open_issues_request.status_code == 200 and closed_issues_request.status_code == 200:
         total_count = int(open_issues_request.json()["total_count"]) + int(closed_issues_request.json()["total_count"])
 
-    print(total_count)
     return total_count
 
 
-get_issues(owner, repo_name, token)
