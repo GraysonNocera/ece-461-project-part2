@@ -12,7 +12,7 @@ import requests
 
 def main():
 
-    if(len(sys.argv) != 3):
+    if(len(sys.argv) != 4):
         print("Invalid length of arguments")
         return 1 
     
@@ -20,7 +20,7 @@ def main():
     user = sys.argv[2]
     repo = sys.argv[3]
     token = os.environ.get('GITHUB_TOKEN')
-    # open("testing.json","w").write(json.dumps(f'{func}, {user}, {repo}'))
+    # open("test.json","w").write(json.dumps(f'Input: {func} {user} {repo}, Token: {token}'))
 
     if func=="get_downloads":
         result = get_downloads(user, repo, token)
@@ -50,6 +50,7 @@ def main():
     # print(result) # Don't print to communicate with TS
     
 def get_downloads(user_id, repo, git_token):
+    open("test.json","w").write(json.dumps(f'get_downloads inputs: {user_id} {repo} {git_token}'))
     num_downloads = 0
 
     # Setting up API
@@ -65,7 +66,7 @@ def get_downloads(user_id, repo, git_token):
         for i in range(0, num_releases - 1):
             num_downloads += int(releases[i]["assets"][0]["download_count"])
 
-    return str(num_downloads)
+    return num_downloads
 
 def get_issues():
     return "2"
