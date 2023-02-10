@@ -52,7 +52,7 @@ def main():
     
 def get_downloads(user_id, repo, git_token):
 
-    open("error.json","w").write(json.dumps(f'get_downloads inputs: {user_id} {repo} {git_token}'))
+    # open("error.json","w").write(json.dumps(f'get_downloads inputs: {user_id} {repo} {git_token}'))
     num_downloads = 0
 
     # Setting up API
