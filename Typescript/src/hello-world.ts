@@ -1,9 +1,9 @@
 const { spawn } = require("child_process");
 import { readFileSync } from 'fs';
 
-async function runPythonScript(argument: string) {
+async function runPythonScript(argument: string, user: string, repo: string) {
   return new Promise((resolve, reject) => {
-    const process = spawn("python3", ["metrics.py", argument]);
+    const process = spawn("python3", ["metrics.py", argument, user, repo]);
     let result = "";
   
     process.stdout.on("data", (data) => {
@@ -49,13 +49,14 @@ console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESP
 
 for(let i = 0; i < wordList.length; i++){
   // let netscore = 0;
-  console.log(wordList[i]);
+  // console.log(wordList[i]);
 
-  let user = wordList[i].split('/')[1];
-  let repo = wordList[i].split('/')[1];
+  let user: string = wordList[i].split('/')[1];
+  let repo: string = wordList[i].split('/')[2];
+
   // console.log(user);
   // console.log(repo);
-  
+
   var downloads: number = 0;
   var issues: number = 0;
   var contributors: number = 0;
@@ -65,84 +66,84 @@ for(let i = 0; i < wordList.length; i++){
   var license: number = 0;
 
   try {
-    await runPythonScript("get_downloads");
+    await runPythonScript("get_downloads", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
     console.log(jsonstring);
-    var downloads: number = +jsonstring.charAt(jsonstring.length - 1);
+    downloads = +jsonstring.split(':')[1];
     console.log((downloads*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    await runPythonScript("get_issues");
+    await runPythonScript("get_issues", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
     console.log(jsonstring);
-    var issues: number = +jsonstring.charAt(jsonstring.length - 1);
+    issues = +jsonstring.split(':')[1];
     console.log((issues*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    await runPythonScript("get_collaborators");
+    await runPythonScript("get_collaborators", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/collaborators.json'));
     console.log(jsonstring);
-    var collaborators: number = +jsonstring.charAt(jsonstring.length - 1);
+    collaborators = +jsonstring.split(':')[1];
     console.log((collaborators*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    await runPythonScript("get_contributors");
+    await runPythonScript("get_contributors", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/contributors.json'));
     console.log(jsonstring);
-    var contributors: number = +jsonstring.charAt(jsonstring.length - 1);
+    contributors = +jsonstring.split(':')[1];
     console.log((contributors*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    await runPythonScript("has_downloads");
+    await runPythonScript("has_downloads", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/has_downloads.json'));
     console.log(jsonstring);
-    var has_downloads: number = +jsonstring.charAt(jsonstring.length - 1);
+    has_downloads = +jsonstring.split(':')[1];
     console.log((has_downloads*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    await runPythonScript("get_pulls");
+    await runPythonScript("get_pulls", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
     console.log(jsonstring);
-    var pulls: number = +jsonstring.charAt(jsonstring.length - 1);
+    pulls = +jsonstring.split(':')[1];
     console.log((pulls*2).toString());
   } catch (error) {
     console.error(error);
   }
 
   try {
-    await runPythonScript("get_license");
+    await runPythonScript("get_license", user, repo);
     // console.log(`${result}`);
     const path = require('path');
     let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));
     console.log(jsonstring);
-    var license: number = +jsonstring.charAt(jsonstring.length - 1);
+    license = +jsonstring.split(':')[1];
     console.log((license*2).toString());
   } catch (error) {
     console.error(error);
