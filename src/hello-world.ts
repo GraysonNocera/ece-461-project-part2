@@ -73,7 +73,7 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_downloads", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
+      let jsonstring: string  = require(path.join(__dirname,'../',`/downloads${user}.json`));
       // console.log(jsonstring);
       downloads = +jsonstring.split(':')[1];
       output = output + " " + downloads;
@@ -86,7 +86,7 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_issues", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
+      let jsonstring: string  = require(path.join(__dirname,'../',`/issues${user}.json`));
       // console.log(jsonstring);`
       issues = +jsonstring.split(':')[1];
       output = output + " " + issues;
@@ -100,7 +100,7 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_forks", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/forks.json'));
+      let jsonstring: string  = require(path.join(__dirname,'../',`/forks${user}.json`));
       // console.log(jsonstring);
       forks = +jsonstring.split(':')[1];
       netscore += Number(forks);
@@ -114,7 +114,7 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_pulls", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
+      let jsonstring: string  = require(path.join(__dirname,'../',`/pulls${user}.json`));
       // console.log(jsonstring);
       pulls = +jsonstring.split(':')[1];
       netscore += Number(pulls);
@@ -128,7 +128,7 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_license", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));
+      let jsonstring: string  = require(path.join(__dirname,'../',`/license${user}.json`));
       // console.log(jsonstring);
       license = +jsonstring.split(':')[1];
       netscore += Number(license);

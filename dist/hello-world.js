@@ -65,7 +65,7 @@ function main() {
                 try {
                     yield runPythonScript("get_downloads", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
+                    let jsonstring = require(path.join(__dirname, '../', `/downloads${user}.json`));
                     downloads = +jsonstring.split(':')[1];
                     output = output + " " + downloads;
                     netscore += Number(downloads);
@@ -76,7 +76,7 @@ function main() {
                 try {
                     yield runPythonScript("get_issues", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
+                    let jsonstring = require(path.join(__dirname, '../', `/issues${user}.json`));
                     issues = +jsonstring.split(':')[1];
                     output = output + " " + issues;
                     netscore += Number(issues);
@@ -87,7 +87,7 @@ function main() {
                 try {
                     yield runPythonScript("get_forks", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/forks.json'));
+                    let jsonstring = require(path.join(__dirname, '../', `/forks${user}.json`));
                     forks = +jsonstring.split(':')[1];
                     netscore += Number(forks);
                     output = output + " " + forks;
@@ -98,7 +98,7 @@ function main() {
                 try {
                     yield runPythonScript("get_pulls", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
+                    let jsonstring = require(path.join(__dirname, '../', `/pulls${user}.json`));
                     pulls = +jsonstring.split(':')[1];
                     netscore += Number(pulls);
                     output = output + " " + pulls;
@@ -109,7 +109,7 @@ function main() {
                 try {
                     yield runPythonScript("get_license", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/license.json'));
+                    let jsonstring = require(path.join(__dirname, '../', `/license${user}.json`));
                     license = +jsonstring.split(':')[1];
                     netscore += Number(license);
                     output = output + " " + license;

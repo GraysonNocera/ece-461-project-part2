@@ -18,19 +18,19 @@ def main():
 
     if func=="get_downloads":
         result = get_downloads(user, repo, token)
-        open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"downloads{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues(user, repo, token)
-        open("issues.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"issues{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_forks":
         result = get_forks()
-        open("forks.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_pulls":
         result = get_pulls()
-        open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"pulls{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
-        open("license.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"license{user}.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
 

@@ -32,7 +32,6 @@ else
     case "$isFile" in
         (*text*)
         node dist/hello-world.js $1
-        rm -f -r cloudinary_npm/
         exit 0
         ;;
         (*)
