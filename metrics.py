@@ -107,7 +107,7 @@ def get_license(user_id, repo):
     elif os.path.exists(readme_file):
         with open(readme_file, "r") as f:
             readme_content = f.read()
-            if "License" in readme_content or "Licensing" in readme_content or "licensing" in readme_content:
+            if "License" in readme_content or "Licensing" in readme_content or "licensing" in readme_content or "license" in readme_content:
                 return "1"
             else:
                 return "0"
