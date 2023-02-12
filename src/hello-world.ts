@@ -87,7 +87,7 @@ for(let i = 0; i < wordList.length; i++){
       // console.log(`${result}`);
       const path = require('path');
       let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
-      // console.log(jsonstring);
+      // console.log(jsonstring);`
       issues = +jsonstring.split(':')[1];
       output = output + " " + issues;
       netscore += Number(issues);
