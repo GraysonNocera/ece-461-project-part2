@@ -25,6 +25,9 @@ def main():
     elif func=="get_forks":
         result = get_forks()
         open("forks.json","w").write(json.dumps(f'{func}: {result}'))
+    elif func=="get_pulls":
+        result = get_pulls()
+        open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
         open("license.json","w").write(json.dumps(f'{func}: {result}'))
@@ -80,6 +83,8 @@ def get_issues(user_id, repo, git_token):
 
 def get_forks():
     return "3"
+def get_pulls():
+    return "4"
 
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"

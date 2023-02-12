@@ -62,6 +62,7 @@ for(let i = 0; i < wordList.length; i++){
   var downloads: number = 0;
   var issues: number = 0;
   var forks: number = 0;
+  var pulls: number = 0;
   var license: number = 0;
   if(website == "github"){
     try {
@@ -71,7 +72,7 @@ for(let i = 0; i < wordList.length; i++){
       let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
       console.log(jsonstring);
       downloads = +jsonstring.split(':')[1];
-      console.log((downloads*2).toString());
+      // console.log((downloads*2).toString());
     } catch (error) {
       console.error(error);
     }
@@ -82,7 +83,7 @@ for(let i = 0; i < wordList.length; i++){
       let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
       console.log(jsonstring);
       issues = +jsonstring.split(':')[1];
-      console.log((issues*2).toString());
+      // console.log((issues*2).toString());
     } catch (error) {
       console.error(error);
     }
@@ -94,7 +95,19 @@ for(let i = 0; i < wordList.length; i++){
       let jsonstring: string  = require(path.join(__dirname,'../','/forks.json'));
       console.log(jsonstring);
       forks = +jsonstring.split(':')[1];
-      console.log((forks*2).toString());
+      // console.log((forks*2).toString());
+    } catch (error) {
+      console.error(error);
+    }
+
+    try {
+      await runPythonScript("get_pulls", user, repo);
+      // console.log(`${result}`);
+      const path = require('path');
+      let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
+      console.log(jsonstring);
+      forks = +jsonstring.split(':')[1];
+      // console.log((forks*2).toString());
     } catch (error) {
       console.error(error);
     }
@@ -106,7 +119,7 @@ for(let i = 0; i < wordList.length; i++){
       let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));
       console.log(jsonstring);
       license = +jsonstring.split(':')[1];
-      console.log((license*2).toString());
+      // console.log((license*2).toString());
     } catch (error) {
       console.error(error);
     }
