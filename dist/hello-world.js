@@ -54,10 +54,7 @@ function main() {
             let repo = wordList[i].split('/')[2];
             var downloads = 0;
             var issues = 0;
-            var contributors = 0;
-            var collaborators = 0;
-            var has_downloads = 0;
-            var pulls = 0;
+            var forks = 0;
             var license = 0;
             try {
                 yield runPythonScript("get_downloads", user, repo);
@@ -82,45 +79,12 @@ function main() {
                 console.error(error);
             }
             try {
-                yield runPythonScript("get_collaborators", user, repo);
+                yield runPythonScript("get_forks", user, repo);
                 const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/collaborators.json'));
+                let jsonstring = require(path.join(__dirname, '../', '/forks.json'));
                 console.log(jsonstring);
-                collaborators = +jsonstring.split(':')[1];
-                console.log((collaborators * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_contributors", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/contributors.json'));
-                console.log(jsonstring);
-                contributors = +jsonstring.split(':')[1];
-                console.log((contributors * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("has_downloads", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/has_downloads.json'));
-                console.log(jsonstring);
-                has_downloads = +jsonstring.split(':')[1];
-                console.log((has_downloads * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_pulls", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
-                console.log(jsonstring);
-                pulls = +jsonstring.split(':')[1];
-                console.log((pulls * 2).toString());
+                forks = +jsonstring.split(':')[1];
+                console.log((forks * 2).toString());
             }
             catch (error) {
                 console.error(error);

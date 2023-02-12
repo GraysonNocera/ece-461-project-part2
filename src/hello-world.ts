@@ -59,10 +59,7 @@ for(let i = 0; i < wordList.length; i++){
 
   var downloads: number = 0;
   var issues: number = 0;
-  var contributors: number = 0;
-  var collaborators: number = 0;
-  var has_downloads: number = 0;
-  var pulls: number = 0;
+  var forks: number = 0;
   var license: number = 0;
 
   try {
@@ -90,49 +87,13 @@ for(let i = 0; i < wordList.length; i++){
   }
 
   try {
-    await runPythonScript("get_collaborators", user, repo);
+    await runPythonScript("get_forks", user, repo);
     // console.log(`${result}`);
     const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/collaborators.json'));
+    let jsonstring: string  = require(path.join(__dirname,'../','/forks.json'));
     console.log(jsonstring);
-    collaborators = +jsonstring.split(':')[1];
-    console.log((collaborators*2).toString());
-  } catch (error) {
-    console.error(error);
-  }
-
-  try {
-    await runPythonScript("get_contributors", user, repo);
-    // console.log(`${result}`);
-    const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/contributors.json'));
-    console.log(jsonstring);
-    contributors = +jsonstring.split(':')[1];
-    console.log((contributors*2).toString());
-  } catch (error) {
-    console.error(error);
-  }
-
-  try {
-    await runPythonScript("has_downloads", user, repo);
-    // console.log(`${result}`);
-    const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/has_downloads.json'));
-    console.log(jsonstring);
-    has_downloads = +jsonstring.split(':')[1];
-    console.log((has_downloads*2).toString());
-  } catch (error) {
-    console.error(error);
-  }
-
-  try {
-    await runPythonScript("get_pulls", user, repo);
-    // console.log(`${result}`);
-    const path = require('path');
-    let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
-    console.log(jsonstring);
-    pulls = +jsonstring.split(':')[1];
-    console.log((pulls*2).toString());
+    forks = +jsonstring.split(':')[1];
+    console.log((forks*2).toString());
   } catch (error) {
     console.error(error);
   }
