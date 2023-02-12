@@ -95,10 +95,13 @@ def get_license(user_id, repo):
     # Clone the repository
     git.Repo.clone_from(repo_url, repo)
 
-    license_file = os.path.join(repo, "LICENSE.txt")
+    license_file_txt = os.path.join(repo, "LICENSE.txt")
+    license_file = os.path.join(repo, "LICENSE")
     readme_file = os.path.join(repo, "README.md")
 
     # Read the contents of the license and readme files
+    if os.path.exists(license_file_txt):
+        return "1"
     if os.path.exists(license_file):
         return "1"
     elif os.path.exists(readme_file):
