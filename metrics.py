@@ -81,8 +81,17 @@ def get_issues(user_id, repo, git_token):
 
     return str(total_count)
 
-def get_forks():
-    return "3"
+def get_forks(user_id, repo, git_token):
+
+    # Setting up API
+    forks_url = f"https://api.github.com/repos/%7Buser_id%7D/%7Brepo%7D"
+    headers = {"Authorization": f"{git_token}"}
+
+    forks_request = requests.get(forks_url, headers=headers)
+
+    if forks_request.status_code == 200:
+        return int(forks_request.json()["forks_count"])
+
 def get_pulls():
     return "4"
 
