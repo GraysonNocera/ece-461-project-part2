@@ -50,91 +50,68 @@ function main() {
         let wordList = cleanData(data);
         console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
         for (let i = 0; i < wordList.length; i++) {
+            let website = wordList[i].split('/')[0];
             let user = wordList[i].split('/')[1];
             let repo = wordList[i].split('/')[2];
             var downloads = 0;
             var issues = 0;
-            var contributors = 0;
-            var collaborators = 0;
-            var has_downloads = 0;
+            var forks = 0;
             var pulls = 0;
             var license = 0;
-            try {
-                yield runPythonScript("get_downloads", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
-                console.log(jsonstring);
-                downloads = +jsonstring.split(':')[1];
-                console.log((downloads * 2).toString());
+            if (website == "github") {
+                try {
+                    yield runPythonScript("get_downloads", user, repo);
+                    const path = require('path');
+                    let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
+                    console.log(jsonstring);
+                    downloads = +jsonstring.split(':')[1];
+                }
+                catch (error) {
+                    console.error(error);
+                }
+                try {
+                    yield runPythonScript("get_issues", user, repo);
+                    const path = require('path');
+                    let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
+                    console.log(jsonstring);
+                    issues = +jsonstring.split(':')[1];
+                }
+                catch (error) {
+                    console.error(error);
+                }
+                try {
+                    yield runPythonScript("get_forks", user, repo);
+                    const path = require('path');
+                    let jsonstring = require(path.join(__dirname, '../', '/forks.json'));
+                    console.log(jsonstring);
+                    forks = +jsonstring.split(':')[1];
+                }
+                catch (error) {
+                    console.error(error);
+                }
+                try {
+                    yield runPythonScript("get_pulls", user, repo);
+                    const path = require('path');
+                    let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
+                    console.log(jsonstring);
+                    forks = +jsonstring.split(':')[1];
+                }
+                catch (error) {
+                    console.error(error);
+                }
+                try {
+                    yield runPythonScript("get_license", user, repo);
+                    const path = require('path');
+                    let jsonstring = require(path.join(__dirname, '../', '/license.json'));
+                    console.log(jsonstring);
+                    license = +jsonstring.split(':')[1];
+                }
+                catch (error) {
+                    console.error(error);
+                }
             }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_issues", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
-                console.log(jsonstring);
-                issues = +jsonstring.split(':')[1];
-                console.log((issues * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_collaborators", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/collaborators.json'));
-                console.log(jsonstring);
-                collaborators = +jsonstring.split(':')[1];
-                console.log((collaborators * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_contributors", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/contributors.json'));
-                console.log(jsonstring);
-                contributors = +jsonstring.split(':')[1];
-                console.log((contributors * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("has_downloads", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/has_downloads.json'));
-                console.log(jsonstring);
-                has_downloads = +jsonstring.split(':')[1];
-                console.log((has_downloads * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_pulls", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
-                console.log(jsonstring);
-                pulls = +jsonstring.split(':')[1];
-                console.log((pulls * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
-            }
-            try {
-                yield runPythonScript("get_license", user, repo);
-                const path = require('path');
-                let jsonstring = require(path.join(__dirname, '../', '/license.json'));
-                console.log(jsonstring);
-                license = +jsonstring.split(':')[1];
-                console.log((license * 2).toString());
-            }
-            catch (error) {
-                console.error(error);
+            else {
+                console.log("Can only accept github URLs.");
             }
         }
     });

@@ -4,13 +4,6 @@ import os
 import requests
 import git
 
-# RAMP_UP: get_downloads
-# CORRECTNESS_SCORE: get_issues
-# BUS_FACTOR: get_collaborators or get_contributors
-# RESPONSIVE_MAINTAINER: get_collaborators or has_downloads or get_pulls
-# LICENSE: get_license
-
-
 def main():
 
     if(len(sys.argv) != 4):
@@ -29,15 +22,9 @@ def main():
     elif func=="get_issues":
         result = get_issues(user, repo, token)
         open("issues.json","w").write(json.dumps(f'{func}: {result}'))
-    elif func=="get_collaborators":
-        result = get_collaborators()
-        open("collaborators.json","w").write(json.dumps(f'{func}: {result}'))
-    elif func=="get_contributors":
-        result = get_contributors()
-        open("contributors.json","w").write(json.dumps(f'{func}: {result}'))
-    elif func=="has_downloads":
-        result = has_downloads()
-        open("has_downloads.json","w").write(json.dumps(f'{func}: {result}'))
+    elif func=="get_forks":
+        result = get_forks()
+        open("forks.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_pulls":
         result = get_pulls()
         open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
@@ -94,25 +81,27 @@ def get_issues(user_id, repo, git_token):
 
     return str(total_count)
 
-def get_collaborators():
+def get_forks():
     return "3"
-def get_contributors():
-    return "4"
-def has_downloads():
-    return "5"
 def get_pulls():
-    return "6"
+    return "4"
 
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
+
+    if os.path.exists(repo):
+        os.system(f"rd /s /q {repo}")
     
     # Clone the repository
     git.Repo.clone_from(repo_url, repo)
 
-    license_file = os.path.join(repo, "LICENSE.txt")
-    readme_file = os.path.join(repo, "README.txt")
+    license_file_txt = os.path.join(repo, "LICENSE.txt")
+    license_file = os.path.join(repo, "LICENSE")
+    readme_file = os.path.join(repo, "README.md")
 
     # Read the contents of the license and readme files
+    if os.path.exists(license_file_txt):
+        return "1"
     if os.path.exists(license_file):
         return "1"
     elif os.path.exists(readme_file):
