@@ -88,12 +88,15 @@ def get_pulls():
 
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
+
+    if os.path.exists(repo):
+        os.system(f"rd /s /q {repo}")
     
     # Clone the repository
     git.Repo.clone_from(repo_url, repo)
 
     license_file = os.path.join(repo, "LICENSE.txt")
-    readme_file = os.path.join(repo, "README.txt")
+    readme_file = os.path.join(repo, "README.md")
 
     # Read the contents of the license and readme files
     if os.path.exists(license_file):
