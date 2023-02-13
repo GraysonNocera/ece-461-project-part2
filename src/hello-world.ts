@@ -41,11 +41,31 @@ function cleanData(data):string[]{
   return wordList
 }
 
+function sortOutput(output, netscores):string[]{
+  var finalOutput: string[] = [];
+  let sorted = [...netscores].sort(function(a, b){return a - b}).reverse();
+  for(var val of sorted){
+    let index = 0
+    for(let i = 0; i < netscores.length; i++){
+      if(val == netscores[i]){
+        index = i
+        break
+      }
+    }
+    finalOutput.push(output[index]);
+    netscores[index] = -2
+  }
+  return finalOutput
+}
+
 async function main() {
 let data = getData();
 // console.log(data);
 let wordList = cleanData(data);
 console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
+var netscores:Array<number> = [];
+var outputStrings:Array<string> = [];
+
 
 for(let i = 0; i < wordList.length; i++){
   // let netscore = 0;
@@ -64,14 +84,21 @@ for(let i = 0; i < wordList.length; i++){
   var forks: number = 0;
   var pulls: number = 0;
   var license: number = 0;
+  
+  let URL = data.split("\n")[i];
+  let output = "";
+  let netscore = 0;
+  // console.log(output)
   if(website == "github"){
     try {
       await runPythonScript("get_downloads", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
-      console.log(jsonstring);
+      let jsonstring: string  = require(path.join(__dirname,'../',`/downloads${user}.json`));
+      // console.log(jsonstring);
       downloads = +jsonstring.split(':')[1];
+      output = output + " " + downloads;
+      netscore += Number(downloads);
       // console.log((downloads*2).toString());
     } catch (error) {
       console.error(error);
@@ -80,9 +107,11 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_issues", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
-      console.log(jsonstring);
+      let jsonstring: string  = require(path.join(__dirname,'../',`/issues${user}.json`));
+      // console.log(jsonstring);`
       issues = +jsonstring.split(':')[1];
+      output = output + " " + issues;
+      netscore += Number(issues);
       // console.log((issues*2).toString());
     } catch (error) {
       console.error(error);
@@ -92,9 +121,11 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_forks", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/forks.json'));
-      console.log(jsonstring);
+      let jsonstring: string  = require(path.join(__dirname,'../',`/forks${user}.json`));
+      // console.log(jsonstring);
       forks = +jsonstring.split(':')[1];
+      netscore += Number(forks);
+      output = output + " " + forks;
       // console.log((forks*2).toString());
     } catch (error) {
       console.error(error);
@@ -104,9 +135,11 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_pulls", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
-      console.log(jsonstring);
-      forks = +jsonstring.split(':')[1];
+      let jsonstring: string  = require(path.join(__dirname,'../',`/pulls${user}.json`));
+      // console.log(jsonstring);
+      pulls = +jsonstring.split(':')[1];
+      netscore += Number(pulls);
+      output = output + " " + pulls;
       // console.log((forks*2).toString());
     } catch (error) {
       console.error(error);
@@ -116,19 +149,29 @@ for(let i = 0; i < wordList.length; i++){
       await runPythonScript("get_license", user, repo);
       // console.log(`${result}`);
       const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));
-      console.log(jsonstring);
+      let jsonstring: string  = require(path.join(__dirname,'../',`/license${user}.json`));
+      // console.log(jsonstring);
       license = +jsonstring.split(':')[1];
+      netscore += Number(license);
+      output = output + " " + license;
       // console.log((license*2).toString());
     } catch (error) {
       console.error(error);
     }
+    console.log(URL + " " + netscore.toString() + output)
+    netscores.push(netscore)
+    outputStrings.push(URL + " " + netscore.toString() + output)
   }
   else{
-    console.log("Can only accept github URLs.");
-
+    console.log(URL + ": -1, Can only accept github URLs.");
+    netscores.push(-1)
+    outputStrings.push(URL + ": -1, Can only accept github URLs.")
+    
   }
   }
+  // console.log(netscores.sort(function(a, b){return a - b}).reverse())
+  let finalOutputStrings = sortOutput(outputStrings, netscores);
+  console.log(finalOutputStrings)
 }
 
 main();

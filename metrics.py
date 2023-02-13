@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import git
+import shutil
 
 def main():
 
@@ -18,19 +19,19 @@ def main():
 
     if func=="get_downloads":
         result = get_downloads(user, repo, token)
-        open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"downloads{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues(user, repo, token)
-        open("issues.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"issues{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_forks":
         result = get_forks()
-        open("forks.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_pulls":
         result = get_pulls()
-        open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"pulls{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
-        open("license.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"license{user}.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
 
@@ -95,6 +96,17 @@ def get_forks(user_id, repo, git_token):
 def get_pulls():
     return "4"
 
+def get_contributors(user_id, repo, git_token):
+
+    # Setting up API
+    contributors_url = f"https://api.github.com/repos/%7Buser_id%7D/%7Brepo%7D/contributors"
+    headers = {"Authorization": f"{git_token}"}
+
+    contributors_request = requests.get(contributors_url, headers=headers)
+
+    if contributors_request.status_code == 200:
+        return len(contributors_request.json())
+
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
 
@@ -107,6 +119,8 @@ def get_license(user_id, repo):
     license_file_txt = os.path.join(repo, "LICENSE.txt")
     license_file = os.path.join(repo, "LICENSE")
     readme_file = os.path.join(repo, "README.md")
+
+    shutil.rmtree(repo)
 
     # Read the contents of the license and readme files
     if os.path.exists(license_file_txt):
