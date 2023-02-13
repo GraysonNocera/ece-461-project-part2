@@ -58,13 +58,17 @@ function main() {
             var forks = 0;
             var pulls = 0;
             var license = 0;
+            let URL = data.split("\n")[i];
+            let output = "";
+            let netscore = 0;
             if (website == "github") {
                 try {
                     yield runPythonScript("get_downloads", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/downloads.json'));
-                    console.log(jsonstring);
+                    let jsonstring = require(path.join(__dirname, '../', `/downloads${user}.json`));
                     downloads = +jsonstring.split(':')[1];
+                    output = output + " " + downloads;
+                    netscore += Number(downloads);
                 }
                 catch (error) {
                     console.error(error);
@@ -72,9 +76,10 @@ function main() {
                 try {
                     yield runPythonScript("get_issues", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/issues.json'));
-                    console.log(jsonstring);
+                    let jsonstring = require(path.join(__dirname, '../', `/issues${user}.json`));
                     issues = +jsonstring.split(':')[1];
+                    output = output + " " + issues;
+                    netscore += Number(issues);
                 }
                 catch (error) {
                     console.error(error);
@@ -82,9 +87,10 @@ function main() {
                 try {
                     yield runPythonScript("get_forks", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/forks.json'));
-                    console.log(jsonstring);
+                    let jsonstring = require(path.join(__dirname, '../', `/forks${user}.json`));
                     forks = +jsonstring.split(':')[1];
+                    netscore += Number(forks);
+                    output = output + " " + forks;
                 }
                 catch (error) {
                     console.error(error);
@@ -92,9 +98,10 @@ function main() {
                 try {
                     yield runPythonScript("get_pulls", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/pulls.json'));
-                    console.log(jsonstring);
-                    forks = +jsonstring.split(':')[1];
+                    let jsonstring = require(path.join(__dirname, '../', `/pulls${user}.json`));
+                    pulls = +jsonstring.split(':')[1];
+                    netscore += Number(pulls);
+                    output = output + " " + pulls;
                 }
                 catch (error) {
                     console.error(error);
@@ -102,16 +109,18 @@ function main() {
                 try {
                     yield runPythonScript("get_license", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', '/license.json'));
-                    console.log(jsonstring);
+                    let jsonstring = require(path.join(__dirname, '../', `/license${user}.json`));
                     license = +jsonstring.split(':')[1];
+                    netscore += Number(license);
+                    output = output + " " + license;
                 }
                 catch (error) {
                     console.error(error);
                 }
+                console.log(URL + " " + netscore.toString() + output);
             }
             else {
-                console.log("Can only accept github URLs.");
+                console.log(URL + ": -1, Can only accept github URLs.");
             }
         }
     });
