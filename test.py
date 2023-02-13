@@ -10,7 +10,8 @@ testSuccess = 0
 
 def testDownloadsSuccess(test_userId, test_repo, test_token):
     numDownloads = get_downloads(test_userId, test_repo, test_token)
-    if numDownloads == '241465':
+    # print(numDownloads)
+    if numDownloads == '241468':
         return 1
     else:
         return 0
@@ -24,6 +25,7 @@ def testDownloadsFail(test_userId, test_repo, test_token):
 
 def testIssuesSuccess(test_userId, test_repo, test_token):
     numIssues = get_issues(test_userId, test_repo, test_token)
+    # print(numIssues)
     if numIssues == '193':
         return 1
     else:
@@ -31,15 +33,23 @@ def testIssuesSuccess(test_userId, test_repo, test_token):
 
 def testForksSuccess(test_userId, test_repo, test_token):
     numForks = get_forks(test_userId, test_repo, test_token)
-    if numForks == '207':
+    # print(numForks)
+    if numForks == 207:
         return 1
     else:
         return 0
 
 def testContributorsSuccess(test_userId, test_repo, test_token):
     num = get_contributors(test_userId, test_repo, test_token)
+    if num == 26:
+        return 1
+    else:
+        return 0
 
-    if num == 'None':
+def testLicenseSuccess(test_userId, test_repo):
+    num = get_license(test_userId, test_repo)
+    print(num)
+    if num == 1:
         return 1
     else:
         return 0
@@ -48,6 +58,7 @@ testSuccess += testDownloadsSuccess(test_userId, test_repo, test_token)
 testSuccess += testIssuesSuccess(test_userId, test_repo, test_token)
 testSuccess += testForksSuccess(test_userId, test_repo, test_token)
 testSuccess += testContributorsSuccess(test_userId, test_repo, test_token)
+testSuccess += testLicenseSuccess(test_userId, test_repo)
 
 totalScore = (testSuccess / testTotal) * 100
 print(totalScore)

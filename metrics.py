@@ -45,7 +45,6 @@ def get_downloads(user_id, repo, git_token):
 
     # Setting up API
     downloads_url = f"https://api.github.com/repos/{user_id}/{repo}/releases"
-    print(downloads_url)
     headers = {"Authorization": f"{git_token}"}
     # open("error.json","w").write(json.dumps(f'{downloads_url}'))
 
@@ -58,7 +57,6 @@ def get_downloads(user_id, repo, git_token):
         if downloads_request.status_code == 200 and "download_count" in releases[0]["assets"][0]:
             for i in range(0, num_releases - 1):
                 num_downloads += int(releases[i]["assets"][0]["download_count"])
-                print(num_downloads)
 
     except:
         num_downloads = 0
