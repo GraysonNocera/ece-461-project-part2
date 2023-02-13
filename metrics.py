@@ -113,13 +113,13 @@ def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
 
     if os.path.exists(repo):
-        os.system(f"rd /s /q {repo}")
+        os.system(f"rm -rf {repo}")
     
     # Clone the repository
     try:
         git.Repo.clone_from(repo_url, repo)
     except:
-        return 0
+        return "0"
 
     license_file_txt = os.path.join(repo, "LICENSE.txt")
     license_file = os.path.join(repo, "LICENSE")
