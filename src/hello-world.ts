@@ -245,6 +245,7 @@ async function main() {
     var json: string[] = [];
     for(let i = 0; i < finalOutputStrings.length; i++){
       let stringgie = finalOutputStrings[i].split(" ")
+      console.log(`${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]}`)
       let temp = JSON.stringify({URL: stringgie[0], 
                   NET_SCORE: Number(stringgie[1]), 
                   RAMP_UP_SCORE: Number(stringgie[2]), 
@@ -255,7 +256,7 @@ async function main() {
       json.push(temp)
     }
 
-    console.log(json)
+    // console.log(json)
 
 }
 
