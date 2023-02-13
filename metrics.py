@@ -95,6 +95,17 @@ def get_forks(user_id, repo, git_token):
 def get_pulls():
     return "4"
 
+def get_contributors(user_id, repo, git_token):
+
+    # Setting up API
+    contributors_url = f"https://api.github.com/repos/%7Buser_id%7D/%7Brepo%7D/contributors"
+    headers = {"Authorization": f"{git_token}"}
+
+    contributors_request = requests.get(contributors_url, headers=headers)
+
+    if contributors_request.status_code == 200:
+        return len(contributors_request.json())
+
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
 
