@@ -54,5 +54,14 @@ testSuccess += testForksSuccess(test_userId, test_repo, test_token)
 testSuccess += testContributorsSuccess(test_userId, test_repo, test_token)
 testSuccess += testLicenseSuccess(test_userId, test_repo)
 
-totalScore = (testSuccess / testTotal) * 100
-print(totalScore)
+totalScore = (testSuccess / testTotal) * 10
+coverScore = (testSuccess / testTotal) * 100
+
+# Total: 10
+# Passed: 2.0
+# Coverage: 20.0%
+# 2.0/10 test cases passed. 20.0% line coverage achieved.
+print(f"Total: {testTotal}")
+print(f"Passed: {totalScore}")
+print(f"Coverage: {coverScore}%")
+print(f"{totalScore}/{testTotal} test cases passed. {coverScore}% line coverage achieved.")
