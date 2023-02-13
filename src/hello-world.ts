@@ -1,5 +1,8 @@
 const { spawn } = require("child_process");
 import { readFileSync } from 'fs';
+const jq = require('node-jq');
+var stream = require('stream');
+const ndjson = require('ndjson')
 
 
 interface URLOBJ{
@@ -68,7 +71,6 @@ function sortOutput(output, netscores):string[]{
   }
   return finalOutput
 }
-
 
 async function main() {
   var objs: URLOBJ[] = [];
@@ -187,22 +189,20 @@ async function main() {
     let finalOutputStrings = sortOutput(outputStrings, netscores);
     // console.log(finalOutputStrings)
 
-
+    var json: string[] = [];
     for(let i = 0; i < finalOutputStrings.length; i++){
       let stringgie = finalOutputStrings[i].split(" ")
-      let temp = {URL: stringgie[0], 
+      let temp = JSON.stringify({URL: stringgie[0], 
                   NET_SCORE: Number(stringgie[1]), 
                   RAMP_UP_SCORE: Number(stringgie[2]), 
                   CORRECTNESS_SCORE: Number(stringgie[3]), 
                   BUS_FACTOR_SCORE: Number(stringgie[4]), 
                   RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[5]), 
-                  LICENSE_SCORE: Number(stringgie[6])}
-      objs.push(temp)
+                  LICENSE_SCORE: Number(stringgie[6])})
+      json.push(temp)
     }
-    console.log(objs)
-    
 
-
+    console.log(json)
 
 }
 

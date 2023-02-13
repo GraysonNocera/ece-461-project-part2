@@ -11,6 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const { spawn } = require("child_process");
 const fs_1 = require("fs");
+const jq = require('node-jq');
+var stream = require('stream');
+const ndjson = require('ndjson');
 function runPythonScript(argument, user, repo) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
@@ -145,18 +148,19 @@ function main() {
             }
         }
         let finalOutputStrings = sortOutput(outputStrings, netscores);
+        var json = [];
         for (let i = 0; i < finalOutputStrings.length; i++) {
             let stringgie = finalOutputStrings[i].split(" ");
-            let temp = { URL: stringgie[0],
+            let temp = JSON.stringify({ URL: stringgie[0],
                 NET_SCORE: Number(stringgie[1]),
                 RAMP_UP_SCORE: Number(stringgie[2]),
                 CORRECTNESS_SCORE: Number(stringgie[3]),
                 BUS_FACTOR_SCORE: Number(stringgie[4]),
                 RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[5]),
-                LICENSE_SCORE: Number(stringgie[6]) };
-            objs.push(temp);
+                LICENSE_SCORE: Number(stringgie[6]) });
+            json.push(temp);
         }
-        console.log(objs);
+        console.log(json);
     });
 }
 main();
