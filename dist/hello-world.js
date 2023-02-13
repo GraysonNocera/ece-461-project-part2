@@ -117,11 +117,11 @@ function main() {
                 catch (error) {
                     console.error(error);
                 }
+                console.log(URL + " " + netscore.toString() + output);
             }
             else {
-                console.log("Can only accept github URLs.");
+                console.log(URL + ": -1, Can only accept github URLs.");
             }
-            console.log(URL + " " + netscore.toString() + output);
         }
     });
 }

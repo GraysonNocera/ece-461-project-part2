@@ -137,12 +137,11 @@ for(let i = 0; i < wordList.length; i++){
     } catch (error) {
       console.error(error);
     }
+    console.log(URL + " " + netscore.toString() + output)
   }
   else{
-    console.log("Can only accept github URLs.");
-
+    console.log(URL + ": -1, Can only accept github URLs.");
   }
-  console.log(URL + " " + netscore.toString() + output)
   }
 }
 
