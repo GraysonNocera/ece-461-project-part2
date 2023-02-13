@@ -123,8 +123,6 @@ def get_license(user_id, repo):
     license_file = os.path.join(repo, "LICENSE")
     readme_file = os.path.join(repo, "README.md")
 
-    shutil.rmtree(repo)
-
     # Read the contents of the license and readme files
     if os.path.exists(license_file_txt):
         return "1"
