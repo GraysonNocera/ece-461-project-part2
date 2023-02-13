@@ -109,6 +109,8 @@ def get_contributors(user_id, repo, git_token):
 
     if contributors_request.status_code == 200:
         return len(contributors_request.json())
+    else:
+        return 0
 
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
@@ -117,7 +119,10 @@ def get_license(user_id, repo):
         os.system(f"rd /s /q {repo}")
     
     # Clone the repository
-    git.Repo.clone_from(repo_url, repo)
+    try:
+        git.Repo.clone_from(repo_url, repo)
+    except:
+        return 0
 
     license_file_txt = os.path.join(repo, "LICENSE.txt")
     license_file = os.path.join(repo, "LICENSE")
