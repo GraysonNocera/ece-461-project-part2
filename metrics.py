@@ -94,7 +94,7 @@ def get_forks(user_id, repo, git_token):
 
     if forks_request.status_code == 200:
         forks = int(forks_request.json()["forks_count"])
-    return forks
+    return str(forks)
 
 def get_contributors(user_id, repo, git_token):
 
@@ -105,21 +105,21 @@ def get_contributors(user_id, repo, git_token):
     contributors_request = requests.get(contributors_url, headers=headers)
 
     if contributors_request.status_code == 200:
-        return len(contributors_request.json())
+        return str(len(contributors_request.json()))
     else:
-        return 0
+        return "0"
 
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
 
     if os.path.exists(repo):
-        os.system(f"rd /s /q {repo}")
+        os.system(f"rm -rf {repo}")
     
     # Clone the repository
     try:
         git.Repo.clone_from(repo_url, repo)
     except:
-        return 0
+        return "0"
 
     license_file_txt = os.path.join(repo, "LICENSE.txt")
     license_file = os.path.join(repo, "LICENSE")
