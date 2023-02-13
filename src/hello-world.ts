@@ -98,7 +98,7 @@ async function main() {
     var downloads: number = 0;
     var issues: number = 0;
     var forks: number = 0;
-    var pulls: number = 0;
+    var contributors: number = 0;
     var license: number = 0;
     
     let URL = data.split("\n")[i];
@@ -179,18 +179,18 @@ async function main() {
       }
 
       try {
-        await runPythonScript("get_pulls", user, repo);
+        await runPythonScript("get_contributors", user, repo);
         // console.log(`${result}`);
         const path = require('path');
-        let jsonstring: string  = require(path.join(__dirname,'../',`/pulls${user}.json`));
+        let jsonstring: string  = require(path.join(__dirname,'../',`/contributors${user}.json`));
         // console.log(jsonstring);
-        pulls = +jsonstring.split(':')[1];
+        contributors = +jsonstring.split(':')[1];
 
         let temp = 0;
-        if(Number(pulls) == null || Number(pulls) < 100){
+        if(Number(contributors) == null || Number(contributors) < 100){
           temp = 0
         }
-        else if(Number(pulls)>100 && Number(pulls)<200){
+        else if(Number(contributors)>100 && Number(contributors)<200){
           temp = .5
         }
         else{
