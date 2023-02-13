@@ -47,12 +47,9 @@ function cleanData(data) {
 function sortOutput(output, netscores) {
     var finalOutput = [];
     let sorted = [...netscores].sort(function (a, b) { return a - b; }).reverse();
-    console.log(netscores);
-    console.log(sorted);
     for (var val of sorted) {
         let index = 0;
         for (let i = 0; i < netscores.length; i++) {
-            console.log("Val: " + val + " Num: " + netscores[i]);
             if (val == netscores[i]) {
                 index = i;
                 break;
@@ -65,6 +62,7 @@ function sortOutput(output, netscores) {
 }
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
+        var objs = [];
         let data = getData();
         let wordList = cleanData(data);
         console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
@@ -138,18 +136,27 @@ function main() {
                 catch (error) {
                     console.error(error);
                 }
-                console.log(URL + " " + netscore.toString() + output);
                 netscores.push(netscore);
                 outputStrings.push(URL + " " + netscore.toString() + output);
             }
             else {
-                console.log(URL + ": -1, Can only accept github URLs.");
                 netscores.push(-1);
                 outputStrings.push(URL + ": -1, Can only accept github URLs.");
             }
         }
         let finalOutputStrings = sortOutput(outputStrings, netscores);
-        console.log(finalOutputStrings);
+        for (let i = 0; i < finalOutputStrings.length; i++) {
+            let stringgie = finalOutputStrings[i].split(" ");
+            let temp = { URL: stringgie[0],
+                NET_SCORE: Number(stringgie[1]),
+                RAMP_UP_SCORE: Number(stringgie[2]),
+                CORRECTNESS_SCORE: Number(stringgie[3]),
+                BUS_FACTOR_SCORE: Number(stringgie[4]),
+                RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[5]),
+                LICENSE_SCORE: Number(stringgie[6]) };
+            objs.push(temp);
+        }
+        console.log(objs);
     });
 }
 main();
