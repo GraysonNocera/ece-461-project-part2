@@ -45,6 +45,7 @@ def get_downloads(user_id, repo, git_token):
 
     # Setting up API
     downloads_url = f"https://api.github.com/repos/{user_id}/{repo}/releases"
+    print(downloads_url)
     headers = {"Authorization": f"{git_token}"}
     # open("error.json","w").write(json.dumps(f'{downloads_url}'))
 
@@ -57,9 +58,10 @@ def get_downloads(user_id, repo, git_token):
         if downloads_request.status_code == 200 and "download_count" in releases[0]["assets"][0]:
             for i in range(0, num_releases - 1):
                 num_downloads += int(releases[i]["assets"][0]["download_count"])
+                print(num_downloads)
+
     except:
         num_downloads = 0
-
     return str(num_downloads)
 
 def get_issues(user_id, repo, git_token):
@@ -85,13 +87,16 @@ def get_issues(user_id, repo, git_token):
 def get_forks(user_id, repo, git_token):
 
     # Setting up API
-    forks_url = f"https://api.github.com/repos/%7Buser_id%7D/%7Brepo%7D"
+    forks_url = f"https://api.github.com/repos/{user_id}/{repo}"
     headers = {"Authorization": f"{git_token}"}
 
     forks_request = requests.get(forks_url, headers=headers)
 
+    forks = 0
+
     if forks_request.status_code == 200:
-        return int(forks_request.json()["forks_count"])
+        forks = int(forks_request.json()["forks_count"])
+    return forks
 
 def get_pulls():
     return "4"
@@ -99,7 +104,7 @@ def get_pulls():
 def get_contributors(user_id, repo, git_token):
 
     # Setting up API
-    contributors_url = f"https://api.github.com/repos/%7Buser_id%7D/%7Brepo%7D/contributors"
+    contributors_url = f"https://api.github.com/repos/{user_id}/{repo}/contributors"
     headers = {"Authorization": f"{git_token}"}
 
     contributors_request = requests.get(contributors_url, headers=headers)
