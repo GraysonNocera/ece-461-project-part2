@@ -41,11 +41,23 @@ function cleanData(data):string[]{
   return wordList
 }
 
+function sortOutput(output, order):string[]{
+
+
+
+
+  return ['']
+
+}
+
 async function main() {
 let data = getData();
 // console.log(data);
 let wordList = cleanData(data);
 console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
+var netscores:Array<number> = [];
+var outputStrings:Array<string> = [];
+
 
 for(let i = 0; i < wordList.length; i++){
   // let netscore = 0;
@@ -64,6 +76,7 @@ for(let i = 0; i < wordList.length; i++){
   var forks: number = 0;
   var pulls: number = 0;
   var license: number = 0;
+  
   let URL = data.split("\n")[i];
   let output = "";
   let netscore = 0;
@@ -138,11 +151,19 @@ for(let i = 0; i < wordList.length; i++){
       console.error(error);
     }
     console.log(URL + " " + netscore.toString() + output)
+    netscores.push(netscore)
+    outputStrings.push(URL + " " + netscore.toString() + output)
   }
   else{
     console.log(URL + ": -1, Can only accept github URLs.");
+    netscores.push(-1)
+    outputStrings.push(URL + ": -1, Can only accept github URLs.")
+    
   }
   }
+  // console.log(netscores.sort(function(a, b){return a - b}).reverse())
+  var finalOutputStrings:Array<string> = sortOutput(outputStrings, netscores.sort(function(a, b){return a - b}).reverse());
+  console.log(finalOutputStrings)
 }
 
 main();

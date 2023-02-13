@@ -49,6 +49,7 @@ function main() {
         let data = getData();
         let wordList = cleanData(data);
         console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
+        var netscores = [];
         for (let i = 0; i < wordList.length; i++) {
             let website = wordList[i].split('/')[0];
             let user = wordList[i].split('/')[1];
@@ -118,11 +119,14 @@ function main() {
                     console.error(error);
                 }
                 console.log(URL + " " + netscore.toString() + output);
+                netscores.push(netscore);
             }
             else {
                 console.log(URL + ": -1, Can only accept github URLs.");
+                netscores.push(-1);
             }
         }
+        console.log(netscores.sort(function (a, b) { return a - b; }).reverse());
     });
 }
 main();
