@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import git
+import shutil
 
 def main():
 
@@ -98,6 +99,8 @@ def get_license(user_id, repo):
     license_file_txt = os.path.join(repo, "LICENSE.txt")
     license_file = os.path.join(repo, "LICENSE")
     readme_file = os.path.join(repo, "README.md")
+
+    shutil.rmtree(repo)
 
     # Read the contents of the license and readme files
     if os.path.exists(license_file_txt):
