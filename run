@@ -26,13 +26,14 @@ else
     exit 0
   elif [[ $1 == "test" ]];
   then
+    python3 test.py
+    rm -rf nodist/
     exit 0
   else 
     isFile=$(file -0 "$1" | cut -d $'\0' -f2)
     case "$isFile" in
         (*text*)
         node dist/hello-world.js $1
-        rm -f -r cloudinary_npm/
         exit 0
         ;;
         (*)

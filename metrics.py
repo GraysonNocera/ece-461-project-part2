@@ -3,6 +3,7 @@ import json
 import os
 import requests
 import git
+import shutil
 
 def main():
 
@@ -18,19 +19,19 @@ def main():
 
     if func=="get_downloads":
         result = get_downloads(user, repo, token)
-        open("downloads.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"downloads{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues(user, repo, token)
-        open("issues.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"issues{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_forks":
         result = get_forks()
-        open("forks.json","w").write(json.dumps(f'{func}: {result}'))
-    elif func=="get_pulls":
-        result = get_pulls()
-        open("pulls.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
+    elif func=="get_contributors":
+        result = get_contributors()
+        open(f"contributors{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
-        open("license.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"license{user}.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
 
@@ -56,9 +57,9 @@ def get_downloads(user_id, repo, git_token):
         if downloads_request.status_code == 200 and "download_count" in releases[0]["assets"][0]:
             for i in range(0, num_releases - 1):
                 num_downloads += int(releases[i]["assets"][0]["download_count"])
+
     except:
         num_downloads = 0
-
     return str(num_downloads)
 
 def get_issues(user_id, repo, git_token):
@@ -81,10 +82,32 @@ def get_issues(user_id, repo, git_token):
 
     return str(total_count)
 
-def get_forks():
-    return "3"
-def get_pulls():
-    return "4"
+def get_forks(user_id, repo, git_token):
+
+    # Setting up API
+    forks_url = f"https://api.github.com/repos/{user_id}/{repo}"
+    headers = {"Authorization": f"{git_token}"}
+
+    forks_request = requests.get(forks_url, headers=headers)
+
+    forks = 0
+
+    if forks_request.status_code == 200:
+        forks = int(forks_request.json()["forks_count"])
+    return forks
+
+def get_contributors(user_id, repo, git_token):
+
+    # Setting up API
+    contributors_url = f"https://api.github.com/repos/{user_id}/{repo}/contributors"
+    headers = {"Authorization": f"{git_token}"}
+
+    contributors_request = requests.get(contributors_url, headers=headers)
+
+    if contributors_request.status_code == 200:
+        return len(contributors_request.json())
+    else:
+        return 0
 
 def get_license(user_id, repo):
     repo_url = f"https://github.com/{user_id}/{repo}.git"
@@ -93,7 +116,10 @@ def get_license(user_id, repo):
         os.system(f"rd /s /q {repo}")
     
     # Clone the repository
-    git.Repo.clone_from(repo_url, repo)
+    try:
+        git.Repo.clone_from(repo_url, repo)
+    except:
+        return 0
 
     license_file_txt = os.path.join(repo, "LICENSE.txt")
     license_file = os.path.join(repo, "LICENSE")

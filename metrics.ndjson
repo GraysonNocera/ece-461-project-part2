@@ -1,0 +1,11 @@
+{"metric":"RAMP_UP_SCORE", "api":"rest", "filepath":"metrics.py", "line":41}
+{"metric":"CORRECTNESS_SCORE", "api":"rest", "filepath":"metrics.py", "line":65}
+{"metric":"RESPONSIVE_MAINTAINER_SCORE", "api":"rest", "filepath":"metrics.py", "line":85}
+{"metric":"BUS_FACTOR_SCORE", "api":"rest", "filepath":"metrics.py", "line":181}
+{"metric":"LICENSE_SCORE", "api":"clone", "filepath":"metrics.py", "line":208}
+
+downloads: 41
+issues: 65
+forks: 85
+contrib: 181
+lic: 208

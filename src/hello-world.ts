@@ -1,5 +1,19 @@
 const { spawn } = require("child_process");
 import { readFileSync } from 'fs';
+const jq = require('node-jq');
+var stream = require('stream');
+const ndjson = require('ndjson')
+
+
+interface URLOBJ{
+  URL: string
+  NET_SCORE: number
+  RAMP_UP_SCORE: number 
+  CORRECTNESS_SCORE: number 
+  BUS_FACTOR_SCORE: number
+  RESPONSIVE_MAINTAINER_SCORE: number 
+  LICENSE_SCORE: number
+}
 
 async function runPythonScript(argument: string, user: string, repo: string) {
   return new Promise((resolve, reject) => {
@@ -41,94 +55,208 @@ function cleanData(data):string[]{
   return wordList
 }
 
+function sortOutput(output, netscores):string[]{
+  var finalOutput: string[] = [];
+  let sorted = [...netscores].sort(function(a, b){return a - b}).reverse();
+  for(var val of sorted){
+    let index = 0
+    for(let i = 0; i < netscores.length; i++){
+      if(val == netscores[i]){
+        index = i
+        break
+      }
+    }
+    finalOutput.push(output[index]);
+    netscores[index] = -2
+  }
+  return finalOutput
+}
+
 async function main() {
-let data = getData();
-// console.log(data);
-let wordList = cleanData(data);
-console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
+  var objs: URLOBJ[] = [];
 
-for(let i = 0; i < wordList.length; i++){
-  // let netscore = 0;
-  // console.log(wordList[i]);
+  let data = getData();
+  // console.log(data);
+  let wordList = cleanData(data);
+  console.log('URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE');
+  var netscores:Array<number> = [];
+  var outputStrings:Array<string> = [];
 
-  let website: string = wordList[i].split('/')[0];
-  let user: string = wordList[i].split('/')[1];
-  let repo: string = wordList[i].split('/')[2];
 
-  // console.log(website);
-  // console.log(user);
-  // console.log(repo);
+  for(let i = 0; i < wordList.length; i++){
+    // let netscore = 0;
+    // console.log(wordList[i]);
 
-  var downloads: number = 0;
-  var issues: number = 0;
-  var forks: number = 0;
-  var pulls: number = 0;
-  var license: number = 0;
-  if(website == "github"){
-    try {
-      await runPythonScript("get_downloads", user, repo);
-      // console.log(`${result}`);
-      const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/downloads.json'));
-      console.log(jsonstring);
-      downloads = +jsonstring.split(':')[1];
-      // console.log((downloads*2).toString());
-    } catch (error) {
-      console.error(error);
+    let website: string = wordList[i].split('/')[0];
+    let user: string = wordList[i].split('/')[1];
+    let repo: string = wordList[i].split('/')[2];
+
+    // console.log(website);
+    // console.log(user);
+    // console.log(repo);
+
+    var downloads: number = 0;
+    var issues: number = 0;
+    var forks: number = 0;
+    var contributors: number = 0;
+    var license: number = 0;
+    
+    let URL = data.split("\n")[i];
+    let output = "";
+    let netscore = 0;
+    // console.log(output)
+    if(website == "github"){
+      try {
+        await runPythonScript("get_downloads", user, repo);
+        // console.log(`${result}`);
+        const path = require('path');
+        let jsonstring: string  = require(path.join(__dirname,'../',`/downloads${user}.json`));
+        // console.log(jsonstring);
+        downloads = +jsonstring.split(':')[1];
+
+        let temp = 0;
+        if(Number(downloads) == null || Number(downloads) < 100){
+          temp = 0
+        }
+        else if(Number(downloads)>100 && Number(downloads)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.25;
+
+      } catch (error) {
+        console.error(error);
+      }
+      try {
+        await runPythonScript("get_issues", user, repo);
+        // console.log(`${result}`);
+        const path = require('path');
+        let jsonstring: string  = require(path.join(__dirname,'../',`/issues${user}.json`));
+        // console.log(jsonstring);`
+        issues = +jsonstring.split(':')[1];
+        
+        let temp = 0;
+        if(Number(issues) == null || Number(issues) < 100){
+          temp = 0
+        }
+        else if(Number(issues)>100 && Number(issues)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.20;
+      } catch (error) {
+        console.error(error);
+      }
+    
+      try {
+        await runPythonScript("get_forks", user, repo);
+        // console.log(`${result}`);
+        const path = require('path');
+        let jsonstring: string  = require(path.join(__dirname,'../',`/forks${user}.json`));
+        // console.log(jsonstring);
+        forks = +jsonstring.split(':')[1];
+        
+        let temp = 0;
+        if(Number(forks) == null || Number(forks) < 100){
+          temp = 0
+        }
+        else if(Number(forks)>100 && Number(forks)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.1;
+      } catch (error) {
+        console.error(error);
+      }
+
+      try {
+        await runPythonScript("get_contributors", user, repo);
+        // console.log(`${result}`);
+        const path = require('path');
+        let jsonstring: string  = require(path.join(__dirname,'../',`/contributors${user}.json`));
+        // console.log(jsonstring);
+        contributors = +jsonstring.split(':')[1];
+
+        let temp = 0;
+        if(Number(contributors) == null || Number(contributors) < 100){
+          temp = 0
+        }
+        else if(Number(contributors)>100 && Number(contributors)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.25;
+        
+        // console.log((forks*2).toString());
+      } catch (error) {
+        console.error(error);
+      }
+    
+      try {
+        await runPythonScript("get_license", user, repo);
+        // console.log(`${result}`);
+        const path = require('path');
+        let jsonstring: string  = require(path.join(__dirname,'../',`/license${user}.json`));
+        // console.log(jsonstring);
+        license = +jsonstring.split(':')[1];
+        
+        let temp = 0;
+        if(Number(license) == null || Number(license) < 100){
+          temp = 0
+        }
+        else if(Number(license)>100 && Number(license)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.20;
+      } catch (error) {
+        console.error(error);
+      }
+      // console.log(URL + " " + netscore.toString() + output)
+      netscores.push(netscore)
+      outputStrings.push(URL + " " + netscore.toString() + output)
+
     }
-    try {
-      await runPythonScript("get_issues", user, repo);
-      // console.log(`${result}`);
-      const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/issues.json'));
-      console.log(jsonstring);
-      issues = +jsonstring.split(':')[1];
-      // console.log((issues*2).toString());
-    } catch (error) {
-      console.error(error);
+    else{
+      // console.log(URL + ": -1, Can only accept github URLs.");
+      netscores.push(-1)
+      outputStrings.push(URL + ": -1, Can only accept github URLs.")
     }
-  
-    try {
-      await runPythonScript("get_forks", user, repo);
-      // console.log(`${result}`);
-      const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/forks.json'));
-      console.log(jsonstring);
-      forks = +jsonstring.split(':')[1];
-      // console.log((forks*2).toString());
-    } catch (error) {
-      console.error(error);
+    }
+    // console.log(netscores.sort(function(a, b){return a - b}).reverse())
+    let finalOutputStrings = sortOutput(outputStrings, netscores);
+    // console.log(finalOutputStrings)
+
+    var json: string[] = [];
+    for(let i = 0; i < finalOutputStrings.length; i++){
+      let stringgie = finalOutputStrings[i].split(" ")
+      let temp = JSON.stringify({URL: stringgie[0], 
+                  NET_SCORE: Number(stringgie[1]), 
+                  RAMP_UP_SCORE: Number(stringgie[2]), 
+                  CORRECTNESS_SCORE: Number(stringgie[3]), 
+                  BUS_FACTOR_SCORE: Number(stringgie[4]), 
+                  RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[5]), 
+                  LICENSE_SCORE: Number(stringgie[6])})
+      json.push(temp)
     }
 
-    try {
-      await runPythonScript("get_pulls", user, repo);
-      // console.log(`${result}`);
-      const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/pulls.json'));
-      console.log(jsonstring);
-      forks = +jsonstring.split(':')[1];
-      // console.log((forks*2).toString());
-    } catch (error) {
-      console.error(error);
-    }
-  
-    try {
-      await runPythonScript("get_license", user, repo);
-      // console.log(`${result}`);
-      const path = require('path');
-      let jsonstring: string  = require(path.join(__dirname,'../','/license.json'));
-      console.log(jsonstring);
-      license = +jsonstring.split(':')[1];
-      // console.log((license*2).toString());
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  else{
-    console.log("Can only accept github URLs.");
+    console.log(json)
 
-  }
-  }
 }
 
 main();
