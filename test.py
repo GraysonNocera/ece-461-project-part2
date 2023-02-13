@@ -16,13 +16,6 @@ def testDownloadsSuccess(test_userId, test_repo, test_token):
     else:
         return 0
 
-def testDownloadsFail(test_userId, test_repo, test_token):
-    numDownloads = get_downloads(test_userId, test_repo, test_token)
-    if numDownloads == '241465':
-        return 1
-    else:
-        return 0
-
 def testIssuesSuccess(test_userId, test_repo, test_token):
     numIssues = get_issues(test_userId, test_repo, test_token)
     # print(numIssues)
@@ -41,6 +34,7 @@ def testForksSuccess(test_userId, test_repo, test_token):
 
 def testContributorsSuccess(test_userId, test_repo, test_token):
     num = get_contributors(test_userId, test_repo, test_token)
+    # print(num)
     if num == 26:
         return 1
     else:
@@ -48,8 +42,8 @@ def testContributorsSuccess(test_userId, test_repo, test_token):
 
 def testLicenseSuccess(test_userId, test_repo):
     num = get_license(test_userId, test_repo)
-    print(num)
-    if num == 1:
+    # print(num)
+    if num == "1":
         return 1
     else:
         return 0
