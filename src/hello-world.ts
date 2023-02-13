@@ -41,13 +41,21 @@ function cleanData(data):string[]{
   return wordList
 }
 
-function sortOutput(output, order):string[]{
-
-
-
-
-  return ['']
-
+function sortOutput(output, netscores):string[]{
+  var finalOutput: string[] = [];
+  let sorted = [...netscores].sort(function(a, b){return a - b}).reverse();
+  for(var val of sorted){
+    let index = 0
+    for(let i = 0; i < netscores.length; i++){
+      if(val == netscores[i]){
+        index = i
+        break
+      }
+    }
+    finalOutput.push(output[index]);
+    netscores[index] = -2
+  }
+  return finalOutput
 }
 
 async function main() {
@@ -162,7 +170,7 @@ for(let i = 0; i < wordList.length; i++){
   }
   }
   // console.log(netscores.sort(function(a, b){return a - b}).reverse())
-  var finalOutputStrings:Array<string> = sortOutput(outputStrings, netscores.sort(function(a, b){return a - b}).reverse());
+  let finalOutputStrings = sortOutput(outputStrings, netscores);
   console.log(finalOutputStrings)
 }
 
