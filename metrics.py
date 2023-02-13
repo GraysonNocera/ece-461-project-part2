@@ -24,10 +24,10 @@ def main():
         result = get_issues(user, repo, token)
         open(f"issues{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_forks":
-        result = get_forks()
+        result = get_forks(user, repo, token)
         open(f"forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_contributors":
-        result = get_contributors()
+        result = get_contributors(user, repo, token)
         open(f"contributors{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
