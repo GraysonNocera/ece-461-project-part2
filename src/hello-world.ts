@@ -1,6 +1,16 @@
 const { spawn } = require("child_process");
 import { readFileSync } from 'fs';
 
+interface URLOBJ{
+  URL: string
+  NET_SCORE: number
+  RAMP_UP_SCORE: number 
+  CORRECTNESS_SCORE: number 
+  BUS_FACTOR_SCORE: number
+  RESPONSIVE_MAINTAINER_SCORE: number 
+  LICENSE_SCORE: number
+}
+
 async function runPythonScript(argument: string, user: string, repo: string) {
   return new Promise((resolve, reject) => {
     const process = spawn("python3", ["metrics.py", argument, user, repo]);
@@ -57,6 +67,7 @@ function sortOutput(output, netscores):string[]{
   }
   return finalOutput
 }
+
 
 async function main() {
 let data = getData();
@@ -172,6 +183,7 @@ for(let i = 0; i < wordList.length; i++){
   // console.log(netscores.sort(function(a, b){return a - b}).reverse())
   let finalOutputStrings = sortOutput(outputStrings, netscores);
   console.log(finalOutputStrings)
+
 }
 
 main();
