@@ -113,9 +113,20 @@ async function main() {
         let jsonstring: string  = require(path.join(__dirname,'../',`/downloads${user}.json`));
         // console.log(jsonstring);
         downloads = +jsonstring.split(':')[1];
-        output = output + " " + downloads;
-        netscore += Number(downloads);
-        // console.log((downloads*2).toString());
+
+        let temp = 0;
+        if(Number(downloads) == null || Number(downloads) < 100){
+          temp = 0
+        }
+        else if(Number(downloads)>100 && Number(downloads)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.25;
+
       } catch (error) {
         console.error(error);
       }
@@ -126,9 +137,19 @@ async function main() {
         let jsonstring: string  = require(path.join(__dirname,'../',`/issues${user}.json`));
         // console.log(jsonstring);`
         issues = +jsonstring.split(':')[1];
-        output = output + " " + issues;
-        netscore += Number(issues);
-        // console.log((issues*2).toString());
+        
+        let temp = 0;
+        if(Number(issues) == null || Number(issues) < 100){
+          temp = 0
+        }
+        else if(Number(issues)>100 && Number(issues)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.20;
       } catch (error) {
         console.error(error);
       }
@@ -140,9 +161,19 @@ async function main() {
         let jsonstring: string  = require(path.join(__dirname,'../',`/forks${user}.json`));
         // console.log(jsonstring);
         forks = +jsonstring.split(':')[1];
-        netscore += Number(forks);
-        output = output + " " + forks;
-        // console.log((forks*2).toString());
+        
+        let temp = 0;
+        if(Number(forks) == null || Number(forks) < 100){
+          temp = 0
+        }
+        else if(Number(forks)>100 && Number(forks)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.1;
       } catch (error) {
         console.error(error);
       }
@@ -154,8 +185,20 @@ async function main() {
         let jsonstring: string  = require(path.join(__dirname,'../',`/pulls${user}.json`));
         // console.log(jsonstring);
         pulls = +jsonstring.split(':')[1];
-        netscore += Number(pulls);
-        output = output + " " + pulls;
+
+        let temp = 0;
+        if(Number(pulls) == null || Number(pulls) < 100){
+          temp = 0
+        }
+        else if(Number(pulls)>100 && Number(pulls)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.25;
+        
         // console.log((forks*2).toString());
       } catch (error) {
         console.error(error);
@@ -168,9 +211,19 @@ async function main() {
         let jsonstring: string  = require(path.join(__dirname,'../',`/license${user}.json`));
         // console.log(jsonstring);
         license = +jsonstring.split(':')[1];
-        netscore += Number(license);
-        output = output + " " + license;
-        // console.log((license*2).toString());
+        
+        let temp = 0;
+        if(Number(license) == null || Number(license) < 100){
+          temp = 0
+        }
+        else if(Number(license)>100 && Number(license)<200){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += temp*.20;
       } catch (error) {
         console.error(error);
       }
