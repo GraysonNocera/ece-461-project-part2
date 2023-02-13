@@ -26,9 +26,9 @@ def main():
     elif func=="get_forks":
         result = get_forks()
         open(f"forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
-    elif func=="get_pulls":
-        result = get_pulls()
-        open(f"pulls{user}.json","w").write(json.dumps(f'{func}: {result}'))
+    elif func=="get_contributors":
+        result = get_contributors()
+        open(f"contributors{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
         open(f"license{user}.json","w").write(json.dumps(f'{func}: {result}'))
@@ -95,9 +95,6 @@ def get_forks(user_id, repo, git_token):
     if forks_request.status_code == 200:
         forks = int(forks_request.json()["forks_count"])
     return forks
-
-def get_pulls():
-    return "4"
 
 def get_contributors(user_id, repo, git_token):
 

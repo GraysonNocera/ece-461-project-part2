@@ -78,7 +78,7 @@ function main() {
             var downloads = 0;
             var issues = 0;
             var forks = 0;
-            var pulls = 0;
+            var contributors = 0;
             var license = 0;
             let URL = data.split("\n")[i];
             let output = "";
@@ -148,15 +148,15 @@ function main() {
                     console.error(error);
                 }
                 try {
-                    yield runPythonScript("get_pulls", user, repo);
+                    yield runPythonScript("get_contributors", user, repo);
                     const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', `/pulls${user}.json`));
-                    pulls = +jsonstring.split(':')[1];
+                    let jsonstring = require(path.join(__dirname, '../', `/contributors${user}.json`));
+                    contributors = +jsonstring.split(':')[1];
                     let temp = 0;
-                    if (Number(pulls) == null || Number(pulls) < 100) {
+                    if (Number(contributors) == null || Number(contributors) < 100) {
                         temp = 0;
                     }
-                    else if (Number(pulls) > 100 && Number(pulls) < 200) {
+                    else if (Number(contributors) > 100 && Number(contributors) < 200) {
                         temp = .5;
                     }
                     else {
