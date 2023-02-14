@@ -125,7 +125,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += Math.round(temp*.25* 100) / 100;
+        netscore += temp*.25;
 
       } catch (error) {
         console.error(error);
@@ -149,7 +149,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += Math.round(temp*.20* 100) / 100;
+        netscore += temp*.20;
       } catch (error) {
         console.error(error);
       }
@@ -173,7 +173,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += Math.round(temp*.25* 100) / 100;
+        netscore += temp*.25;
         
         // console.log((forks*2).toString());
       } catch (error) {
@@ -199,7 +199,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += Math.round(temp*.1* 100) / 100;
+        netscore += temp*.1;
       } catch (error) {
         console.error(error);
       }
@@ -211,23 +211,13 @@ async function main() {
         let jsonstring: string  = require(path.join(__dirname,'../',`/license${user}.json`));
         // console.log(jsonstring);
         license = +jsonstring.split(':')[1];
-        
-        let temp = 0;
-        if(Number(license) == null || Number(license) < 100){
-          temp = 0
-        }
-        else if(Number(license)>100 && Number(license)<200){
-          temp = .5
-        }
-        else{
-          temp = 1
-        }
-        output = output + " " + temp;
-        netscore += Math.round(temp*.20* 100) / 100;
+        output = output + " " + Number(license);
+        netscore += Number(license)*.20;
       } catch (error) {
         console.error(error);
       }
       // console.log(URL + " " + netscore.toString() + output)
+      netscore = Math.round(netscore*100)/100
       netscores.push(netscore)
       outputStrings.push(URL + " " + netscore.toString() + output)
 

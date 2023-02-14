@@ -31,6 +31,7 @@ def main():
         open(f"contributors{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
+        shutil.rmtree(repo)
         open(f"license{user}.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
@@ -121,16 +122,17 @@ def get_license(user_id, repo):
     except:
         return "0"
 
-    license_file_txt = os.path.join(repo, "LICENSE.txt")
-    license_file = os.path.join(repo, "LICENSE")
+    license_file_txt_1 = os.path.join(repo, "LICENSE.txt")
+    license_file_txt_2 = os.path.join(repo, "License.txt")
+    license_file_1 = os.path.join(repo, "LICENSE")
+    license_file_2 = os.path.join(repo, "License")
     readme_file = os.path.join(repo, "README.md")
-    shutil.rmtree(repo)
+    # shutil.rmtree(repo)
 
     # Read the contents of the license and readme files
-    if os.path.exists(license_file_txt):
+    if os.path.exists(license_file_txt_1) or os.path.exists(license_file_txt_2) or os.path.exists(license_file_1) or os.path.exists(license_file_2):
         return "1"
-    if os.path.exists(license_file):
-        return "1"
+        
     elif os.path.exists(readme_file):
         with open(readme_file, "r") as f:
             readme_content = f.read()
