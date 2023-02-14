@@ -125,7 +125,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += temp*.25;
+        netscore += Math.round(temp*.25* 100) / 100;
 
       } catch (error) {
         console.error(error);
@@ -149,11 +149,37 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += temp*.20;
+        netscore += Math.round(temp*.20* 100) / 100;
       } catch (error) {
         console.error(error);
       }
-    
+
+      try {
+        await runPythonScript("get_contributors", user, repo);
+        // console.log(`${result}`);
+        const path = require('path');
+        let jsonstring: string  = require(path.join(__dirname,'../',`/contributors${user}.json`));
+        // console.log(jsonstring);
+        contributors = +jsonstring.split(':')[1];
+
+        let temp = 0;
+        if(Number(contributors) == null || Number(contributors) < 10){
+          temp = 0
+        }
+        else if(Number(contributors)>10 && Number(contributors)<20){
+          temp = .5
+        }
+        else{
+          temp = 1
+        }
+        output = output + " " + temp;
+        netscore += Math.round(temp*.25* 100) / 100;
+        
+        // console.log((forks*2).toString());
+      } catch (error) {
+        console.error(error);
+      }
+
       try {
         await runPythonScript("get_forks", user, repo);
         // console.log(`${result}`);
@@ -173,33 +199,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += temp*.1;
-      } catch (error) {
-        console.error(error);
-      }
-
-      try {
-        await runPythonScript("get_contributors", user, repo);
-        // console.log(`${result}`);
-        const path = require('path');
-        let jsonstring: string  = require(path.join(__dirname,'../',`/contributors${user}.json`));
-        // console.log(jsonstring);
-        contributors = +jsonstring.split(':')[1];
-
-        let temp = 0;
-        if(Number(contributors) == null || Number(contributors) < 100){
-          temp = 0
-        }
-        else if(Number(contributors)>100 && Number(contributors)<200){
-          temp = .5
-        }
-        else{
-          temp = 1
-        }
-        output = output + " " + temp;
-        netscore += temp*.25;
-        
-        // console.log((forks*2).toString());
+        netscore += Math.round(temp*.1* 100) / 100;
       } catch (error) {
         console.error(error);
       }
@@ -223,7 +223,7 @@ async function main() {
           temp = 1
         }
         output = output + " " + temp;
-        netscore += temp*.20;
+        netscore += Math.round(temp*.20* 100) / 100;
       } catch (error) {
         console.error(error);
       }
