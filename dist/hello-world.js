@@ -100,7 +100,7 @@ function main() {
                         temp = 1;
                     }
                     output = output + " " + temp;
-                    netscore += temp * .25;
+                    netscore += Math.round(temp * .25 * 100) / 100;
                 }
                 catch (error) {
                     console.error(error);
@@ -121,7 +121,28 @@ function main() {
                         temp = 1;
                     }
                     output = output + " " + temp;
-                    netscore += temp * .20;
+                    netscore += Math.round(temp * .20 * 100) / 100;
+                }
+                catch (error) {
+                    console.error(error);
+                }
+                try {
+                    yield runPythonScript("get_contributors", user, repo);
+                    const path = require('path');
+                    let jsonstring = require(path.join(__dirname, '../', `/contributors${user}.json`));
+                    contributors = +jsonstring.split(':')[1];
+                    let temp = 0;
+                    if (Number(contributors) == null || Number(contributors) < 10) {
+                        temp = 0;
+                    }
+                    else if (Number(contributors) > 10 && Number(contributors) < 20) {
+                        temp = .5;
+                    }
+                    else {
+                        temp = 1;
+                    }
+                    output = output + " " + temp;
+                    netscore += Math.round(temp * .25 * 100) / 100;
                 }
                 catch (error) {
                     console.error(error);
@@ -142,28 +163,7 @@ function main() {
                         temp = 1;
                     }
                     output = output + " " + temp;
-                    netscore += temp * .1;
-                }
-                catch (error) {
-                    console.error(error);
-                }
-                try {
-                    yield runPythonScript("get_contributors", user, repo);
-                    const path = require('path');
-                    let jsonstring = require(path.join(__dirname, '../', `/contributors${user}.json`));
-                    contributors = +jsonstring.split(':')[1];
-                    let temp = 0;
-                    if (Number(contributors) == null || Number(contributors) < 100) {
-                        temp = 0;
-                    }
-                    else if (Number(contributors) > 100 && Number(contributors) < 200) {
-                        temp = .5;
-                    }
-                    else {
-                        temp = 1;
-                    }
-                    output = output + " " + temp;
-                    netscore += temp * .25;
+                    netscore += Math.round(temp * .1 * 100) / 100;
                 }
                 catch (error) {
                     console.error(error);
@@ -184,7 +184,7 @@ function main() {
                         temp = 1;
                     }
                     output = output + " " + temp;
-                    netscore += temp * .20;
+                    netscore += Math.round(temp * .20 * 100) / 100;
                 }
                 catch (error) {
                     console.error(error);
@@ -201,6 +201,7 @@ function main() {
         var json = [];
         for (let i = 0; i < finalOutputStrings.length; i++) {
             let stringgie = finalOutputStrings[i].split(" ");
+            console.log(`${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]}`);
             let temp = JSON.stringify({ URL: stringgie[0],
                 NET_SCORE: Number(stringgie[1]),
                 RAMP_UP_SCORE: Number(stringgie[2]),
@@ -210,7 +211,6 @@ function main() {
                 LICENSE_SCORE: Number(stringgie[6]) });
             json.push(temp);
         }
-        console.log(json);
     });
 }
 main();
