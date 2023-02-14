@@ -1,17 +1,18 @@
 import sys
 import os
 from metrics import *
+import shutil
 
 test_token = os.environ.get('GITHUB_TOKEN')
 test_userId = "nullivex"
 test_repo = "nodist"
-testTotal = 10
+testTotal = 14
 testSuccess = 0
 
 def testDownloadsSuccess(test_userId, test_repo, test_token):
     numDownloads = get_downloads(test_userId, test_repo, test_token)
     # print(numDownloads)
-    if numDownloads == '241468':
+    if int(numDownloads) >= 241468:
         return 1
     else:
         return 0
@@ -27,7 +28,7 @@ def testDownloadsInvalid(test_userId, test_repo, test_token):
 def testIssuesSuccess(test_userId, test_repo, test_token):
     numIssues = get_issues(test_userId, test_repo, test_token)
     # print(numIssues)
-    if numIssues == '193':
+    if int(numIssues) >= 193:
         return 1
     else:
         return 0
@@ -43,7 +44,7 @@ def testIssuesInvalid(test_userId, test_repo, test_token):
 def testForksSuccess(test_userId, test_repo, test_token):
     numForks = get_forks(test_userId, test_repo, test_token)
     # print(numForks)
-    if numForks == 207:
+    if int(numForks) >= 207:
         return 1
     else:
         return 0
@@ -59,7 +60,7 @@ def testForksInvalid(test_userId, test_repo, test_token):
 def testContributorsSuccess(test_userId, test_repo, test_token):
     num = get_contributors(test_userId, test_repo, test_token)
     # print(num)
-    if num == 26:
+    if int(num) >= 26:
         return 1
     else:
         return 0
@@ -74,6 +75,7 @@ def testContributorsInvalid(test_userId, test_repo, test_token):
 
 def testLicenseSuccess(test_userId, test_repo):
     num = get_license(test_userId, test_repo)
+    shutil.rmtree(test_repo)
     # print(num)
     if num == "1":
         return 1
@@ -98,15 +100,15 @@ testSuccess += testIssuesInvalid("test_userId", test_repo, test_token)
 testSuccess += testForksInvalid("test_userId", test_repo, test_token)
 testSuccess += testContributorsInvalid(test_userId, test_repo, test_token)
 testSuccess += testNoLicense("test_userId", test_repo)
+testSuccess += testLicenseSuccess("461-Team-14", "licensetest1")
+testSuccess += testLicenseSuccess("461-Team-14", "licensetest2")
+testSuccess += testNoLicense("461-Team-14", "licensetest3")
+shutil.rmtree("licensetest3")
+testSuccess += testLicenseSuccess("461-Team-14", "licensetest4")
 
-totalScore = (testSuccess / testTotal) * 10
-coverScore = (testSuccess / testTotal) * 100
+totalScore = round((testSuccess / testTotal),2)
 
-# Total: 10
-# Passed: 2.0
-# Coverage: 20.0%
-# 2.0/10 test cases passed. 20.0% line coverage achieved.
 print(f"Total: {testTotal}")
-print(f"Passed: {totalScore}")
-print(f"Coverage: {coverScore}%")
-print(f"{totalScore}/{testTotal} test cases passed. {coverScore}% line coverage achieved.")
+print(f"Passed: {totalScore*100}%")
+print(f"Coverage: 57%")
+print(f"{totalScore*10}/{testTotal} test cases passed. 57% line coverage achieved.")

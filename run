@@ -27,6 +27,10 @@ else
   elif [[ $1 == "test" ]];
   then
     python3 test.py
+    exit 0
+  elif [[ $1 == "ltest" ]];
+  then
+    python3 licensetest.py
     rm -rf nodist/
     exit 0
   else 
