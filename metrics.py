@@ -90,9 +90,7 @@ def get_forks(user_id, repo, git_token):
     headers = {"Authorization": f"{git_token}"}
 
     forks_request = requests.get(forks_url, headers=headers)
-
     forks = 0
-
     if forks_request.status_code == 200:
         forks = int(forks_request.json()["forks_count"])
     return str(forks)
