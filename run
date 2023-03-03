@@ -19,6 +19,7 @@ else
     pip install bs4
     pip install requests
     pip install gitpython
+    npm install
     exit 0
   elif [[ $1 == "build" ]];
   then

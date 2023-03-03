@@ -1,6 +1,6 @@
 import sys
 import os
-from src.metrics import *
+from metrics import *
 import shutil
 
 test_token = os.environ.get('GITHUB_TOKEN')
