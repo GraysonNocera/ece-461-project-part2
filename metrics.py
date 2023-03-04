@@ -17,22 +17,25 @@ def main():
     token = os.environ.get('GITHUB_TOKEN')
     # open("test.json","w").write(json.dumps(f'Input: {func} {user} {repo}, Token: {token}'))
 
+    if not os.path.exists("jsons/"):
+        os.mkdir("jsons/")
+
     if func=="get_downloads":
         result = get_downloads(user, repo, token)
-        open(f"downloads{user}.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"jsons/downloads{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_issues":
         result = get_issues(user, repo, token)
-        open(f"issues{user}.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"jsons/issues{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_forks":
         result = get_forks(user, repo, token)
-        open(f"forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"jsons/forks{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_contributors":
         result = get_contributors(user, repo, token)
-        open(f"contributors{user}.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"jsons/contributors{user}.json","w").write(json.dumps(f'{func}: {result}'))
     elif func=="get_license":
         result = get_license(user, repo)
         shutil.rmtree(repo)
-        open(f"license{user}.json","w").write(json.dumps(f'{func}: {result}'))
+        open(f"jsons/license{user}.json","w").write(json.dumps(f'{func}: {result}'))
     else:
         result = "invalid input"
 

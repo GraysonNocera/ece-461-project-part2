@@ -1,4 +1,5 @@
 import { readFileSync } from "fs";
+import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
 const jq = require("node-jq");
@@ -129,7 +130,7 @@ async function main() {
         let jsonstring: string = require(path.join(
           __dirname,
           "../",
-          `/downloads${user}.json`
+          `/jsons/downloads${user}.json`
         ));
         // console.log(jsonstring);
         downloads = +jsonstring.split(":")[1];
@@ -154,7 +155,7 @@ async function main() {
         let jsonstring: string = require(path.join(
           __dirname,
           "../",
-          `/issues${user}.json`
+          `/jsons/issues${user}.json`
         ));
         // console.log(jsonstring);`
         issues = +jsonstring.split(":")[1];
@@ -180,7 +181,7 @@ async function main() {
         let jsonstring: string = require(path.join(
           __dirname,
           "../",
-          `/contributors${user}.json`
+          `/jsons/contributors${user}.json`
         ));
         // console.log(jsonstring);
         contributors = +jsonstring.split(":")[1];
@@ -208,7 +209,7 @@ async function main() {
         let jsonstring: string = require(path.join(
           __dirname,
           "../",
-          `/forks${user}.json`
+          `/jsons/forks${user}.json`
         ));
         // console.log(jsonstring);
         forks = +jsonstring.split(":")[1];
@@ -234,7 +235,7 @@ async function main() {
         let jsonstring: string = require(path.join(
           __dirname,
           "../",
-          `/license${user}.json`
+          `/jsons/license${user}.json`
         ));
         // console.log(jsonstring);
         license = +jsonstring.split(":")[1];
@@ -256,6 +257,8 @@ async function main() {
   // console.log(netscores.sort(function(a, b){return a - b}).reverse())
   let finalOutputStrings = sortOutput(outputStrings, netscores);
   // console.log(finalOutputStrings)
+
+  emptyDirSync("jsons/")
 
   var json: string[] = [];
   for (let i = 0; i < finalOutputStrings.length; i++) {
