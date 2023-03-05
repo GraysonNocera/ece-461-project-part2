@@ -87,13 +87,9 @@ async function main() {
     // let netscore = 0;
     // console.log(wordList[i]);
 
-    let website: string = wordList[i].split('/')[0];
-    let user: string = wordList[i].split('/')[1];
-    let repo: string = wordList[i].split('/')[2];
-
-    // console.log(website);
-    // console.log(user);
-    // console.log(repo);
+    let website: string = wordList[i].split("/")[0];
+    let user: string = wordList[i].split("/")[1];
+    let repo: string = wordList[i].split("/")[2];
 
     var downloads: number = 0;
     var issues: number = 0;
@@ -104,8 +100,21 @@ async function main() {
     let URL = data.split("\n")[i];
     let output = "";
     let netscore = 0;
-    // console.log(output)
-    if(website == "github"){
+
+    if (website == "npmjs") {
+      //find github url and update user and repo values to be able to run code
+      let run: string = "npm view " + repo + " repository.url";
+      let result: string = cp.execSync(run).toString();
+      user = result.split("/")[3];
+      repo = result.split("/")[4].replace(".git", "");
+      repo = repo.replace("\n", "");
+    }
+    if (website == "github" || website == "npmjs") {
+      try {
+        await runPythonScript("get_clone", user, repo);
+      } catch (error) {
+        console.error(error);
+      }
       try {
         await runPythonScript("get_downloads", user, repo);
         // console.log(`${result}`);
@@ -216,21 +225,27 @@ async function main() {
       } catch (error) {
         console.error(error);
       }
-      // console.log(URL + " " + netscore.toString() + output)
-      netscore = Math.round(netscore*100)/100
-      netscores.push(netscore)
-      outputStrings.push(URL + " " + netscore.toString() + output)
 
-    }
-    else{
+      try {
+        await runPythonScript("rm_repo", user, repo);
+      } catch (error) {
+        console.error(error);
+      }
+      // console.log(URL + " " + netscore.toString() + output)
+      netscore = Math.round(netscore * 100) / 100;
+      netscores.push(netscore);
+      outputStrings.push(URL + " " + netscore.toString() + output);
+    } else {
       // console.log(URL + ": -1, Can only accept github URLs.");
-      netscores.push(-1)
-      outputStrings.push(URL + ": -1, Can only accept github URLs.")
+      netscores.push(-1);
+      outputStrings.push(
+        URL + ": -1, Can only accept github URLs or npm URLs."
+      );
     }
-    }
-    // console.log(netscores.sort(function(a, b){return a - b}).reverse())
-    let finalOutputStrings = sortOutput(outputStrings, netscores);
-    // console.log(finalOutputStrings)
+  }
+  // console.log(netscores.sort(function(a, b){return a - b}).reverse())
+  let finalOutputStrings = sortOutput(outputStrings, netscores);
+  // console.log(finalOutputStrings);
 
     var json: string[] = [];
     for(let i = 0; i < finalOutputStrings.length; i++){
