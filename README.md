@@ -27,26 +27,6 @@ This project aims to use REST API, GraphQL API, and local repository cloning to 
  `X/Y test cases passed. Z% line coverage achieved.`
 - Returns 0 on `EXIT_SUCCESS`
 
-### Grading
-#### Notes on NodeJS
-In accordance with Dr. Davis's instructions, we have included a version of NodeJS in our project. Our program uses this "vendored" Node which can be found in bin/bin/node. Since this is in our repository when cloned, running `cloc` on a cloned repository would yield mostly C code. For accurate line counts, the command `cloc . --exclude-dir=bin,package.json,package-lock.json` should be run in the root directory of the cloned repository.
-
-
-#### Upgrading NodeJS on Grading Environment
-We have, of course, extensively tested our program with this vendored node version and we have tested our program on ECEProg. However, there's always potential (some would say proclivity) for software to break at the critical moment. We have worked very hard on this and would hate for it to go to waste because ECN couldn't upgrade the Node version on their machines.
-
-The following are steps on how to manually update the NodeJS version for a particular user.
-
-1. `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash`
-2. `export NVM_DIR="$HOME/.nvm"`
-3. `[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"`
-4. `[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"`
-5. `source ~/.bashrc`
-6. `nvm install v18.14.0`
-7. `nvm use v18.14.0`
-
-Once these steps are run, the grading environment will have NodeJS v18.14. Please execute `./run URL_FILE.txt` again.
-
 ### Rating System
 #### Ramp-up Time
 Determines how easy it will be for a new engineer to get familiar with the package - good documentation, frequency of comments, README length, etc.
