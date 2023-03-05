@@ -29,19 +29,19 @@ This project aims to use REST API, GraphQL API, and local repository cloning to 
 
 ### Rating System
 #### Ramp-up Time
-Determines how easy it will be for a new engineer to get familiar with the package - good documentation, frequency of comments, README length, etc.
+Determines how easy it will be for a new engineer to get familiar with the package - this was rated based on the number of downloads.
 #### Correctness
-Determines how reliable the package is using the number of issues, the number of commits, and the working lifetime of the project from the date it was created to the date of the last commit.
+Determines how reliable the package is... this was rated based on how many issues the package has. 
 #### Bus Factor
-Finds the number of people who can work on the package at any given moment. Also takes into account the number of recent commits in a timeframe of the past three months.
+This was measured based on the number of contributors.
 #### Responsiveness
-Determines how "responsive" the package is to issues, commits, pull requests, etc. Takes into account the number of total commits, issues created recently, and the ratio of closed issues to open issues.
+Determines how "responsive" the package is; this was measured with how many forks there are.
 #### License Compatibility
 Does the package have a license? If yes, then it will receive a high score. If no... then low. 
 
 #### Net Score
 Based on the above metrics, the net score will be their weighted sum on a scale from 0 to 1 inclusive using the following formula:  
   
-```(0.35 ∗ bF) + (0.25 ∗ L) + (0.2 ∗ C) + (0.1 ∗ rU) + (0.1 ∗ rM) = nS```  
+```(0.25 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.25 ∗ rU) + (0.1 ∗ rM) = nS```  
   
 where ```bF``` is the bus factor; ```L``` is license; ```C``` is correctness; ```rU``` is ramp up; ```rM``` is responsive Maintainer; and ```nS``` is the net score of the package overall.
