@@ -4,7 +4,7 @@ import os
 import requests
 import git
 import shutil
-
+import re 
 
 def main():
     if len(sys.argv) != 4:
@@ -35,6 +35,9 @@ def main():
         open(f"license{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_clone":
         result = get_clone(user, repo)
+    elif func == "get_pinned":
+        result = get_pinned(user, repo)
+        open(f"pinned{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "rm_repo":
         shutil.rmtree(repo)
     else:
@@ -165,6 +168,22 @@ def get_license(user_id, repo):
                 return "0"
     else:
         return "0"
+
+def get_pinned(user_id: str, repo: str) -> str: 
+    package = os.path.join(repo, "package.json")
+    if(os.path.exists(package)):
+        file = open(package, "r")
+        parse = json.load(file)
+        num = 0; 
+        total = 1; 
+        string = []
+        for i in parse['dependencies']:
+            string.append(parse['dependencies'][i])
+            if(re.search(r'\d\.[1-9]\d*', parse['dependencies'][i])):
+                num += 1
+        if(num > 0):
+            total /= num
+        return str(total)
 
 
 if __name__ == "__main__":

@@ -124,132 +124,132 @@ async function main() {
         console.error(error);
       }
       try {
-        await runPythonScript("get_downloads", user, repo);
-        // console.log(`${result}`);
-        const path = require("path");
-        let jsonstring: string = require(path.join(
-          __dirname,
-          "../",
-          `/downloads${user}.json`
-        ));
-        // console.log(jsonstring);
-        downloads = +jsonstring.split(":")[1];
-
-        let temp = 0;
-        if (Number(downloads) == null || Number(downloads) < 100) {
-          temp = 0;
-        } else if (Number(downloads) > 100 && Number(downloads) < 200) {
-          temp = 0.5;
-        } else {
-          temp = 1;
-        }
-        output = output + " " + temp;
-        netscore += temp * 0.25;
+        await runPythonScript("get_pinned", user, repo);
       } catch (error) {
         console.error(error);
+        console.log("nope");
       }
-      try {
-        await runPythonScript("get_issues", user, repo);
-        // console.log(`${result}`);
-        const path = require("path");
-        let jsonstring: string = require(path.join(
-          __dirname,
-          "../",
-          `/issues${user}.json`
-        ));
-        // console.log(jsonstring);`
-        issues = +jsonstring.split(":")[1];
+      // try {
+      //   await runPythonScript("get_downloads", user, repo);
+      //   // console.log(`${result}`);
+      //   const path = require("path");
+      //   let jsonstring: string = require(path.join(
+      //     __dirname,
+      //     "../",
+      //     `/downloads${user}.json`
+      //   ));
+      //   // console.log(jsonstring);
+      //   downloads = +jsonstring.split(":")[1];
 
-        let temp = 0;
-        if (Number(issues) == null || Number(issues) < 100) {
-          temp = 0;
-        } else if (Number(issues) > 100 && Number(issues) < 200) {
-          temp = 0.5;
-        } else {
-          temp = 1;
-        }
-        output = output + " " + temp;
-        netscore += temp * 0.2;
-      } catch (error) {
-        console.error(error);
-      }
+      //   let temp = 0;
+      //   if (Number(downloads) == null || Number(downloads) < 100) {
+      //     temp = 0;
+      //   } else if (Number(downloads) > 100 && Number(downloads) < 200) {
+      //     temp = 0.5;
+      //   } else {
+      //     temp = 1;
+      //   }
+      //   output = output + " " + temp;
+      //   netscore += temp * 0.25;
+      // } catch (error) {
+      //   console.error(error);
+      // }
+      // try {
+      //   await runPythonScript("get_issues", user, repo);
+      //   // console.log(`${result}`);
+      //   const path = require("path");
+      //   let jsonstring: string = require(path.join(
+      //     __dirname,
+      //     "../",
+      //     `/issues${user}.json`
+      //   ));
+      //   // console.log(jsonstring);`
+      //   issues = +jsonstring.split(":")[1];
 
-      try {
-        await runPythonScript("get_contributors", user, repo);
-        // console.log(`${result}`);
-        const path = require("path");
-        let jsonstring: string = require(path.join(
-          __dirname,
-          "../",
-          `/contributors${user}.json`
-        ));
-        // console.log(jsonstring);
-        contributors = +jsonstring.split(":")[1];
+      //   let temp = 0;
+      //   if (Number(issues) == null || Number(issues) < 100) {
+      //     temp = 0;
+      //   } else if (Number(issues) > 100 && Number(issues) < 200) {
+      //     temp = 0.5;
+      //   } else {
+      //     temp = 1;
+      //   }
+      //   output = output + " " + temp;
+      //   netscore += temp * 0.2;
+      // } catch (error) {
+      //   console.error(error);
+      // }
 
-        let temp = 0;
-        if (Number(contributors) == null || Number(contributors) < 10) {
-          temp = 0;
-        } else if (Number(contributors) > 10 && Number(contributors) < 20) {
-          temp = 0.5;
-        } else {
-          temp = 1;
-        }
-        output = output + " " + temp;
-        netscore += temp * 0.25;
+      // try {
+      //   await runPythonScript("get_contributors", user, repo);
+      //   // console.log(`${result}`);
+      //   const path = require("path");
+      //   let jsonstring: string = require(path.join(
+      //     __dirname,
+      //     "../",
+      //     `/contributors${user}.json`
+      //   ));
+      //   // console.log(jsonstring);
+      //   contributors = +jsonstring.split(":")[1];
 
-        // console.log((forks*2).toString());
-      } catch (error) {
-        console.error(error);
-      }
+      //   let temp = 0;
+      //   if (Number(contributors) == null || Number(contributors) < 10) {
+      //     temp = 0;
+      //   } else if (Number(contributors) > 10 && Number(contributors) < 20) {
+      //     temp = 0.5;
+      //   } else {
+      //     temp = 1;
+      //   }
+      //   output = output + " " + temp;
+      //   netscore += temp * 0.25;
 
-      try {
-        await runPythonScript("get_forks", user, repo);
-        // console.log(`${result}`);
-        const path = require("path");
-        let jsonstring: string = require(path.join(
-          __dirname,
-          "../",
-          `/forks${user}.json`
-        ));
-        // console.log(jsonstring);
-        forks = +jsonstring.split(":")[1];
+      //   // console.log((forks*2).toString());
+      // } catch (error) {
+      //   console.error(error);
+      // }
 
-        let temp = 0;
-        if (Number(forks) == null || Number(forks) < 100) {
-          temp = 0;
-        } else if (Number(forks) > 100 && Number(forks) < 200) {
-          temp = 0.5;
-        } else {
-          temp = 1;
-        }
-        output = output + " " + temp;
-        netscore += temp * 0.1;
-      } catch (error) {
-        console.error(error);
-      }
+      // try {
+      //   await runPythonScript("get_forks", user, repo);
+      //   // console.log(`${result}`);
+      //   const path = require("path");
+      //   let jsonstring: string = require(path.join(
+      //     __dirname,
+      //     "../",
+      //     `/forks${user}.json`
+      //   ));
+      //   // console.log(jsonstring);
+      //   forks = +jsonstring.split(":")[1];
 
-      try {
-        await runPythonScript("get_license", user, repo);
-        // console.log(`${result}`);
-        const path = require("path");
-        let jsonstring: string = require(path.join(
-          __dirname,
-          "../",
-          `/license${user}.json`
-        ));
-        // console.log(jsonstring);
-        license = +jsonstring.split(":")[1];
-        output = output + " " + Number(license);
-        netscore += Number(license) * 0.2;
-      } catch (error) {
-        console.error(error);
-      }
+      //   let temp = 0;
+      //   if (Number(forks) == null || Number(forks) < 100) {
+      //     temp = 0;
+      //   } else if (Number(forks) > 100 && Number(forks) < 200) {
+      //     temp = 0.5;
+      //   } else {
+      //     temp = 1;
+      //   }
+      //   output = output + " " + temp;
+      //   netscore += temp * 0.1;
+      // } catch (error) {
+      //   console.error(error);
+      // }
 
-      try {
-        await runPythonScript("rm_repo", user, repo);
-      } catch (error) {
-        console.error(error);
-      }
+      // try {
+      //   await runPythonScript("get_license", user, repo);
+      //   // console.log(`${result}`);
+      //   const path = require("path");
+      //   let jsonstring: string = require(path.join(
+      //     __dirname,
+      //     "../",
+      //     `/license${user}.json`
+      //   ));
+      //   // console.log(jsonstring);
+      //   license = +jsonstring.split(":")[1];
+      //   output = output + " " + Number(license);
+      //   netscore += Number(license) * 0.2;
+      // } catch (error) {
+      //   console.error(error);
+      // }
 
       try {
         await runPythonScript("rm_repo", user, repo);
