@@ -42,6 +42,6 @@ Does the package have a license? If yes, then it will receive a high score. If n
 #### Net Score
 Based on the above metrics, the net score will be their weighted sum on a scale from 0 to 1 inclusive using the following formula:  
   
-```(0.25 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.25 ∗ rU) + (0.1 ∗ rM) = nS```  
+```(0.2 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.2 ∗ rU) + (0.1 ∗ rM) + (0.1 * vP)= nS```  
   
-where ```bF``` is the bus factor; ```L``` is license; ```C``` is correctness; ```rU``` is ramp up; ```rM``` is responsive Maintainer; and ```nS``` is the net score of the package overall.
+where ```bF``` is the bus factor; ```L``` is license; ```C``` is correctness; ```rU``` is ramp up; ```rM``` is responsive Maintainer; ```vP``` is version pinning; and ```nS``` is the net score of the package overall.
