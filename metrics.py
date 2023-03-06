@@ -4,7 +4,8 @@ import os
 import requests
 import git
 import shutil
-import re 
+import re
+
 
 def main():
     if len(sys.argv) != 4:
@@ -30,13 +31,13 @@ def main():
         result = get_contributors(user, repo, token)
         open(f"contributors{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_license":
-        result = get_license(user, repo)
+        result = get_license(repo)
         # shutil.rmtree(repo)
         open(f"license{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_clone":
         result = get_clone(user, repo)
     elif func == "get_pinned":
-        result = get_pinned(user, repo)
+        result = get_pinned(repo)
         open(f"pinned{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "rm_repo":
         shutil.rmtree(repo)
@@ -46,7 +47,8 @@ def main():
     # open("pyout.json","w").write(json.dumps(f'{func}: {result}'))
     # print(result) # Don't print to communicate with TS
 
-def get_clone(user_id: str  , repo: str) -> str:
+
+def get_clone(user_id: str, repo: str) -> str:
     repo_url = f"https://github.com/{user_id}/{repo}.git"
 
     if os.path.exists(repo):
@@ -58,7 +60,8 @@ def get_clone(user_id: str  , repo: str) -> str:
     except:
         return "0"
 
-def get_downloads(user_id, repo, git_token):
+
+def get_downloads(user_id: str, repo: str, git_token: str) -> str:
     # open("error.json","w").write(json.dumps(f'get_downloads inputs: {user_id} {repo} {git_token}'))
     num_downloads = 0
 
@@ -85,7 +88,7 @@ def get_downloads(user_id, repo, git_token):
     return str(num_downloads)
 
 
-def get_issues(user_id, repo, git_token):
+def get_issues(user_id: str, repo: str, git_token: str) -> str:
     total_count = 0
 
     # Setting up API
@@ -111,7 +114,7 @@ def get_issues(user_id, repo, git_token):
     return str(total_count)
 
 
-def get_forks(user_id, repo, git_token):
+def get_forks(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
     forks_url = f"https://api.github.com/repos/{user_id}/{repo}"
     headers = {"Authorization": f"{git_token}"}
@@ -123,7 +126,7 @@ def get_forks(user_id, repo, git_token):
     return str(forks)
 
 
-def get_contributors(user_id, repo, git_token):
+def get_contributors(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
     contributors_url = f"https://api.github.com/repos/{user_id}/{repo}/contributors"
     headers = {"Authorization": f"{git_token}"}
@@ -136,8 +139,7 @@ def get_contributors(user_id, repo, git_token):
         return "0"
 
 
-def get_license(user_id, repo):
-
+def get_license(repo: str) -> str:
     license_file_txt_1 = os.path.join(repo, "LICENSE.txt")
     license_file_txt_2 = os.path.join(repo, "License.txt")
     license_file_1 = os.path.join(repo, "LICENSE")
@@ -169,21 +171,28 @@ def get_license(user_id, repo):
     else:
         return "0"
 
-def get_pinned(user_id: str, repo: str) -> str: 
+
+def get_pinned(repo: str) -> str:
+    # version pinned metric, check if package.json exists
+    # if it does parse it to see if it has dependencies
+    # else assume no dependencies
     package = os.path.join(repo, "package.json")
-    if(os.path.exists(package)):
+    if os.path.exists(package):
         file = open(package, "r")
         parse = json.load(file)
-        num = 0; 
-        total = 1; 
-        string = []
-        for i in parse['dependencies']:
-            string.append(parse['dependencies'][i])
-            if(re.search(r'\d\.[1-9]\d*', parse['dependencies'][i])):
-                num += 1
-        if(num > 0):
-            total /= num
-        return str(total)
+        total = 1
+        num = 0
+        if "dependencies" in parse:
+            for i in parse["dependencies"]:
+                if re.search(r"\d\.[1-9]\d*", parse["dependencies"][i]):
+                    num += 1
+            if num > 0:
+                total /= num
+            return str(total)
+        else:
+            return "1"
+    else:
+        return "1"
 
 
 if __name__ == "__main__":
