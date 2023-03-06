@@ -19,6 +19,7 @@ else
     pip install bs4
     pip install requests
     pip install gitpython
+    npm install
     exit 0
   elif [[ $1 == "build" ]];
   then
@@ -34,7 +35,7 @@ else
     rm -rf nodist/
     exit 0
   else 
-    isFile=$(file -0 "$1" | cut -d $'\0' -f2)
+    isFile=$(file -0 "$1")
     case "$isFile" in
         (*text*)
         node dist/hello-world.js $1
