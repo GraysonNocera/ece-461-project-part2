@@ -38,11 +38,10 @@ This was measured based on the number of contributors.
 Determines how "responsive" the package is; this was measured with how many forks there are.
 #### License Compatibility
 Does the package have a license? If yes, then it will receive a high score. If no... then low. 
-### Version Pinning 
+#### Version Pinning 
 Measured based on how many dependencies are pinned to a major.minor version 
-###
-Measure based on how many pull requests with a reviewer's approval have been merged divided by total merged pull requests 
-
+#### Engineering Score
+Measure based on how many pull requests with a reviewer's approval have been merged divided by total merged pull requests.
 #### Net Score
 Based on the above metrics, the net score will be their weighted sum on a scale from 0 to 1 inclusive using the following formula:  
   
