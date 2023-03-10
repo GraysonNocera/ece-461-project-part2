@@ -40,10 +40,12 @@ Determines how "responsive" the package is; this was measured with how many fork
 Does the package have a license? If yes, then it will receive a high score. If no... then low. 
 ### Version Pinning 
 Measured based on how many dependencies are pinned to a major.minor version 
+###
+Measure based on how many pull requests with a reviewer's approval have been merged divided by total merged pull requests 
 
 #### Net Score
 Based on the above metrics, the net score will be their weighted sum on a scale from 0 to 1 inclusive using the following formula:  
   
-```(0.2 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.2 ∗ rU) + (0.1 ∗ rM) + (0.1 * vP)= nS```  
+```(0.15 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.15 ∗ rU) + (0.1 ∗ rM) + (0.1 * vP) + (0.1 * eP)= nS```  
   
-where ```bF``` is the bus factor; ```L``` is license; ```C``` is correctness; ```rU``` is ramp up; ```rM``` is responsive Maintainer; ```vP``` is version pinning; and ```nS``` is the net score of the package overall.
+where ```bF``` is the bus factor; ```L``` is license; ```C``` is correctness; ```rU``` is ramp up; ```rM``` is responsive Maintainer; ```vP``` is version pinning; ```eP``` is engineering process;  and ```nS``` is the net score of the package overall.

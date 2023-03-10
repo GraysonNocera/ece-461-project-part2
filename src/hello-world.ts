@@ -172,7 +172,7 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.2;
+        netscore += temp * 0.15;
       } catch (error) {
         console.error(error);
       }
@@ -223,7 +223,7 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.2;
+        netscore += temp * 0.15;
 
         // console.log((forks*2).toString());
       } catch (error) {
