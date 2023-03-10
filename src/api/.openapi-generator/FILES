@@ -1,0 +1,17 @@
+.gitignore
+.openapi-generator-ignore
+api.ts
+api/apis.ts
+api/defaultApi.ts
+git_push.sh
+model/authenticationRequest.ts
+model/modelError.ts
+model/models.ts
+model/package.ts
+model/packageData.ts
+model/packageHistoryEntry.ts
+model/packageMetadata.ts
+model/packageQuery.ts
+model/packageRating.ts
+model/user.ts
+model/userAuthenticationInfo.ts
