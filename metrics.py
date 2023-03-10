@@ -31,7 +31,9 @@ def main():
         open(f"jsons/forks{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_contributors":
         result = get_contributors(user, repo, token)
-        open(f"jsons/contributors{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"jsons/contributors{user}.json", "w").write(
+            json.dumps(f"{func}: {result}")
+        )
     elif func == "get_license":
         result = get_license(repo)
         # shutil.rmtree(repo)
@@ -41,6 +43,9 @@ def main():
     elif func == "get_pinned":
         result = get_pinned(repo)
         open(f"jsons/pinned{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+    elif func == "get_engr":
+        result = get_engr(user, repo, token)
+        open(f"jsons/engr{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "rm_repo":
         shutil.rmtree(repo)
     else:
@@ -195,6 +200,26 @@ def get_pinned(repo: str) -> str:
             return "1"
     else:
         return "1"
+
+
+def get_engr(user_id: str, repo: str, git_token: str) -> str:
+    # Setting up API
+    engr_url = f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}+is:pr+is:merged+review:approved"
+    headers = {"Authorization": f"{git_token}"}
+    pull_url = (
+        f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}+is:pr+is:merged"
+    )
+    engr_request = requests.get(engr_url, headers=headers)
+    review_pr = engr_request.json()
+    if "total_count" in review_pr:
+        pull_request = requests.get(pull_url, headers=headers)
+        total_pr = pull_request.json()
+        if "total_count" in total_pr:
+            return str(review_pr["total_count"] / total_pr["total_count"])
+        else:
+            return "0"
+    else:
+        return "0"
 
 
 if __name__ == "__main__":
