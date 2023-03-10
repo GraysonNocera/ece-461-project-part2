@@ -87,7 +87,7 @@ async function main() {
   // console.log(data);
   let wordList = cleanData(data);
   console.log(
-    "URL NET_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE"
+    "URL NET_SCORE VERSION_PINNING_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE"
   );
   var netscores: Array<number> = [];
   var outputStrings: Array<string> = [];
@@ -100,11 +100,8 @@ async function main() {
     let user: string = wordList[i].split("/")[1];
     let repo: string = wordList[i].split("/")[2];
 
-    // console.log(website);
-    // console.log(user);
-    // console.log(repo);
-
     var downloads: number = 0;
+    var pinned: number = 0;
     var issues: number = 0;
     var forks: number = 0;
     var contributors: number = 0;
@@ -123,6 +120,34 @@ async function main() {
       repo = repo.replace("\n", "");
     }
     if (website == "github" || website == "npmjs") {
+      //is url valid
+      try {
+        await runPythonScript("get_clone", user, repo);
+      } catch (error) {
+        console.error(error);
+      }
+      try {
+        await runPythonScript("get_pinned", user, repo);
+        //function for getting version pinned dependencies
+        const path = require("path");
+        let jsonstring: string = require(path.join(
+          __dirname,
+          "../",
+          `/jsons/pinned${user}.json`
+        ));
+
+        pinned = +jsonstring.split(":")[1];
+
+        let temp = 0;
+
+        //epic typescript notation basically I'm taking a number casting it to number again, not sure why but everywhere else does it
+        //then I am converting it to 2 decimal places and the plus sign converts it back to a number
+        temp = +Number(pinned).toFixed(2);
+        output = output + " " + temp;
+        netscore += temp * 0.1;
+      } catch (error) {
+        console.error(error);
+      }
       try {
         await runPythonScript("get_downloads", user, repo);
         // console.log(`${result}`);
@@ -144,7 +169,7 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.25;
+        netscore += temp * 0.2;
       } catch (error) {
         console.error(error);
       }
@@ -195,7 +220,7 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.25;
+        netscore += temp * 0.2;
 
         // console.log((forks*2).toString());
       } catch (error) {
@@ -244,19 +269,30 @@ async function main() {
       } catch (error) {
         console.error(error);
       }
+
+      try {
+        await runPythonScript("rm_repo", user, repo);
+      } catch (error) {
+        console.error(error);
+      }
       // console.log(URL + " " + netscore.toString() + output)
       netscore = Math.round(netscore * 100) / 100;
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
-      // } else {
-      //   // console.log(URL + ": -1, Can only accept github URLs.");
-      //   netscores.push(-1);
-      //   outputStrings.push(URL + ": -1, Can only accept github URLs.");
+    } else {
+      // console.log(URL + ": -1, Can only accept github URLs.");
+      netscores.push(-1);
+      outputStrings.push(
+        URL + ": -1, Can only accept github URLs or npm URLs."
+      );
+      netscore = Math.round(netscore * 100) / 100;
+      netscores.push(netscore);
+      outputStrings.push(URL + " " + netscore.toString() + output);
     }
   }
   // console.log(netscores.sort(function(a, b){return a - b}).reverse())
   let finalOutputStrings = sortOutput(outputStrings, netscores);
-  // console.log(finalOutputStrings)
+  // console.log(finalOutputStrings);
 
   emptyDirSync("jsons/")
 
@@ -264,16 +300,17 @@ async function main() {
   for (let i = 0; i < finalOutputStrings.length; i++) {
     let stringgie = finalOutputStrings[i].split(" ");
     console.log(
-      `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]}`
+      `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]} ${stringgie[7]}`
     );
     let temp = JSON.stringify({
       URL: stringgie[0],
-      NET_SCORE: Number(stringgie[1]),
-      RAMP_UP_SCORE: Number(stringgie[2]),
-      CORRECTNESS_SCORE: Number(stringgie[3]),
-      BUS_FACTOR_SCORE: Number(stringgie[4]),
-      RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[5]),
-      LICENSE_SCORE: Number(stringgie[6]),
+      VERSION_PINNING_SCORE: Number(stringgie[1]),
+      NET_SCORE: Number(stringgie[2]),
+      RAMP_UP_SCORE: Number(stringgie[3]),
+      CORRECTNESS_SCORE: Number(stringgie[4]),
+      BUS_FACTOR_SCORE: Number(stringgie[5]),
+      RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[6]),
+      LICENSE_SCORE: Number(stringgie[7]),
     });
     json.push(temp);
   }
