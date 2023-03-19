@@ -2,6 +2,7 @@ import { readFileSync } from "fs";
 import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
+import { graphAPIfetch, gql_query } from "./graphql_json";
 const jq = require("node-jq");
 var stream = require("stream");
 const ndjson = require("ndjson");
@@ -130,6 +131,13 @@ async function main() {
         console.error(error);
       }
       try {
+        let gql: string = gql_query(user, repo);
+        await graphAPIfetch(gql);
+        // await runPythonScript("get_graph", user, repo);
+      } catch (error) {
+        console.error(error);
+      }
+      try {
         await runPythonScript("get_pinned", user, repo);
         //function for getting version pinned dependencies
         const path = require("path");
@@ -151,6 +159,7 @@ async function main() {
       } catch (error) {
         console.error(error);
       }
+
       try {
         await runPythonScript("get_downloads", user, repo);
         // console.log(`${result}`);
@@ -241,7 +250,6 @@ async function main() {
         ));
         // console.log(jsonstring);
         forks = +jsonstring.split(":")[1];
-
         let temp = 0;
         if (Number(forks) == null || Number(forks) < 100) {
           temp = 0;
