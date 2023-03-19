@@ -132,7 +132,7 @@ async function main() {
       }
       try {
         let gql: string = gql_query(user, repo);
-        await graphAPIfetch(gql);
+        await graphAPIfetch(gql, repo);
         // await runPythonScript("get_graph", user, repo);
       } catch (error) {
         console.error(error);

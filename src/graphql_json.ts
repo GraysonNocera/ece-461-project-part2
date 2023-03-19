@@ -2,7 +2,10 @@ const MAX_RETRIES = 1;
 var fs = require("fs");
 // GraphQL query to get the number of commits in the last year
 
-export async function graphAPIfetch(gql_query: string): Promise<any> {
+export async function graphAPIfetch(
+  gql_query: string,
+  repo: string
+): Promise<any> {
   // Fetch data from GraphQL
   // :param gql_query: string query to be passed to GraphQL
   // :param package_test: instance of Package class
@@ -26,7 +29,7 @@ export async function graphAPIfetch(gql_query: string): Promise<any> {
 
     // Get data in usable format
     let data2 = JSON.stringify(data, null, 2);
-    fs.writeFile("jsons/graphql.json", data2, (err) => {
+    fs.writeFile("jsons/graphql" + repo + ".json", data2, (err) => {
       if (err) {
         console.error(err);
       }

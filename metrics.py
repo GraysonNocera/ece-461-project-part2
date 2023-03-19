@@ -96,7 +96,7 @@ def get_downloads(user_id: str, repo: str, git_token: str) -> str:
 
 
 def get_issues(user_id: str, repo: str, git_token: str) -> str:
-    gpl_file = "jsons/graphql.json"
+    gpl_file = f"jsons/graphql{repo}.json"
     if os.path.exists(gpl_file):
         file = open(gpl_file)
         contents = json.load(file)
@@ -109,7 +109,7 @@ def get_issues(user_id: str, repo: str, git_token: str) -> str:
 
 def get_forks(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
-    gpl_file = "jsons/graphql.json"
+    gpl_file = f"jsons/graphql{repo}.json"
     if os.path.exists(gpl_file):
         file = open(gpl_file)
         contents = json.load(file)
@@ -121,7 +121,7 @@ def get_forks(user_id: str, repo: str, git_token: str) -> str:
 
 def get_contributors(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
-    gpl_file = "jsons/graphql.json"
+    gpl_file = f"jsons/graphql{repo}.json"
     if os.path.exists(gpl_file):
         file = open(gpl_file)
         contents = json.load(file)
@@ -172,7 +172,7 @@ def get_pinned(repo: str) -> str:
         file = open(package, "r")
         parse = json.load(file)
         total = 1
-        num = 0
+        num = 1
         if "dependencies" in parse:
             for i in parse["dependencies"]:
                 if re.search(r"\d\.[1-9]\d*\.", parse["dependencies"][i]):
@@ -193,7 +193,7 @@ def get_engr(user_id: str, repo: str, git_token: str) -> str:
     engr_request = requests.get(engr_url, headers=headers)
     review_pr = engr_request.json()
     if "total_count" in review_pr:
-        gpl_file = "jsons/graphql.json"
+        gpl_file = f"jsons/graphql{repo}.json"
         if os.path.exists(gpl_file):
             file = open(gpl_file)
             contents = json.load(file)
