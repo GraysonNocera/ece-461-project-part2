@@ -1,9 +1,13 @@
 .gitignore
 .openapi-generator-ignore
-api.ts
-api/apis.ts
-api/defaultApi.ts
+README.md
+api.module.ts
+api/api.ts
+api/default.service.ts
+configuration.ts
+encoder.ts
 git_push.sh
+index.ts
 model/authenticationRequest.ts
 model/modelError.ts
 model/models.ts
@@ -15,3 +19,5 @@ model/packageQuery.ts
 model/packageRating.ts
 model/user.ts
 model/userAuthenticationInfo.ts
+param.ts
+variables.ts

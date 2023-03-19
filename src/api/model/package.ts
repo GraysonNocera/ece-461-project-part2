@@ -9,31 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-
-import { RequestFile } from './models';
-import { PackageData } from './packageData';
 import { PackageMetadata } from './packageMetadata';
+import { PackageData } from './packageData';
 
-export class Package {
-    'metadata': PackageMetadata;
-    'data': PackageData;
 
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "metadata",
-            "baseName": "metadata",
-            "type": "PackageMetadata"
-        },
-        {
-            "name": "data",
-            "baseName": "data",
-            "type": "PackageData"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return Package.attributeTypeMap;
-    }
+export interface Package { 
+    metadata: PackageMetadata;
+    data: PackageData;
 }
 

@@ -10,37 +10,18 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
 /**
-* 
-*/
-export class PackageQuery {
+ * 
+ */
+export interface PackageQuery { 
     /**
-    * 
-    */
-    'version'?: string;
+     * 
+     */
+    Version?: string;
     /**
-    * Name of a package.  - Names should only use typical \"keyboard\" characters. - The name \"*\" is reserved. See the `/packages` API for its meaning.
-    */
-    'name': string;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "version",
-            "baseName": "Version",
-            "type": "string"
-        },
-        {
-            "name": "name",
-            "baseName": "Name",
-            "type": "string"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return PackageQuery.attributeTypeMap;
-    }
+     * Name of a package.  - Names should only use typical \"keyboard\" characters. - The name \"*\" is reserved. See the `/packages` API for its meaning.
+     */
+    Name: string;
 }
 

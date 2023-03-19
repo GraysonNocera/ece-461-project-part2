@@ -10,28 +10,14 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
 /**
-* Authentication info for a user
-*/
-export class UserAuthenticationInfo {
+ * Authentication info for a user
+ */
+export interface UserAuthenticationInfo { 
     /**
-    * Password for a user. Per the spec, this should be a \"strong\" password.
-    */
-    'password': string;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "password",
-            "baseName": "password",
-            "type": "string"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return UserAuthenticationInfo.attributeTypeMap;
-    }
+     * Password for a user. Per the spec, this should be a \"strong\" password.
+     */
+    password: string;
 }
 

@@ -9,60 +9,33 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-
-import { RequestFile } from './models';
-import { PackageMetadata } from './packageMetadata';
 import { User } from './user';
+import { PackageMetadata } from './packageMetadata';
+
 
 /**
-* One entry of the history of this package.
-*/
-export class PackageHistoryEntry {
-    'user': User;
+ * One entry of the history of this package.
+ */
+export interface PackageHistoryEntry { 
+    User: User;
     /**
-    * Date of activity.
-    */
-    'date': Date;
-    'packageMetadata': PackageMetadata;
+     * Date of activity.
+     */
+    Date: string;
+    PackageMetadata: PackageMetadata;
     /**
-    * 
-    */
-    'action': PackageHistoryEntry.ActionEnum;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "user",
-            "baseName": "User",
-            "type": "User"
-        },
-        {
-            "name": "date",
-            "baseName": "Date",
-            "type": "Date"
-        },
-        {
-            "name": "packageMetadata",
-            "baseName": "PackageMetadata",
-            "type": "PackageMetadata"
-        },
-        {
-            "name": "action",
-            "baseName": "Action",
-            "type": "PackageHistoryEntry.ActionEnum"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return PackageHistoryEntry.attributeTypeMap;
-    }
+     * 
+     */
+    Action: PackageHistoryEntry.ActionEnum;
 }
-
 export namespace PackageHistoryEntry {
-    export enum ActionEnum {
-        Create = <any> 'CREATE',
-        Update = <any> 'UPDATE',
-        Download = <any> 'DOWNLOAD',
-        Rate = <any> 'RATE'
-    }
+    export type ActionEnum = 'CREATE' | 'UPDATE' | 'DOWNLOAD' | 'RATE';
+    export const ActionEnum = {
+        Create: 'CREATE' as ActionEnum,
+        Update: 'UPDATE' as ActionEnum,
+        Download: 'DOWNLOAD' as ActionEnum,
+        Rate: 'RATE' as ActionEnum
+    };
 }
+
+

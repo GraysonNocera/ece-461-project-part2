@@ -10,37 +10,18 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
 /**
-* 
-*/
-export class User {
+ * 
+ */
+export interface User { 
     /**
-    * 
-    */
-    'name': string;
+     * 
+     */
+    name: string;
     /**
-    * Is this user an admin?
-    */
-    'isAdmin': boolean;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "name",
-            "baseName": "name",
-            "type": "string"
-        },
-        {
-            "name": "isAdmin",
-            "baseName": "isAdmin",
-            "type": "boolean"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return User.attributeTypeMap;
-    }
+     * Is this user an admin?
+     */
+    isAdmin: boolean;
 }
 

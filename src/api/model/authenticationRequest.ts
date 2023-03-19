@@ -9,34 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-
-import { RequestFile } from './models';
 import { User } from './user';
 import { UserAuthenticationInfo } from './userAuthenticationInfo';
 
+
 /**
-* 
-*/
-export class AuthenticationRequest {
-    'user': User;
-    'secret': UserAuthenticationInfo;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "user",
-            "baseName": "User",
-            "type": "User"
-        },
-        {
-            "name": "secret",
-            "baseName": "Secret",
-            "type": "UserAuthenticationInfo"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return AuthenticationRequest.attributeTypeMap;
-    }
+ * 
+ */
+export interface AuthenticationRequest { 
+    User: User;
+    Secret: UserAuthenticationInfo;
 }
 

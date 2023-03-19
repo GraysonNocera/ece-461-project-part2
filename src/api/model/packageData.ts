@@ -10,46 +10,22 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
 /**
-* This is a \"union\" type. - On package upload, either Content or URL should be set. - On package update, exactly one field should be set. - On download, the Content field should be set.
-*/
-export class PackageData {
+ * This is a \"union\" type. - On package upload, either Content or URL should be set. - On package update, exactly one field should be set. - On download, the Content field should be set.
+ */
+export interface PackageData { 
     /**
-    * Package contents. This is the zip file uploaded by the user. (Encoded as text using a Base64 encoding).  This will be a zipped version of an npm package\'s GitHub repository, minus the \".git/\" directory.\" It will, for example, include the \"package.json\" file that can be used to retrieve the project homepage.  See https://docs.npmjs.com/cli/v7/configuring-npm/package-json#homepage.
-    */
-    'content'?: string;
+     * Package contents. This is the zip file uploaded by the user. (Encoded as text using a Base64 encoding).  This will be a zipped version of an npm package\'s GitHub repository, minus the \".git/\" directory.\" It will, for example, include the \"package.json\" file that can be used to retrieve the project homepage.  See https://docs.npmjs.com/cli/v7/configuring-npm/package-json#homepage.
+     */
+    Content?: string;
     /**
-    * Package URL (for use in public ingest).
-    */
-    'uRL'?: string;
+     * Package URL (for use in public ingest).
+     */
+    URL?: string;
     /**
-    * A JavaScript program (for use with sensitive modules).
-    */
-    'jSProgram'?: string;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "content",
-            "baseName": "Content",
-            "type": "string"
-        },
-        {
-            "name": "uRL",
-            "baseName": "URL",
-            "type": "string"
-        },
-        {
-            "name": "jSProgram",
-            "baseName": "JSProgram",
-            "type": "string"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return PackageData.attributeTypeMap;
-    }
+     * A JavaScript program (for use with sensitive modules).
+     */
+    JSProgram?: string;
 }
 

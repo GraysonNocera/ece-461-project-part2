@@ -10,73 +10,34 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
 /**
-* Package rating (cf. Project 1).  If the Project 1 that you inherited does not support one or more of the original properties, denote this with the value \"-1\".
-*/
-export class PackageRating {
+ * Package rating (cf. Project 1).  If the Project 1 that you inherited does not support one or more of the original properties, denote this with the value \"-1\".
+ */
+export interface PackageRating { 
     /**
-    * 
-    */
-    'busFactor': number;
+     * 
+     */
+    BusFactor: number;
     /**
-    * 
-    */
-    'correctness': number;
+     * 
+     */
+    Correctness: number;
     /**
-    * 
-    */
-    'rampUp': number;
+     * 
+     */
+    RampUp: number;
     /**
-    * 
-    */
-    'responsiveMaintainer': number;
+     * 
+     */
+    ResponsiveMaintainer: number;
     /**
-    * 
-    */
-    'licenseScore': number;
+     * 
+     */
+    LicenseScore: number;
     /**
-    * The fraction of its dependencies that are pinned to at least a specific major+minor version, e.g. version 2.3.X of a package. (If there are zero dependencies, they should receive a 1.0 rating. If there are two dependencies, one pinned to this degree, then they should receive a Â½ = 0.5 rating).
-    */
-    'goodPinningPractice': number;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "busFactor",
-            "baseName": "BusFactor",
-            "type": "number"
-        },
-        {
-            "name": "correctness",
-            "baseName": "Correctness",
-            "type": "number"
-        },
-        {
-            "name": "rampUp",
-            "baseName": "RampUp",
-            "type": "number"
-        },
-        {
-            "name": "responsiveMaintainer",
-            "baseName": "ResponsiveMaintainer",
-            "type": "number"
-        },
-        {
-            "name": "licenseScore",
-            "baseName": "LicenseScore",
-            "type": "number"
-        },
-        {
-            "name": "goodPinningPractice",
-            "baseName": "GoodPinningPractice",
-            "type": "number"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return PackageRating.attributeTypeMap;
-    }
+     * The fraction of its dependencies that are pinned to at least a specific major+minor version, e.g. version 2.3.X of a package. (If there are zero dependencies, they should receive a 1.0 rating. If there are two dependencies, one pinned to this degree, then they should receive a Â½ = 0.5 rating).
+     */
+    GoodPinningPractice: number;
 }
 

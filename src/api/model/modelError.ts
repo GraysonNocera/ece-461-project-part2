@@ -10,28 +10,9 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
-export class ModelError {
-    'code': number;
-    'message': string;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "code",
-            "baseName": "code",
-            "type": "number"
-        },
-        {
-            "name": "message",
-            "baseName": "message",
-            "type": "string"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return ModelError.attributeTypeMap;
-    }
+export interface ModelError { 
+    code: number;
+    message: string;
 }
 

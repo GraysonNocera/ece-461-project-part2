@@ -10,46 +10,22 @@
  * Do not edit the class manually.
  */
 
-import { RequestFile } from './models';
 
 /**
-* The \"Name\" and \"Version\" are used as a unique identifier pair when uploading a package.  The \"ID\" is used as an internal identifier for interacting with existing packages.
-*/
-export class PackageMetadata {
+ * The \"Name\" and \"Version\" are used as a unique identifier pair when uploading a package.  The \"ID\" is used as an internal identifier for interacting with existing packages.
+ */
+export interface PackageMetadata { 
     /**
-    * Name of a package.  - Names should only use typical \"keyboard\" characters. - The name \"*\" is reserved. See the `/packages` API for its meaning.
-    */
-    'name': string;
+     * Name of a package.  - Names should only use typical \"keyboard\" characters. - The name \"*\" is reserved. See the `/packages` API for its meaning.
+     */
+    Name: string;
     /**
-    * Package version
-    */
-    'version': string;
+     * Package version
+     */
+    Version: string;
     /**
-    * 
-    */
-    'iD': string;
-
-    static discriminator: string | undefined = undefined;
-
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
-        {
-            "name": "name",
-            "baseName": "Name",
-            "type": "string"
-        },
-        {
-            "name": "version",
-            "baseName": "Version",
-            "type": "string"
-        },
-        {
-            "name": "iD",
-            "baseName": "ID",
-            "type": "string"
-        }    ];
-
-    static getAttributeTypeMap() {
-        return PackageMetadata.attributeTypeMap;
-    }
+     * 
+     */
+    ID: string;
 }
 
