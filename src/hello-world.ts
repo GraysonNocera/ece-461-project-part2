@@ -2,6 +2,7 @@ import { readFileSync } from "fs";
 import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
+import { graphAPIfetch, gql_query } from "./graphql_json";
 const jq = require("node-jq");
 var stream = require("stream");
 const ndjson = require("ndjson");
@@ -9,11 +10,13 @@ const ndjson = require("ndjson");
 interface URLOBJ {
   URL: string;
   NET_SCORE: number;
+  PINNING_SCORE: number;
   RAMP_UP_SCORE: number;
   CORRECTNESS_SCORE: number;
   BUS_FACTOR_SCORE: number;
   RESPONSIVE_MAINTAINER_SCORE: number;
   LICENSE_SCORE: number;
+  ENGR_SCORE: number;
 }
 
 async function runPythonScript(argument: string, user: string, repo: string) {
@@ -87,7 +90,7 @@ async function main() {
   // console.log(data);
   let wordList = cleanData(data);
   console.log(
-    "URL NET_SCORE VERSION_PINNING_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE"
+    "URL NET_SCORE VERSION_PINNING_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE ENGR_SCORE"
   );
   var netscores: Array<number> = [];
   var outputStrings: Array<string> = [];
@@ -106,6 +109,7 @@ async function main() {
     var forks: number = 0;
     var contributors: number = 0;
     var license: number = 0;
+    var engr: number = 0;
 
     let URL = data.split("\n")[i];
     let output = "";
@@ -123,6 +127,13 @@ async function main() {
       //is url valid
       try {
         await runPythonScript("get_clone", user, repo);
+      } catch (error) {
+        console.error(error);
+      }
+      try {
+        let gql: string = gql_query(user, repo);
+        await graphAPIfetch(gql, repo);
+        // await runPythonScript("get_graph", user, repo);
       } catch (error) {
         console.error(error);
       }
@@ -148,6 +159,7 @@ async function main() {
       } catch (error) {
         console.error(error);
       }
+
       try {
         // await runPythonScript("get_downloads", user, repo);
         // console.log(`${result}`);
@@ -232,7 +244,7 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.2;
+        netscore += temp * 0.15;
 
         // console.log((forks*2).toString());
       } catch (error) {
@@ -250,7 +262,6 @@ async function main() {
         ));
         // console.log(jsonstring);
         forks = +jsonstring.split(":")[1];
-
         let temp = 0;
         if (Number(forks) == null || Number(forks) < 100) {
           temp = 0;
@@ -283,6 +294,24 @@ async function main() {
       }
 
       try {
+        await runPythonScript("get_engr", user, repo);
+        // console.log(`${result}`);
+        const path = require("path");
+        let jsonstring: string = require(path.join(
+          __dirname,
+          "../",
+          `/jsons/engr${user}.json`
+        ));
+        // console.log(jsonstring);
+        engr = +jsonstring.split(":")[1];
+        let temp: number = +Number(engr).toFixed(2);
+        output = output + " " + temp;
+        netscore += temp * 0.1;
+      } catch (error) {
+        console.error(error);
+      }
+
+      try {
         await runPythonScript("rm_repo", user, repo);
       } catch (error) {
         console.error(error);
@@ -306,16 +335,16 @@ async function main() {
   let finalOutputStrings = sortOutput(outputStrings, netscores);
   // console.log(finalOutputStrings);
 
-  emptyDirSync("jsons/")
+  emptyDirSync("jsons/");
 
   var json: string[] = [];
   for (let i = 0; i < finalOutputStrings.length; i++) {
     let stringgie = finalOutputStrings[i].split(" ");
     console.log(
-      `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]} ${stringgie[7]}`
+      `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]} ${stringgie[7]} ${stringgie[8]}`
     );
     let temp = JSON.stringify({
-      URL: stringgie[0],
+      URL: Number(stringgie[0]),
       VERSION_PINNING_SCORE: Number(stringgie[1]),
       NET_SCORE: Number(stringgie[2]),
       RAMP_UP_SCORE: Number(stringgie[3]),
@@ -323,6 +352,7 @@ async function main() {
       BUS_FACTOR_SCORE: Number(stringgie[5]),
       RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[6]),
       LICENSE_SCORE: Number(stringgie[7]),
+      ENGR_SCORE: Number(stringgie[8]),
     });
     json.push(temp);
   }
