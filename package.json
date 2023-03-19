@@ -9,5 +9,9 @@
     "octokit": "^2.0.14",
     "request-promise": "^4.2.6",
     "threads": "^1.7.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.3",
+    "@types/request": "^2.48.8"
   }
 }
