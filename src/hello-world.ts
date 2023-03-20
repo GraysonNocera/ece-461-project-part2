@@ -161,27 +161,39 @@ async function main() {
       }
 
       try {
-        await runPythonScript("get_downloads", user, repo);
+        // await runPythonScript("get_downloads", user, repo);
         // console.log(`${result}`);
-        const path = require("path");
-        let jsonstring: string = require(path.join(
-          __dirname,
-          "../",
-          `/jsons/downloads${user}.json`
-        ));
-        // console.log(jsonstring);
-        downloads = +jsonstring.split(":")[1];
+        let repo_2: string = repo;
+        // .system("cloc --by-percent cm --sum-one --yaml " + repo)
+        repo_2 = '"' + repo + '"'; // prep directory for cloc command
+        let terminal_command: string =
+          "cloc --by-percent cm --sum-one --yaml " + repo_2;
 
-        let temp = 0;
-        if (Number(downloads) == null || Number(downloads) < 100) {
-          temp = 0;
-        } else if (Number(downloads) > 100 && Number(downloads) < 200) {
-          temp = 0.5;
-        } else {
-          temp = 1;
+        // Run terminal output and convert to string
+        let terminal_output: Buffer;
+        try {
+          terminal_output = cp.execSync(terminal_command);
+          let data: string = terminal_output.toString();
+          // Get pecentage of repo that is comments
+          let percent: number = 0;
+
+          // Get the part of the result after SUM
+          let re: RegExp = new RegExp("SUM", "i");
+          data = data.substring(data.search(re), data.length);
+
+          // Get total comment percentage
+          re = new RegExp("comment:", "i");
+          let loc: number = data.search(re);
+          if (!loc) {
+            percent = 0;
+          }
+          data = data.substring(loc + "comment: ".length, data.length);
+          percent = parseFloat(data.split("\n")[0]);
+          output = output + " " + percent / 100;
+          netscore += (percent / 100) * 0.2;
+        } catch (err) {
+          console.error(err);
         }
-        output = output + " " + temp;
-        netscore += temp * 0.15;
       } catch (error) {
         console.error(error);
       }
