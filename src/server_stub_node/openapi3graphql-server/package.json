@@ -1,0 +1,25 @@
+{
+  "name": "graphql-server",
+  "version": "1.0.0",
+  "description": " API for ECE 461/Spring 2023/Project 2: A Trustworthy Module Registry ",
+  "main": "index.js",
+  "scripts": {
+    "start": "node start.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "latest",
+    "graphql": "latest",
+    "apollo-server-express": "latest",
+    "graphql-combine": "latest",
+    "lodash": "latest",
+    "path": "latest"
+  },
+  "devDependencies": {
+    "babel-register": "latest",
+    "babel-preset-env": "latest"
+  }
+}
