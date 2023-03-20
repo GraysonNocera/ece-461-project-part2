@@ -31,7 +31,9 @@ def main():
         open(f"jsons/forks{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_contributors":
         result = get_contributors(user, repo, token)
-        open(f"jsons/contributors{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"jsons/contributors{user}.json", "w").write(
+            json.dumps(f"{func}: {result}")
+        )
     elif func == "get_license":
         result = get_license(repo)
         # shutil.rmtree(repo)
@@ -41,6 +43,9 @@ def main():
     elif func == "get_pinned":
         result = get_pinned(repo)
         open(f"jsons/pinned{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+    elif func == "get_engr":
+        result = get_engr(user, repo, token)
+        open(f"jsons/engr{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "rm_repo":
         shutil.rmtree(repo)
     else:
@@ -91,55 +96,39 @@ def get_downloads(user_id: str, repo: str, git_token: str) -> str:
 
 
 def get_issues(user_id: str, repo: str, git_token: str) -> str:
-    total_count = 0
-
-    # Setting up API
-    open_issues_url = f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}%20is:issue%20is:open&per_page=1"
-    closed_issues_url = f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}%20is:issue%20is:closed&per_page=1"
-    headers = {"Authorization": f"{git_token}"}
-
-    open_issues_request = requests.get(open_issues_url, headers=headers)
-    closed_issues_request = requests.get(closed_issues_url, headers=headers)
-
-    # Calculating total number of issues
-    try:
-        if (
-            open_issues_request.status_code == 200
-            and closed_issues_request.status_code == 200
-        ):
-            total_count = int(open_issues_request.json()["total_count"]) + int(
-                closed_issues_request.json()["total_count"]
-            )
-    except:
-        total_count = 0
-
-    return str(total_count)
+    gpl_file = f"jsons/graphql{repo}.json"
+    if os.path.exists(gpl_file):
+        file = open(gpl_file)
+        contents = json.load(file)
+        if "hasIssuesEnabled" in contents["data"]["repository"]:
+            if(contents["data"]["repository"]["hasIssuesEnabled"]):
+                return str(contents["data"]["repository"]["open_issues"]["totalCount"] + contents["data"]["repository"]["issues"]["totalCount"])
+    else:
+        return "-1"
 
 
 def get_forks(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
-    forks_url = f"https://api.github.com/repos/{user_id}/{repo}"
-    headers = {"Authorization": f"{git_token}"}
-
-    forks_request = requests.get(forks_url, headers=headers)
-    forks = 0
-    if forks_request.status_code == 200:
-        forks = int(forks_request.json()["forks_count"])
-    return str(forks)
+    gpl_file = f"jsons/graphql{repo}.json"
+    if os.path.exists(gpl_file):
+        file = open(gpl_file)
+        contents = json.load(file)
+        if "forkCount" in contents["data"]["repository"]:
+            return str(contents["data"]["repository"]["forkCount"])
+    else:
+        return "-1"
 
 
 def get_contributors(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
-    contributors_url = f"https://api.github.com/repos/{user_id}/{repo}/contributors"
-    headers = {"Authorization": f"{git_token}"}
-
-    contributors_request = requests.get(contributors_url, headers=headers)
-
-    if contributors_request.status_code == 200:
-        return str(len(contributors_request.json()))
+    gpl_file = f"jsons/graphql{repo}.json"
+    if os.path.exists(gpl_file):
+        file = open(gpl_file)
+        contents = json.load(file)
+        if "assignableUsers" in contents["data"]["repository"]:
+            return str(contents["data"]["repository"]["assignableUsers"]["totalCount"])
     else:
-        return "0"
-
+        return "-1"
 
 def get_license(repo: str) -> str:
     license_file_txt_1 = os.path.join(repo, "LICENSE.txt")
@@ -183,7 +172,7 @@ def get_pinned(repo: str) -> str:
         file = open(package, "r")
         parse = json.load(file)
         total = 1
-        num = 0
+        num = 1
         if "dependencies" in parse:
             for i in parse["dependencies"]:
                 if re.search(r"\d\.[1-9]\d*\.", parse["dependencies"][i]):
@@ -195,6 +184,25 @@ def get_pinned(repo: str) -> str:
             return "1"
     else:
         return "1"
+
+
+def get_engr(user_id: str, repo: str, git_token: str) -> str:
+    # Setting up API
+    engr_url = f"https://api.github.com/search/issues?q=repo:{user_id}/{repo}+is:pr+is:merged+review:approved"
+    headers = {"Authorization": f"{git_token}"}
+    engr_request = requests.get(engr_url, headers=headers)
+    review_pr = engr_request.json()
+    if "total_count" in review_pr:
+        gpl_file = f"jsons/graphql{repo}.json"
+        if os.path.exists(gpl_file):
+            file = open(gpl_file)
+            contents = json.load(file)
+            if "pullRequests" in contents["data"]["repository"]:
+                return str(review_pr["total_count"] / contents["data"]["repository"]["pullRequests"]["totalCount"])
+        else:
+            return "0"  
+    else:
+        return "0"
 
 
 if __name__ == "__main__":
