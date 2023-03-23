@@ -2,6 +2,8 @@
 var fs = require("fs");
 // GraphQL query to get the number of commits in the last year
 
+import fetch from "node-fetch";
+
 export async function graphAPIfetch(
   gql_query: string,
   repo: string
