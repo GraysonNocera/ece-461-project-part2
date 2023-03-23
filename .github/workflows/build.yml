@@ -30,9 +30,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install cloc -y
-    
-    - name: Install node-fetch
-      run: npm install node-fetch
 
     - name: Build
       run: |
