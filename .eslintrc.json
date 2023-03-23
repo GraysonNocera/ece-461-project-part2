@@ -19,5 +19,12 @@
   ],
   "rules": {
     "@typescript-eslint/dot-notation": "error"
-  }
+  },
+  "overrides": [
+    {
+      "rules": {
+        "@typescript-eslint/no-unsafe-assignment": "off"
+      }
+    }
+  ]
 }
