@@ -40,6 +40,8 @@ jobs:
         ./run build
 
     - name: Test
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         chmod +x ./run
         ./run Test.txt
