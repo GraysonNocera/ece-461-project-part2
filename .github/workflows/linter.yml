@@ -2,9 +2,9 @@ name: TypeScript Lint
 
 on:
   push:
-    branches: [ "CI/CD" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "CI/CD" ]
+    branches: [ "main" ]
 
 jobs:
 
