@@ -1,4 +1,4 @@
-/root/src/api/**
-/root/src/server_stub/openapi_server/**
-/root/src/server_stub_node/**
-/root/src/server_stub_python/**
+/src/api/**
+/src/server_stub/openapi_server/**
+/src/server_stub_node/**
+/src/server_stub_python/**
