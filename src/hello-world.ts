@@ -3,9 +3,9 @@ import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
 import { graphAPIfetch, gql_query } from "./graphql_json";
-const jq = require("node-jq");
-var stream = require("stream");
-const ndjson = require("ndjson");
+// const jq = require("node-jq");
+// var stream = require("stream");
+// const ndjson = require("ndjson");
 
 interface URLOBJ {
   URL: string;
@@ -84,7 +84,7 @@ function sortOutput(output, netscores): string[] {
 }
 
 async function main() {
-  var objs: URLOBJ[] = [];
+//   var objs: URLOBJ[] = [];
 
   let data = getData();
   // console.log(data);
@@ -103,7 +103,7 @@ async function main() {
     let user: string = wordList[i].split("/")[1];
     let repo: string = wordList[i].split("/")[2];
 
-    var downloads: number = 0;
+//     var downloads: number = 0;
     var pinned: number = 0;
     var issues: number = 0;
     var forks: number = 0;
