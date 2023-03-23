@@ -30,3 +30,8 @@ jobs:
       run: |
         chmod +x ./run
         ./run build
+
+    - name: Test
+      run: |
+        chmod +x ./run
+        ./run Test.txt
