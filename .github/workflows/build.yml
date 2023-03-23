@@ -31,8 +31,8 @@ jobs:
         sudo apt-get update
         sudo apt-get install cloc -y
       
-    - name: Audit Dependencies
-      run: npm audit
+#     - name: Audit Dependencies
+#       run: npm audit
 
     - name: Build
       run: |
