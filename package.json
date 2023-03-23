@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "run",
   "scripts": {
-    "lint": "eslint --ext --fix .ts src",
+    "lint": "eslint --fix .ts src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
