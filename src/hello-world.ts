@@ -103,7 +103,9 @@ async function main() {
     let user: string = wordList[i].split("/")[1];
     let repo: string = wordList[i].split("/")[2];
 
-//     var downloads: number = 0;
+    // downloads was unused at the time the linter was implemented. 
+    // uncomment if downloads is later used
+    // var downloads: number = 0;
     var pinned: number = 0;
     var issues: number = 0;
     var forks: number = 0;
