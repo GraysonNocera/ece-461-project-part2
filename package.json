@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "run",
   "scripts": {
-    "lint": "eslint --ext .ts src"
+    "lint": "eslint --ext .ts src",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@angular/common": "^15.2.3",
