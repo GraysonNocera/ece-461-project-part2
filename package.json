@@ -18,6 +18,7 @@
     "node-jq": "^2.3.5",
     "octokit": "^2.0.14",
     "request-promise": "^4.2.6",
+    "snyk": "^1.1126.0",
     "threads": "^1.7.0"
   },
   "devDependencies": {
