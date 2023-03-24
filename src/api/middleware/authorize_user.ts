@@ -3,8 +3,10 @@ import { Request, Response, NextFunction } from 'express';
 import { logger } from '../../logging';
 
 export const authorizeUser = (req: Request, res: Response, next: NextFunction) => {
-    logger.info("Authorizing user...");
-    req.body.authorized = true;
+    // Authentication failed: status 403
+
+    logger.info("authorizeUser: Authorizing user...");
+    // req.body.authorized = true;
     next();
 }
 
