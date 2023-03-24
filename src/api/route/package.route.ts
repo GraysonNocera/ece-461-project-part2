@@ -5,11 +5,19 @@ import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
 import { packages } from '../app';
+import Joi from 'joi';
 const express = require('express');
 
 const packageRouter: Router = express.Router();
 
-// Create a package
+// This ensures that Content, URL, and JSProgram are all inputted as strings
+const schema = Joi.object({
+    Content: Joi.string(),
+    URL: Joi.string(),
+    JSProgram: Joi.string(),
+});
+
+// Create a package when POST /package is called
 packageRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("POST /package");
 
@@ -20,6 +28,12 @@ packageRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     } catch {
         // Request body is not valid JSON
         logger.info("Invalid JSON for POST /package");
+    }
+
+    // Validate with joi (trivial example)
+    const { error, value } = schema.validate(packageData);
+    if (error) {
+        // Request body is not valid
     }
 
     // Check the inputted data
@@ -41,6 +55,7 @@ packageRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     // for now, just store it in memory
     packages.push(packageData);
 
+    logger.info("POST /package: Package created successfully\n");
     res.status(201).send({
         "metadata": metadata,
         "data": {
