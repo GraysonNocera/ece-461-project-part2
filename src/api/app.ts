@@ -5,7 +5,7 @@ import { PackageData } from "./model/packageData";
 
 const packageRouter = require('./route/package.route');
 const authRouter = require('./route/authenticate.route');
-const packageByNameName = require('./route/package_byName_name.route')
+const packagesRouter = require('./route/packages.route')
 
 const app = express();
 
@@ -20,6 +20,7 @@ app.get('/', (req, res, next) => {
 // Endpoints
 app.use('/package', packageRouter);
 app.use('/authenticate', authRouter);
+app.use('/packages', packagesRouter);
 
 app.listen(3000, () => {
   logger.info("API server listening on port 3000");
