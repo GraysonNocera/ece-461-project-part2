@@ -5,6 +5,7 @@ import { PackageData } from "./model/packageData";
 
 const packageRouter = require('./route/package.route');
 const authRouter = require('./route/authenticate.route');
+const packageByNameName = require('./route/package_byName_name.route')
 
 const app = express();
 

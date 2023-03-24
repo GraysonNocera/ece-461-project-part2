@@ -29,3 +29,7 @@ Content-Type: application/json
         "password": "test password"
     }
 }
+
+###
+
+GET http://localhost:3000/package/byName/testName
