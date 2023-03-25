@@ -1,0 +1,16 @@
+GET http://localhost:3000/package
+
+###
+
+GET http://localhost:3000/
+
+###
+
+POST http://localhost:3000/package
+Content-Type: application/json
+
+{
+    "Content": "This is a test",
+    "URL": "https://github.com/winstonjs/winston",
+    "JSProgram": "console.log('Hello World')"
+}
