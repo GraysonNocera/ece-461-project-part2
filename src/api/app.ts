@@ -7,6 +7,7 @@ const packageRouter = require('./route/package.route');
 const authRouter = require('./route/authenticate.route');
 const packagesRouter = require('./route/packages.route')
 
+// define app
 const app = express();
 
 logger.info("Starting up the API server...");
