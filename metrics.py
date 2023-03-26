@@ -145,12 +145,13 @@ def get_pinned(repo: str) -> str:
         total = 1
         num = 1
         if "dependencies" in parse:
+            total += 1
             for i in parse["dependencies"]:
                 if re.search(r"\d\.[1-9]\d*\.", parse["dependencies"][i]):
                     num += 1
             if num > 0:
-                total /= num
-            return str(total)
+                num /= total
+            return str(num)
         else:
             return "1"
     else:
