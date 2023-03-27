@@ -2,13 +2,13 @@ name: Build/Test Project
 
 on:
   push:
-    branches: [ "CI/CD" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "CI/CD" ]
+    branches: [ "main" ]
 
 jobs:
 
-  build:
+  build-and-test:
 
     runs-on: ubuntu-latest
 
@@ -30,6 +30,9 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install cloc -y
+      
+#     - name: Audit Dependencies
+#       run: npm audit
 
     - name: Build
       run: |
