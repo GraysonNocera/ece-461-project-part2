@@ -143,14 +143,15 @@ def get_pinned(repo: str) -> str:
         file = open(package, "r")
         parse = json.load(file)
         total = 1
-        num = 1
+        num = 0
         if "dependencies" in parse:
             for i in parse["dependencies"]:
+                total += 1
                 if re.search(r"\d\.[1-9]\d*\.", parse["dependencies"][i]):
                     num += 1
-            if num > 0:
-                total /= num
-            return str(total)
+            if num > 0: 
+                num /= total
+            return str(num)
         else:
             return "1"
     else:
