@@ -14,4 +14,4 @@ async function demo(url: string) {
   console.log(test.RampUp);
 }
 
-demo("Test_2.txt");
+demo("https://github.com/nullivex/nodist");

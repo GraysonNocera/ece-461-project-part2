@@ -85,8 +85,11 @@ function sortOutput(output, netscores): string[] {
 
 async function main() {
   //   var objs: URLOBJ[] = [];
-
-  let data = getData();
+  let data = process.argv[2];
+  if (data.includes(".txt")) {
+    data = getData();
+  }
+  // let data = getData();
   // console.log(data);
   let wordList = cleanData(data);
   console.log(
