@@ -1,3 +1,4 @@
+process.title = "package-api";
 let express = require('express');
 let path = require('path');
 import { logger } from '../logging';
@@ -10,6 +11,7 @@ const resetRouter = require('./route/reset.route');
 
 // define app
 const app = express();
+
 
 logger.info("Starting up the API server...");
 
