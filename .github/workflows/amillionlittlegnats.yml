@@ -27,7 +27,7 @@ jobs:
         ./run install
 
     - name: Install dev dependencies
-      run: npm install --only=dev
+      run: npm install
       
     - name: Install cloc
       run: |
