@@ -44,8 +44,9 @@ jobs:
         sudo apt-get update
         sudo apt-get install cloc -y
       
-#     - name: Audit Dependencies
-#       run: npm audit
+    - name: Install Test Dependencies
+      run: |
+        npm install --save-dev @types/jest @types/mocha @angular/router @angular/router/testing
 
     - name: TypeScript Lint
       run: npm run lint
