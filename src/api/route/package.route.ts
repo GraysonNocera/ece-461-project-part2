@@ -103,6 +103,32 @@ packageRouter.get('/byName/:name', authorizeUser, (req: Request, res: Response) 
     // Validate with joi (trivial example)
 });
 
+// Return a package when DELETE /package/byName/{name} is called
+packageRouter.delete('/byName/:name', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("DELETE /package/byName/{name}");
+
+    let name: string;
+    let auth: string;
+    try {
+        name = req.params.name;
+        auth = req.header('X-Authorization') || "";
+        // Require auth
+
+        logger.info("Auth data: " + auth);
+
+        // TODO: Get the package from the database using the name
+        // TODO: Delete package
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        res.status(200).send("Package is deleted.");
+
+        res.status(404).send("Package does not exist.");
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for DELETE /package/:id");
+    }
+});
+
 // Rate a package when GET /package/:id/rate is called
 packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("GET /package/:id/rate");
@@ -192,7 +218,7 @@ packageRouter.get('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
-// Get a package when PUT /package/:id is called
+// Update a package when PUT /package/:id is called
 packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("PUT /package/:id");
 
@@ -224,6 +250,7 @@ packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
+// Delete a package when DELETE /package/:id is called
 packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("DELETE /package/:id");
 

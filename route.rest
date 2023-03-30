@@ -36,6 +36,10 @@ GET http://localhost:3000/package/byName/testName
 
 ###
 
+DELETE http://localhost:3000/package/byName/testName
+
+###
+
 POST http://localhost:3000/packages
 Content-Type: application/json
 
