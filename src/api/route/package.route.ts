@@ -139,7 +139,6 @@ packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
       packageRate.RampUp == Number(-1) ||
       packageRate.ResponsiveMaintainer == Number(-1)
     ) {
-      console.log("insanity");
       res.status(500).send();
     }
     // TODO: Update the database to have this rating for the given package
