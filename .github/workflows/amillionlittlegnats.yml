@@ -26,6 +26,9 @@ jobs:
         chmod +x ./run
         ./run install
 
+    - name: Install dev dependencies
+      run: npm install --only=dev
+      
     - name: Install cloc
       run: |
         sudo apt-get update
