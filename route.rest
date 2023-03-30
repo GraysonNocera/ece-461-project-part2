@@ -43,3 +43,7 @@ Content-Type: application/json
     "Name": "name of package",
     "Version": "version of package"
 }
+
+###
+
+GET http://localhost:3000/package/4/rate
