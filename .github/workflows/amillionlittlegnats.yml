@@ -29,6 +29,16 @@ jobs:
     - name: Install dev dependencies
       run: npm install
       
+    - name: Install stupid dependencies
+      run: |
+        npm install
+        npm install axios
+        npm install ts-node
+        npm install @types/axios
+        npm install @types/node
+        npm install @types/jest
+        npm install @types/mocha
+      
     - name: Install cloc
       run: |
         sudo apt-get update
