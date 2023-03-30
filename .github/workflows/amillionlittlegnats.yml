@@ -68,7 +68,9 @@ jobs:
       run: ts-node src/api/app.ts &
         
     - name: Compile API tests
-      run: tsc testing/apitests.ts
+      run: | 
+           tsc testing/apitests.ts
+           node testing/apitests.js
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
