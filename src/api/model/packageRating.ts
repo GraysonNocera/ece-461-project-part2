@@ -41,6 +41,6 @@ export interface PackageRating {
    */
   GoodPinningPractice: number;
 
-  GoodEngineeringPractic: number;
+  GoodEngineeringPractice: number;
 }
 
