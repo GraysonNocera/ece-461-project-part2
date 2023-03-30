@@ -276,4 +276,55 @@ packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
+packageRouter.post('/byRegEx/:regex', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("POST /package/byRegEx/{regex}");
+
+    let regex: string;
+    let regex_body: string;
+    let auth: string;
+    let packageMetadata: PackageMetadata;
+    let return_data: Object;
+    try {
+        regex = req.params.regex;
+        logger.info("Got regex: " + regex);
+
+        auth = req.header('X-Authorization') || "";
+        // Require auth
+
+        logger.info("Auth data: " + auth);
+
+        regex_body = req.body.PackageRegEx;
+
+        logger.info("Got regex body: " + regex_body);
+
+        // TODO: Get the package from the database using the regex
+        // TODO: Return package
+
+        // TODO: Hit database for this metadata
+        packageMetadata = {
+            Name: "test",
+            Version: "1.0.0",
+            ID: "1234",
+        };
+
+        logger.info("Preparing return_data");
+
+        // According to YML spec, return only name and version
+        return_data = {
+            Name: packageMetadata.Name,
+            Version: packageMetadata.Version,
+        };
+
+        logger.info("Sending status");
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        res.status(200).send([return_data, return_data]);
+
+        //res.status(404).send("No package found under this regex.");
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for POST /RegEx/{regex}");
+    }
+});
+
 module.exports = packageRouter;

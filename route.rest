@@ -85,3 +85,13 @@ Content-Type: application/json
 
 DELETE http://localhost:3000/package/5
 X-Authorization: ur brotha
+
+###
+
+POST http://localhost:3000/package/byRegEx/.*test.*?rate
+X-Authorization: ur sistah
+Content-Type: application/json
+
+{
+    "PackageRegEx": ".*test.*?rate"
+}
