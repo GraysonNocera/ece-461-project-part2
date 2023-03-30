@@ -34,6 +34,9 @@ jobs:
 #     - name: Audit Dependencies
 #       run: npm audit
 
+    - name: TypeScript Lint
+      run: npm run lint
+    
     - name: Build
       run: |
         chmod +x ./run
@@ -45,3 +48,29 @@ jobs:
       run: |
         chmod +x ./run
         ./run Test.txt
+        
+    - name: Start API
+      run: ts-node src/api/app.ts &
+        
+    - name: Compile and Run for API tests
+      run: ts-node testing/apitests.ts
+      
+    - name: Kill API
+      run: pkill -f 'ts-node src/api/app.ts'
+        
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+        
+      - name: SSH Keys
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOYSSH_KEY }}
+        
+      - name: Deployment
+        run: ssh brian@server 'cd /var/www && git pull origin main'
