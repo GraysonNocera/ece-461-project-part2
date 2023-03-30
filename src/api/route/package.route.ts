@@ -121,12 +121,12 @@ packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
     id = parseInt(req.params.id);
 
     // TODO: Get the package from the database using the id
-    //let url: string = "https://www.npmjs.com/package/express";
+    let url: string = "https://www.npmjs.com/package/express";
     // Fill in PackageRating
     // TODO: Hit rate module to get this info
-    //terminal_command = `ts-node src/hello-world.ts ${url}`;
+    terminal_command = `ts-node src/hello-world.ts ${url}`;
 
-    //terminal_output = cp.execSync(terminal_command);
+    terminal_output = cp.execSync(terminal_command);
     const test_file = readFileSync("./src/score.json", "utf8");
     packageRate = JSON.parse(test_file);
     console.log(packageRate.GoodEngineeringPractice);
