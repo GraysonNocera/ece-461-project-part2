@@ -276,6 +276,7 @@ packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
+// Search packages via a Regex when POST /package/byRegEx/:regex is called
 packageRouter.post('/byRegEx/:regex', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("POST /package/byRegEx/{regex}");
 
