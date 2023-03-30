@@ -27,7 +27,7 @@ jobs:
         ./run install
 
     - name: Install dev dependencies
-      run: npm install
+      run: npm install --force
       
     - name: Install stupid dependencies
       run: |
