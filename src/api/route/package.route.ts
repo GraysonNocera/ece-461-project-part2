@@ -7,6 +7,7 @@ import { Request, Response } from 'express';
 import { packages } from '../app';
 import Joi from 'joi';
 import { PackageHistoryEntry } from '../model/packageHistoryEntry';
+import { PackageRating } from '../model/packageRating';
 
 const express = require('express');
 
@@ -101,5 +102,47 @@ packageRouter.get('/byName/:name', authorizeUser, (req: Request, res: Response) 
     // Validate with joi (trivial example)
 });
 
+packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("GET /package/:id/rate");
+
+    let id: number;
+    let packageRate: PackageRating;
+    try {
+        id = parseInt(req.params.id);
+
+        // TODO: Get the package from the database using the id
+
+        // Fill in PackageRating 
+        // TODO: Hit rate module to get this info
+        packageRate = {
+            BusFactor: 1,
+            Correctness: 0.5,
+            RampUp: 0.8,
+            ResponsiveMaintainer: 0.3,
+            LicenseScore: 0.1,
+            /**
+             * The fraction of its dependencies that are pinned to at least a specific major+minor version, e.g. version 2.3.X of a package. (If there are zero dependencies, they should receive a 1.0 rating. If there are two dependencies, one pinned to this degree, then they should receive a Â½ = 0.5 rating).
+             */
+            GoodPinningPractice: 1,
+            /**
+             * The fraction of project code that was introduced through pull requests with a code review).
+            */
+            GoodEngineeringProcess: 1,
+        
+            NetScore: 1,
+        }
+
+        // TODO: Update the database to have this rating for the given package
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        // Send 500 if rating module failed
+        res.status(200).send(packageRate);
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for GET /package/:id/rate");
+    }
+
+    // Validate with joi (trivial example)
+});
 
 module.exports = packageRouter;
