@@ -350,28 +350,24 @@ async function main() {
     // );
     let temp = JSON.stringify({
       //URL: Number(stringgie[0]),
-      NetScore: !Number.isNaN(Number(stringgie[2]))
-        ? Number(stringgie[2])
-        : "-1",
+      NetScore: !Number.isNaN(Number(stringgie[2])) ? Number(stringgie[2]) : -1,
       BusFactor: !Number.isNaN(Number(stringgie[5]))
         ? Number(stringgie[5])
-        : "-1",
+        : -1,
       Correctness: !Number.isNaN(Number(stringgie[4]))
         ? Number(stringgie[4])
-        : "-1",
-      RampUp: !Number.isNaN(Number(stringgie[3])) ? Number(stringgie[3]) : "-1",
+        : -1,
+      RampUp: !Number.isNaN(Number(stringgie[3])) ? Number(stringgie[3]) : -1,
       ResponsiveMaintainer: !Number.isNaN(Number(stringgie[6]))
         ? Number(stringgie[6])
-        : "-1",
+        : -1,
       LicenseScore: !Number.isNaN(Number(stringgie[7]))
         ? Number(stringgie[7])
-        : "-1",
+        : -1,
       GoodPinningPractice: !Number.isNaN(Number(stringgie[1]))
         ? Number(stringgie[1])
-        : "-1",
-      GoodEngineeringPractice: !Number.isNaN(Number(stringgie[8]))
-        ? Number(stringgie[8])
-        : "-1",
+        : -1,
+      GoodEngineeringPractice: -1,
     });
     writeFile("src/score.json", temp, function (err) {
       if (err) throw err;
