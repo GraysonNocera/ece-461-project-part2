@@ -8,6 +8,7 @@ import { packages } from '../app';
 import Joi from 'joi';
 import { PackageHistoryEntry } from '../model/packageHistoryEntry';
 import { PackageRating } from '../model/packageRating';
+import { Package } from '../model/package';
 
 const express = require('express');
 
@@ -68,7 +69,7 @@ packageRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     });
 });
 
-// Create a package when GET /package/byName/{name} is called
+// Return a package when GET /package/byName/{name} is called
 packageRouter.get('/byName/:name', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("GET /package/byName/{name}");
 
@@ -102,6 +103,7 @@ packageRouter.get('/byName/:name', authorizeUser, (req: Request, res: Response) 
     // Validate with joi (trivial example)
 });
 
+// Rate a package when GET /package/:id/rate is called
 packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("GET /package/:id/rate");
 
@@ -143,6 +145,53 @@ packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  
     }
 
     // Validate with joi (trivial example)
+});
+
+// Get a package when GET /package/:id is called
+packageRouter.get('/:id', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("GET /package/:id");
+
+    let id: number;
+    let auth: string;
+    let packageInfo: Package;
+    try {
+        id = parseInt(req.params.id);
+        auth = req.header('X-Authorization') || "";
+        // Require auth
+
+        logger.info("Auth data: " + auth);
+
+        // TODO: Get the package from the database using the id
+
+        // Fill in PackageRating 
+        // TODO: Hit database to get this info
+        packageInfo = {
+            metadata: {
+                Name: "test",
+                Version: "1.0.0",
+                ID: "1234",
+            },
+            data: {
+                Content: "test content",
+                URL: "test url",
+                JSProgram: "test js program",
+            }
+        }
+
+        // TODO: Update the database to have this rating for the given package
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        res.status(200).send(packageInfo);
+
+        res.status(404).send("Package does not exist.");
+    
+        // "There is missing field(s) in the PackageID/AuthenticationToken
+        // or it is formed improperly, or the AuthenticationToken is invalid."
+        res.status(400).send("unexpected error");
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for GET /package/:id");
+    }
 });
 
 module.exports = packageRouter;

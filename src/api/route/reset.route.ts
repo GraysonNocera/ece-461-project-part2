@@ -21,7 +21,7 @@ resetRouter.delete('/', authorizeUser, (req: Request, res: Response) =>  {
     let auth: string;
     try {
         logger.info("Request body: " + req.headers);
-        auth = req.get('X-Authorization') || "";
+        auth = req.header('X-Authorization') || "";
         logger.info("Auth data: " + auth);
         // TODO: check authorization
 
