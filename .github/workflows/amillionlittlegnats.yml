@@ -46,7 +46,7 @@ jobs:
       
     - name: Install Test Dependencies
       run: |
-        npm install --save-dev @types/jest @types/mocha @angular/router @angular/router/testing
+        npm install --save-dev @types/jest @types/mocha @angular/router @angular/router/testing --force
 
     - name: TypeScript Lint
       run: npm run lint
