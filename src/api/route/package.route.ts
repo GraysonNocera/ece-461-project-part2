@@ -115,7 +115,6 @@ packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
 
   let id: number;
   let packageRate: PackageRating;
-  let terminal_output: Buffer;
   let terminal_command: string;
   try {
     id = parseInt(req.params.id);
@@ -126,7 +125,7 @@ packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
     // TODO: Hit rate module to get this info
     terminal_command = `ts-node src/hello-world.ts ${url}`;
 
-    terminal_output = cp.execSync(terminal_command);
+    cp.execSync(terminal_command);
     const test_file = readFileSync("./src/score.json", "utf8");
     packageRate = JSON.parse(test_file);
     console.log(packageRate.GoodEngineeringPractice);
