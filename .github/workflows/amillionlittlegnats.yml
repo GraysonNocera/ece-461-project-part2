@@ -86,4 +86,4 @@ jobs:
           ssh-private-key: ${{ secrets.DEPLOYSSH_KEY }}
         
       - name: Deployment
-        run: ssh brian@server 'cd /var/www && git pull origin main'
+        run: ssh ECE461@34.30.211.162 'cd ece461-project-part2 && git pull origin main'
