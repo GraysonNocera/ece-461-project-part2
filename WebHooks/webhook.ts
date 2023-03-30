@@ -14,7 +14,7 @@ http.createServer(function (req, res) {
         // if (req.headers['x-hub-signature'] == sig) {
         //     exec('cd ' + repo + ' && git pull');
         // }
-
+        console.log ("Execing");
         exec ('~/ece-461-project-part2/update')
     });
 
