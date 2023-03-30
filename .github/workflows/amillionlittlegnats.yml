@@ -27,7 +27,7 @@ jobs:
         ./run install
 
     - name: Install dev dependencies
-      run: npm install --force
+      run: npm install 
       
     - name: Install stupid dependencies
       run: |
@@ -46,7 +46,8 @@ jobs:
       
     - name: Install Test Dependencies
       run: |
-        npm install --save-dev @types/jest @types/mocha @angular/router
+        npm install --save-dev @types/jest @types/mocha @angular/router @angular/router/testing
+
 
     - name: TypeScript Lint
       run: npm run lint
