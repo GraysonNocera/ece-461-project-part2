@@ -67,11 +67,11 @@ jobs:
     - name: Start API
       run: ts-node src/api/app.ts &
         
-    - name: Check ts-node
-      run: ts-node --version
-      
+    - name: Compile API tests
+      run: tsc testing/apitests.ts
+
     - name: Compile and Run for API tests
-      run: ts-node testing/apitests.ts
+      run: node testing/apitests.js
       
     - name: Kill API
       run: pkill -f 'ts-node src/api/app.ts'
