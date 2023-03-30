@@ -178,8 +178,6 @@ packageRouter.get('/:id', authorizeUser, (req: Request, res: Response) =>  {
             }
         }
 
-        // TODO: Update the database to have this rating for the given package
-
         // If status is 200, ok. Send 404 if package doesn't exist. 
         res.status(200).send(packageInfo);
 
@@ -191,6 +189,38 @@ packageRouter.get('/:id', authorizeUser, (req: Request, res: Response) =>  {
     } catch {
         // Request body is not valid JSON
         logger.info("Invalid JSON for GET /package/:id");
+    }
+});
+
+// Get a package when PUT /package/:id is called
+packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("PUT /package/:id");
+
+    let id: number;
+    let auth: string;
+    let packageInfo: Package;
+    try {
+        id = parseInt(req.params.id);
+        auth = req.header('X-Authorization') || "";
+        // Require auth
+
+        logger.info("Auth data: " + auth);
+
+        packageInfo = req.body; // Get user-inputted package details
+        // Validate with joi
+
+        // TODO: Get the package from the database using the id
+        // TODO: Update contents with new contents
+
+        packageInfo.data.Content = "new content yaya";
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        res.status(200).send(packageInfo);
+
+        res.status(404).send("Package does not exist.");
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for PUT /package/:id");
     }
 });
 

@@ -57,3 +57,22 @@ X-Authorization: "ur mom"
 
 GET http://localhost:3000/package/5
 X-Authorization: ur dad
+
+###
+
+PUT http://localhost:3000/package/5
+X-Authorization: ur dad
+Content-Type: application/json
+
+{
+    "metadata": {
+        "Name": "test",
+        "Version": "1.0.0",
+        "ID": "1234"
+    },
+    "data": {
+        "Content": "test content",
+        "URL": "test url",
+        "JSProgram": "test js program"
+    }
+}
