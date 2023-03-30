@@ -47,3 +47,8 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3000/package/4/rate
+
+###
+
+DELETE http://localhost:3000/reset
+X-Authorization: "ur mom"
