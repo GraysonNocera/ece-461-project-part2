@@ -224,4 +224,29 @@ packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
+packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("DELETE /package/:id");
+
+    let id: number;
+    let auth: string;
+    try {
+        id = parseInt(req.params.id);
+        auth = req.header('X-Authorization') || "";
+        // Require auth
+
+        logger.info("Auth data: " + auth);
+
+        // TODO: Get the package from the database using the id
+        // TODO: Delete package
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        res.status(200).send("Package is deleted.");
+
+        res.status(404).send("Package does not exist.");
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for PUT /package/:id");
+    }
+});
+
 module.exports = packageRouter;
