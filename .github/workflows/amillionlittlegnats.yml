@@ -67,8 +67,10 @@ jobs:
     - name: Start API
       run: ts-node src/api/app.ts &
         
-    - name: Compile and Run for API tests
+    - name: Check ts-node
       run: ts-node --version
+      
+    - name: Compile and Run for API tests
       run: ts-node testing/apitests.ts
       
     - name: Kill API
