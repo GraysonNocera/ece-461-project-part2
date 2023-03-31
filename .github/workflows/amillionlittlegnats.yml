@@ -37,6 +37,7 @@ jobs:
         npm install @types/axios
         npm install @types/node
         npm install @types/jest
+        npm install winston @types/winston --save
         
       
     - name: Install cloc
