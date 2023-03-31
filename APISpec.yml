@@ -63,8 +63,8 @@ paths:
                     Name: React
           description: List of packages
         "400":
-          description: There is missing field(s) in the PackageQuery/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageQuery/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "413":
           description: Too many packages returned.
       operationId: PackagesList
@@ -82,14 +82,15 @@ paths:
       schema:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
+      required: true
   /reset:
     delete:
       responses:
         "200":
           description: Registry is reset.
         "400":
-          description: There is missing field(s) in the AuthenticationToken or it
-            is formed improperly.
+          description: "There is missing field(s) in the AuthenticationToken or it\
+            \ is formed improperly, or the AuthenticationToken is invalid."
         "401":
           description: You do not have permission to reset the registry.
       operationId: RegistryReset
@@ -101,6 +102,7 @@ paths:
       schema:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
+      required: true
   /package/{id}:
     get:
       parameters:
@@ -157,8 +159,8 @@ paths:
                         }
           description: Return the package.
         "400":
-          description: There is missing field(s) in the PackageID/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageID/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: Package does not exist.
       operationId: PackageRetrieve
@@ -182,8 +184,8 @@ paths:
         "200":
           description: Version is updated.
         "400":
-          description: There is missing field(s) in the PackageID/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageID/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: Package does not exist.
       operationId: PackageUpdate
@@ -204,8 +206,8 @@ paths:
         "200":
           description: Package is deleted.
         "400":
-          description: There is missing field(s) in the PackageID/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageID/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: Package does not exist.
       operationId: PackageDelete
@@ -228,6 +230,7 @@ paths:
       schema:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
+      required: true
   /package:
     post:
       requestBody:
@@ -262,11 +265,8 @@ paths:
           description: Success. Check the ID in the returned metadata for the official
             ID.
         "400":
-          description: There is missing field(s) in the PackageData/AuthenticationToken
-            or it is formed improperly.
-        "403":
-          description: Authentication failed (e.g. AuthenticationToken invalid or
-            does not exist)
+          description: "There is missing field(s) in the PackageData/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "409":
           description: Package exists already.
         "424":
@@ -290,8 +290,8 @@ paths:
           description: Return the rating. Only use this if each metric was computed
             successfully.
         "400":
-          description: There is missing field(s) in the PackageID/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageID/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: Package does not exist.
         "500":
@@ -308,6 +308,7 @@ paths:
       schema:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
+      required: true
   /authenticate:
     summary: Authenticate this user -- get an access token.
     description: |-
@@ -360,6 +361,7 @@ paths:
         schema:
           $ref: '#/components/schemas/AuthenticationToken'
         in: header
+        required: true
       responses:
         default:
           content:
@@ -415,8 +417,8 @@ paths:
                     Action: CREATE
           description: Return the package history.
         "400":
-          description: There is missing field(s) in the PackageName/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageName/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: No such package.
       operationId: PackageByNameGet
@@ -432,8 +434,8 @@ paths:
         "200":
           description: Package is deleted.
         "400":
-          description: There is missing field(s) in the PackageName/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageName/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: Package does not exist.
       operationId: PackageByNameDelete
@@ -455,7 +457,8 @@ paths:
       schema:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
-  /package/byRegEx/{regex}:
+      required: true
+  /package/byRegEx:
     post:
       requestBody:
         content:
@@ -482,8 +485,8 @@ paths:
                     Name: React
           description: Return a list of packages.
         "400":
-          description: There is missing field(s) in the PackageRegEx/AuthenticationToken
-            or it is formed improperly.
+          description: "There is missing field(s) in the PackageRegEx/AuthenticationToken\
+            \ or it is formed improperly, or the AuthenticationToken is invalid."
         "404":
           description: No package found under this regex.
       operationId: PackageByRegExGet
@@ -492,14 +495,6 @@ paths:
         and READMEs. This is similar to search by name.
     parameters:
     - examples:
-        ExampleRegEx:
-          value: .*Underscore.*
-      name: regex
-      schema:
-        $ref: '#/components/schemas/PackageRegEx'
-      in: path
-      required: true
-    - examples:
         ExampleToken:
           value: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
       name: X-Authorization
@@ -507,7 +502,7 @@ paths:
       schema:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
-      required: false
+      required: true
 components:
   schemas:
     Error:
@@ -610,20 +605,16 @@ components:
 
         If the Project 1 that you inherited does not support one or more of the original properties, denote this with the value "-1".
       required:
-      - NetScore
       - RampUp
       - Correctness
       - BusFactor
       - ResponsiveMaintainer
       - LicenseScore
       - GoodPinningPractice
-      - GoodEngineeringProcess
+      - PullRequest
+      - NetScore
       type: object
       properties:
-        NetScore:
-          format: double
-          description: ""
-          type: number
         BusFactor:
           format: double
           description: ""
@@ -652,10 +643,14 @@ components:
             \ are two dependencies, one pinned to this degree, then they should receive\
             \ a Â½ = 0.5 rating)."
           type: number
-        GoodEngineeringProcess:
+        PullRequest:
           format: double
-          description: "The fraction of project code that was introduced\
-          \through pull requests with a code review)."
+          description: The fraction of project code that was introduced through pull
+            requests with a code review.
+          type: number
+        NetScore:
+          format: double
+          description: From Part 1
           type: number
     PackageHistoryEntry:
       description: One entry of the history of this package.
