@@ -12,6 +12,7 @@ import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFile, readFileSync } from "fs";
 import { DataType } from "../param";
+import { Package } from '../model/package';
 
 const express = require("express");
 
@@ -110,8 +111,35 @@ packageRouter.get(
   }
 );
 
-packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
-  logger.info("GET /package/:id/rate");
+// Return a package when DELETE /package/byName/{name} is called
+packageRouter.delete('/byName/:name', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("DELETE /package/byName/{name}");
+
+    let name: string;
+    let auth: string;
+    try {
+        name = req.params.name;
+        auth = req.header('X-Authorization') || "";
+        // Require auth
+
+        logger.info("Auth data: " + auth);
+
+        // TODO: Get the package from the database using the name
+        // TODO: Delete package
+
+        // If status is 200, ok. Send 404 if package doesn't exist. 
+        res.status(200).send("Package is deleted.");
+
+        res.status(404).send("Package does not exist.");
+    } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for DELETE /package/:id");
+    }
+});
+
+// Rate a package when GET /package/:id/rate is called
+packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
+    logger.info("GET /package/:id/rate");
 
   let id: number;
   let packageRate: PackageRating;
