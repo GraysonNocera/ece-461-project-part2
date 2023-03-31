@@ -72,6 +72,7 @@ jobs:
         
     - name: Compile API tests
       run: | 
+        npm install jest
         tsc testing/apitests.ts
         npx jest testing/apitests.ts
 
