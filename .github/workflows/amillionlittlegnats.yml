@@ -37,7 +37,7 @@ jobs:
         npm install @types/axios
         npm install @types/node
         npm install @types/jest
-        npm install @types/mocha
+        npm install @types/mocha@latest --save-dev
       
     - name: Install cloc
       run: |
