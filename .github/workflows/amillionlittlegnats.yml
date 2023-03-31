@@ -37,6 +37,7 @@ jobs:
         npm install @types/axios
         npm install @types/node
         npm install @types/jest
+        
       
     - name: Install cloc
       run: |
@@ -64,12 +65,14 @@ jobs:
         ./run Test.txt
         
     - name: Start API
-      run: ts-node src/api/app.ts &
+      run: |
+        tsc src/api/app.ts 
+        node src/api/app.ts &
         
     - name: Compile API tests
       run: | 
-           tsc testing/apitests.ts
-           node testing/apitests.js
+        tsc testing/apitests.ts
+        node testing/apitests.js
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
