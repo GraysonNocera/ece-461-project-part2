@@ -73,7 +73,7 @@ jobs:
     - name: Compile API tests
       run: | 
         tsc testing/apitests.ts
-        node testing/apitests.js
+        npx jest testing/apitests.ts
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
