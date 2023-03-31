@@ -1,7 +1,7 @@
-let express = require('express');
-let path = require('path');
-import { logger } from '../logging';
-import { PackageData } from "./model/packageData";
+const express = require('express');
+const path = require('path');
+const { logger } = require('../logging');
+const { PackageData } = require("./model/packageData");
 
 const packageRouter = require('./route/package.route');
 const authRouter = require('./route/authenticate.route');
