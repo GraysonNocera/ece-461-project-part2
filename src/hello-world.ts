@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, writeFile } from "fs";
 import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
@@ -84,9 +84,12 @@ function sortOutput(output, netscores): string[] {
 }
 
 async function main() {
-//   var objs: URLOBJ[] = [];
-
-  let data = getData();
+  //   var objs: URLOBJ[] = [];
+  let data = process.argv[2];
+  if (data.includes(".txt")) {
+    data = getData();
+  }
+  // let data = getData();
   // console.log(data);
   let wordList = cleanData(data);
   console.log(
@@ -103,7 +106,7 @@ async function main() {
     let user: string = wordList[i].split("/")[1];
     let repo: string = wordList[i].split("/")[2];
 
-    // downloads was unused at the time the linter was implemented. 
+    // downloads was unused at the time the linter was implemented.
     // uncomment if downloads is later used
     // var downloads: number = 0;
     var pinned: number = 0;
@@ -342,21 +345,34 @@ async function main() {
   var json: string[] = [];
   for (let i = 0; i < finalOutputStrings.length; i++) {
     let stringgie = finalOutputStrings[i].split(" ");
-    console.log(
-      `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]} ${stringgie[7]} ${stringgie[8]}`
-    );
+    // console.log(
+    //   `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]} ${stringgie[7]} ${stringgie[8]}`
+    // );
     let temp = JSON.stringify({
-      URL: Number(stringgie[0]),
-      VERSION_PINNING_SCORE: Number(stringgie[1]),
-      NET_SCORE: Number(stringgie[2]),
-      RAMP_UP_SCORE: Number(stringgie[3]),
-      CORRECTNESS_SCORE: Number(stringgie[4]),
-      BUS_FACTOR_SCORE: Number(stringgie[5]),
-      RESPONSIVE_MAINTAINER_SCORE: Number(stringgie[6]),
-      LICENSE_SCORE: Number(stringgie[7]),
-      ENGR_SCORE: Number(stringgie[8]),
+      //URL: Number(stringgie[0]),
+      NetScore: !Number.isNaN(Number(stringgie[2])) ? Number(stringgie[2]) : -1,
+      BusFactor: !Number.isNaN(Number(stringgie[5]))
+        ? Number(stringgie[5])
+        : -1,
+      Correctness: !Number.isNaN(Number(stringgie[4]))
+        ? Number(stringgie[4])
+        : -1,
+      RampUp: !Number.isNaN(Number(stringgie[3])) ? Number(stringgie[3]) : -1,
+      ResponsiveMaintainer: !Number.isNaN(Number(stringgie[6]))
+        ? Number(stringgie[6])
+        : -1,
+      LicenseScore: !Number.isNaN(Number(stringgie[7]))
+        ? Number(stringgie[7])
+        : -1,
+      GoodPinningPractice: !Number.isNaN(Number(stringgie[1]))
+        ? Number(stringgie[1])
+        : -1,
+      GoodEngineeringPractice: -1,
     });
-    json.push(temp);
+    writeFile("src/score.json", temp, function (err) {
+      if (err) throw err;
+      //console.log("complete");
+    });
   }
 
   // console.log(json)
