@@ -68,13 +68,13 @@ jobs:
     - name: Start API
       run: |
         # tsc --project ./tsconfig.json src/api/app.ts 
-        node src/api/app.ts &
+        node src/api/app.js &
         
     - name: Compile API tests
       run: | 
         npm install jest
         tsc testing/apitests.ts
-        node testing/apitests.ts
+        node testing/apitests.js
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
