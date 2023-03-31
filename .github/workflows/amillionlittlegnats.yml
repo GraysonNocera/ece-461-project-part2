@@ -74,7 +74,7 @@ jobs:
       run: | 
         npm install jest
         tsc testing/apitests.ts
-        npx jest testing/apitests.ts
+        node testing/apitests.ts
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
