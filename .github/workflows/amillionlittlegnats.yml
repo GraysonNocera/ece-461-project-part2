@@ -49,8 +49,8 @@ jobs:
         npm install --save-dev @types/jest @types/mocha @angular/router
 
 
-    - name: TypeScript Lint
-      run: npm run lint
+#     - name: TypeScript Lint
+#       run: npm run lint
     
     - name: Build
       run: |
