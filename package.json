@@ -7,7 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@angular/common": "^15.2.3",
+    "@angular/common": "^15.2.5",
     "@angular/core": "^15.2.3",
     "body-parser": "^1.20.1",
     "child_process": "^1.0.2",

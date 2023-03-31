@@ -36,6 +36,10 @@ GET http://localhost:3000/package/byName/testName
 
 ###
 
+DELETE http://localhost:3000/package/byName/testName
+
+###
+
 POST http://localhost:3000/packages
 Content-Type: application/json
 
@@ -47,3 +51,47 @@ Content-Type: application/json
 ###
 
 GET http://localhost:3000/package/4/rate
+
+###
+
+DELETE http://localhost:3000/reset
+X-Authorization: "ur mom"
+
+###
+
+GET http://localhost:3000/package/5
+X-Authorization: ur dad
+
+###
+
+PUT http://localhost:3000/package/5
+X-Authorization: ur dad
+Content-Type: application/json
+
+{
+    "metadata": {
+        "Name": "test",
+        "Version": "1.0.0",
+        "ID": "1234"
+    },
+    "data": {
+        "Content": "test content",
+        "URL": "test url",
+        "JSProgram": "test js program"
+    }
+}
+
+###
+
+DELETE http://localhost:3000/package/5
+X-Authorization: ur brotha
+
+###
+
+POST http://localhost:3000/package/byRegEx/.*test.*?rate
+X-Authorization: ur sistah
+Content-Type: application/json
+
+{
+    "PackageRegEx": ".*test.*?rate"
+}
