@@ -67,7 +67,7 @@ jobs:
         
     - name: Start API
       run: |
-        # tsc --project ./tsconfig.json src/api/app.ts 
+        tsc src/api/app.ts 
         node src/api/app.js &
         
     - name: Compile API tests
