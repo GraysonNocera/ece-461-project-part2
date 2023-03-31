@@ -4,7 +4,7 @@
   "main": "run",
   "scripts": {
     "lint": "eslint --fix --ext .ts src --ignore-path .eslintignore",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "dependencies": {
     "@angular/common": "^15.2.3",
