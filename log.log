@@ -1,7 +1,0 @@
-info: Starting up the API server...
-info: API server listening on port 3000
-info: authorizeUser: Authorizing user...
-info: POST /package
-info: Package data: {"Content":"This is a test","URL":"https://github.com/winstonjs/winston","JSProgram":"console.log('Hello World')"}
-info: POST /package: Package created successfully
-
