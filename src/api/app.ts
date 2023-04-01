@@ -1,12 +1,12 @@
-const express = require('express');
-const path = require('path');
-const { logger } = require('../logging');
-const { PackageData } = require("./model/packageData");
+import express from 'express';
+import path from 'path';
+import { logger } from '../logging';
+import { PackageData } from "./model/packageData";
 
-const packageRouter = require('./route/package.route');
-const authRouter = require('./route/authenticate.route');
-const packagesRouter = require('./route/packages.route');
-const resetRouter = require('./route/reset.route');
+import packageRouter from './route/package.route';
+import authRouter from './route/authenticate.route';
+import packagesRouter from './route/packages.route';
+import resetRouter from './route/reset.route';
 
 // define app
 const app = express();
