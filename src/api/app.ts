@@ -1,3 +1,4 @@
+process.title = "package-api";
 import express from 'express';
 import path from 'path';
 import { logger } from '../logging';
@@ -10,6 +11,7 @@ import { resetRouter } from './route/reset.route';
 
 // define app
 const app = express();
+
 
 logger.info("Starting up the API server...");
 

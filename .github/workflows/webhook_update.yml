@@ -1,0 +1,3 @@
+- id: redeploy-webhook
+  execute-command: "$HOME/ece-461-project-part2"
+  command-working-directory: "$HOME/ece-461-project-part2"
