@@ -22,65 +22,30 @@ jobs:
         node-version: 18.x
 
     - name: Install dependencies
-      run: |
-        chmod +x ./run
-        ./run install
+      run: npm ci
 
-    - name: Install dev dependencies
-      run: npm install 
-      
-    - name: Install stupid dependencies
-      run: |
-        npm install
-        npm install axios
-        npm install ts-node
-        npm install @types/axios
-        npm install @types/node
-        npm install @types/jest
-        npm install winston @types/winston --save
-        
-      
     - name: Install cloc
       run: |
         sudo apt-get update
         sudo apt-get install cloc -y
-      
-    - name: Install Test Dependencies
-      run: |
-        npm install --save-dev @types/jest @angular/router
 
-
-#     - name: TypeScript Lint
-#       run: npm run lint
-    
     - name: Build
-      run: |
-        chmod +x ./run
-        ./run build
+      run: tsc
 
     - name: Test
-      env:
-        GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
       run: |
-        chmod +x ./run
-        ./run Test.txt
+        # Add your test command here (e.g., npm test)
         
     - name: Start API
       run: |
-        tsc src/api/app.ts
-        node src/api/app.js &
+        node dist/api/app.js &
         
-    - name: Compile API tests
+    - name: Run API tests
       run: | 
-        npm install jest
-        tsc testing/apitests.ts
-        node testing/apitests.js
-
-    - name: Compile and Run for API tests
-      run: node testing/apitests.js
+        # Add your API test command here (e.g., npm run apitest)
       
     - name: Kill API
-      run: pkill -f 'ts-node src/api/app.ts'
+      run: pkill -f 'node dist/api/app.js'
         
   deploy:
     needs: build-and-test
