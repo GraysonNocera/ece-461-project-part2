@@ -68,7 +68,7 @@ jobs:
     - name: Start API
       run: |
         tsc --project tsconfig.json
-        ls dist/api
+        ls dist
         node dist/api/app.js &
         
     - name: Compile API tests
