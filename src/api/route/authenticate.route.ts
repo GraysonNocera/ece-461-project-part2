@@ -41,4 +41,4 @@ authRouter.put('/', authorizeUser, (req: Request, res: Response) =>  {
     // Validate with joi (trivial example)
 });
 
-module.exports = authRouter;
+// module.exports = authRouter;
