@@ -37,9 +37,7 @@ jobs:
         npm install @types/axios
         npm install @types/node
         npm install @types/jest
-        npm install winston @types/winston --save
-        npm install --save-dev jest
-        
+        npm install winston @types/winston --save        
       
     - name: Install cloc
       run: |
@@ -74,9 +72,9 @@ jobs:
         
     - name: Compile API tests
       run: | 
-        npm install jest
+        npm install --save-dev jest
         tsc testing/apitests.ts
-        node testing/apitests.js
+        npm test
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
