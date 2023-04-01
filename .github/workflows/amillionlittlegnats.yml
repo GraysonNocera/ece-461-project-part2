@@ -2,9 +2,9 @@ name: Build/Test Project
 
 on:
   push:
-    branches: [ "CI/CD" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "CI/CD" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
