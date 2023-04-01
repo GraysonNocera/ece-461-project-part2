@@ -12,9 +12,7 @@ describe('API tests', () => {
     expect(response.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: 'test-package',
-          version: '1.0.0',
-          ID: '1234',
+          Version: '1.0.0',
         }),
       ]),
     );
@@ -27,9 +25,17 @@ describe('API tests', () => {
     expect(response.data).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          name: 'test-package',
-          version: '1.0.0',
-          ID: '1234',
+          Action: 'CREATE',
+          Date: '2021-04-01',
+          PackageMetadata: {
+            ID: '1234',
+            Name: 'test package metadata',
+            Version: '1.0.0',
+          },
+          User: {
+            isAdmin: true,
+            name: 'test-package',
+          },
         }),
       ]),
     );
