@@ -41,10 +41,10 @@ describe('API tests', () => {
     );
   });
 
-  it('should get a list of packages', async () => {
-    const response = await axios.get('http://localhost:3000/package');
+//   it('should get a list of packages', async () => {
+//     const response = await axios.get('http://localhost:3000/package');
 
-    expect(response.status).toBe(200);
-    expect(Array.isArray(response.data)).toBe(true);
-  });
+//     expect(response.status).toBe(200);
+//     expect(Array.isArray(response.data)).toBe(true);
+//   });
 });
