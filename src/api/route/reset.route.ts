@@ -40,4 +40,4 @@ resetRouter.delete('/', authorizeUser, (req: Request, res: Response) =>  {
     // Validate with joi (trivial example)
 });
 
-module.exports = resetRouter;
+// module.exports = resetRouter;
