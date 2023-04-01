@@ -38,6 +38,7 @@ jobs:
         npm install @types/node
         npm install @types/jest
         npm install winston @types/winston --save
+        npm install --save-dev jest
         
       
     - name: Install cloc
