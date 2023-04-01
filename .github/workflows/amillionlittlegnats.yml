@@ -74,7 +74,7 @@ jobs:
         
     - name: Compile API tests
       run: | 
-        npm install --save-dev jest
+        npm install --save-dev jest ts-jest typescript @types/jest
         tsc testing/apitests.ts
         npm test
 
