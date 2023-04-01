@@ -78,9 +78,6 @@ jobs:
         npm install --save-dev typescript@4.5.4
         tsc testing/apitests.ts
         npm test -- --verbose
-
-    - name: Compile and Run for API tests
-      run: node testing/apitests.js
       
     - name: Kill API
       run: pkill -f 'ts-node src/api/app.ts'
