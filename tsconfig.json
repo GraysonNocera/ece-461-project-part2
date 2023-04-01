@@ -7,7 +7,6 @@
     "types": ["node", "@angular/router", "jest"],             /* Specify type package names to be included without being referenced in a source file. */
     "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
     "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
-    "outDirForTests": "./dist_tests",
     "removeComments": true,                           /* Disable emitting comments. */
     "noEmitOnError": true,                            /* Disable emitting files if any type checking errors are reported. */
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
