@@ -67,7 +67,7 @@ jobs:
         
     - name: Start API
       run: |
-        tsc src/api/app.ts
+        tsc
         node dist/api/app.js &
         
     - name: Compile API tests
