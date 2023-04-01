@@ -14,7 +14,7 @@ describe('API tests', () => {
       name: 'test-package',
       version: '1.0.0',
       ID: '1234',
-    })
+    }),
   });
 
   it('should get a package by name', async () => {
@@ -26,7 +26,7 @@ describe('API tests', () => {
       name: 'test-package',
       version: '1.0.0',
       ID: '1234',
-    })
+    }),
   });
 
 //   it('should get a list of packages', async () => {
