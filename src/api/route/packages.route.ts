@@ -45,4 +45,4 @@ packagesRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     // Validate with joi (trivial example)
 });
 
-module.exports = packagesRouter;
+// module.exports = packagesRouter;
