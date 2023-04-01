@@ -458,7 +458,7 @@ paths:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
       required: true
-  /package/byRegEx:
+  /package/byRegEx/{regex}:
     post:
       requestBody:
         content:

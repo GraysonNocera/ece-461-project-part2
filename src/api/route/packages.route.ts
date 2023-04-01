@@ -10,7 +10,7 @@ import { PackageHistoryEntry } from '../model/packageHistoryEntry';
 import { PackageQuery } from '../model/packageQuery';
 
 const express = require('express');
-const packagesRouter: Router = express.Router();
+export const packagesRouter: Router = express.Router();
 
 // Create a package when POST /packages is called
 packagesRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
@@ -45,4 +45,4 @@ packagesRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     // Validate with joi (trivial example)
 });
 
-module.exports = packagesRouter;
+// module.exports = packagesRouter;

@@ -4,12 +4,11 @@
   "main": "run",
   "scripts": {
     "lint": "eslint --fix --ext .ts src --ignore-path .eslintignore",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "dependencies": {
     "@angular/common": "^15.2.5",
     "@angular/core": "^15.2.3",
-    "@types/winston": "^2.4.4",
     "body-parser": "^1.20.1",
     "child_process": "^1.0.2",
     "cloc": "^2.11.0",
@@ -22,12 +21,9 @@
     "node-jq": "^2.3.5",
     "octokit": "^2.0.14",
     "request-promise": "^4.2.6",
-    "threads": "^1.7.0",
-    "ts-node": "^10.9.1",
-    "winston": "^3.8.2"
+    "threads": "^1.7.0"
   },
   "devDependencies": {
-    "@types/express": "^4.17.17",
     "@types/node": "^18.15.3",
     "@types/request": "^2.48.8",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
