@@ -3,10 +3,10 @@ import path from 'path';
 import { logger } from '../logging';
 import { PackageData } from "./model/packageData";
 
-import packageRouter from './route/package.route';
-import authRouter from './route/authenticate.route';
-import packagesRouter from './route/packages.route';
-import resetRouter from './route/reset.route';
+import { packageRouter } from './route/package.route';
+import { authRouter from './route/authenticate.route';
+import { packagesRouter } from './route/packages.route';
+import { resetRouter } from './route/reset.route';
 
 // define app
 const app = express();
