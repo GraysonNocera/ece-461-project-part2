@@ -77,7 +77,7 @@ jobs:
         npm install --save-dev jest ts-jest typescript @types/jest
         npm install --save-dev typescript@4.5.4
         tsc testing/apitests.ts
-        npm test
+        npm test -- --verbose
 
     - name: Compile and Run for API tests
       run: node testing/apitests.js
