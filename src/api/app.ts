@@ -17,13 +17,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.get('/', (req, res, next) => {
     res.send('respond with a resource');
-});
+});,
 
 // Endpoints
 app.use('/package', packageRouter);
 app.use('/authenticate', authRouter);
 app.use('/packages', packagesRouter);
-app.use('/reset', resetRouter);
+app.use('/reset', resetRouter);,
 
 app.listen(3000, () => {
   logger.info("API server listening on port 3000");
