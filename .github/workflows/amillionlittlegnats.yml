@@ -79,8 +79,9 @@ jobs:
         tsc testing/apitests.ts
         npm test -- --verbose
       
-    - name: Kill API
-      run: pkill -f 'ts-node src/api/app.ts'
+    - name: Find and Kill API Process
+      run: ps aux | grep 'ts-node src/api/app.ts' | grep -v grep | awk '{print $2}' | xargs -r kill
+
         
   deploy:
     needs: build-and-test
