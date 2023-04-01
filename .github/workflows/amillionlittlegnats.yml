@@ -67,7 +67,7 @@ jobs:
         
     - name: Start API
       run: |
-        tsc --project tsconfig.json src/api/app.ts
+        tsc --project tsconfig.json
         ls -la dist/api
         node dist/api/app.js &
         
