@@ -27,7 +27,9 @@ jobs:
         ./run install
 
     - name: Install dev dependencies
-      run: npm install 
+      run: |
+        npm install 
+        npm install --save-dev ts-jest
       
     - name: Install stupid dependencies
       run: |
