@@ -337,4 +337,4 @@ packageRouter.post('/byRegEx/:regex', authorizeUser, (req: Request, res: Respons
     }
 });
 
-module.exports = packageRouter;
+// module.exports = packageRouter;
