@@ -13,7 +13,7 @@ describe('API tests', () => {
     expect.objectContaining({
       name: 'test-package',
       version: '1.0.0',
-      ID: '1234'
+      ID: '1234',
     })
   });
 
@@ -25,7 +25,7 @@ describe('API tests', () => {
     expect.objectContaining({
       name: 'test-package',
       version: '1.0.0',
-      ID: '1234'
+      ID: '1234',
     })
   });
 
