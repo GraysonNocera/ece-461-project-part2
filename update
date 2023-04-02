@@ -1,0 +1,9 @@
+#! /usr/bin/bash
+pkill node && reset
+
+cd ~/ece-461-project-part2 && sleep 0.5
+git pull && sleep 0.5
+npm install > ~/npm_install_output.log && sleep 0.5
+npm install ts-node -g > ~/npm_install_output.log && sleep 0.5
+
+ts-node ~ece-461-project-part2/src/api/app.ts

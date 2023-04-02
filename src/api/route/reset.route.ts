@@ -5,7 +5,8 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 const express = require('express');
 
-const resetRouter: Router = express.Router();
+
+export const resetRouter: Router = express.Router();
 
 // This ensures that Content, URL, and JSProgram are all inputted as strings
 const schema = Joi.object({
@@ -40,4 +41,4 @@ resetRouter.delete('/', authorizeUser, (req: Request, res: Response) =>  {
     // Validate with joi (trivial example)
 });
 
-module.exports = resetRouter;
+// module.exports = resetRouter;

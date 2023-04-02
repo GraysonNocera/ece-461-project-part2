@@ -16,7 +16,7 @@ import { Package } from '../model/package';
 
 const express = require("express");
 
-const packageRouter: Router = express.Router();
+export const packageRouter: Router = express.Router();
 
 // This ensures that Content, URL, and JSProgram are all inputted as strings
 const schema = Joi.object({
@@ -337,4 +337,5 @@ packageRouter.post('/byRegEx/:regex', authorizeUser, (req: Request, res: Respons
     }
 });
 
-module.exports = packageRouter;
+
+// module.exports = packageRouter;

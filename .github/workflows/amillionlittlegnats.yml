@@ -1,0 +1,73 @@
+name: Build/Test Project
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install dependencies
+        run: |
+          chmod +x ./run
+          ./run install
+          npm install --save-dev ts-jest @types/jest @angular/router typescript@4.5.4
+          npm install axios ts-node @types/axios @types/node winston @types/winston --save
+
+      - name: Install cloc
+        run: |
+          sudo apt-get update
+          sudo apt-get install cloc -y
+
+      - name: Build
+        run: |
+          chmod +x ./run
+          ./run build
+
+      - name: Test
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          chmod +x ./run
+          ./run Test.txt
+
+      - name: Start API
+        run: |
+          tsc --project tsconfig.json
+          ls dist/api
+          node dist/api/app.js &
+
+      - name: Run API tests
+        run: | 
+          tsc testing/apitests.ts
+          npm test -- --verbose
+
+      - name: Find and Kill API Process
+        run: ps aux | grep 'ts-node src/api/app.ts' | grep -v grep | awk '{print $2}' | xargs -r kill
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Setup SSH keys
+        uses: webfactory/ssh-agent@v0.5.0
+        with:
+          ssh-private-key: ${{ secrets.DEPLOYSSH_KEY }}
+
+      - name: Deployment
+        run: ssh ECE461@34.30.211.162 'cd ece461-project-part2 && git pull origin main'
