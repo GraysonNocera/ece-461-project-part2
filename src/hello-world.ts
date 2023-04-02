@@ -367,7 +367,9 @@ async function main() {
       GoodPinningPractice: !Number.isNaN(Number(stringgie[1]))
         ? Number(stringgie[1])
         : -1,
-      GoodEngineeringPractice: -1,
+      GoodEngineeringPractice: !Number.isNaN(Number(stringgie[8]))
+        ? Number(stringgie[8])
+        : -1,
     });
     writeFile("src/score.json", temp, function (err) {
       if (err) throw err;
