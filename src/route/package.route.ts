@@ -12,6 +12,7 @@ import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFile, readFileSync } from "fs";
 import { Package } from '../model/package';
+import path from 'path';
 
 const express = require("express");
 
@@ -150,10 +151,12 @@ packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  
     let url: string = "https://www.npmjs.com/package/express";
     // Fill in PackageRating
     // TODO: Hit rate module to get this info
-    terminal_command = `ts-node src/hello-world.ts ${url}`;
+    // const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
+    logger.info("Read file");
+    terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
 
     cp.execSync(terminal_command);
-    const test_file = readFileSync("./src/score.json", "utf8");
+    const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
     packageRate = JSON.parse(test_file);
     console.log(packageRate.GoodEngineeringPractice);
     if (

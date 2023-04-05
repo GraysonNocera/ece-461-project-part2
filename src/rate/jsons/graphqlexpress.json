@@ -1,0 +1,38 @@
+{
+  "data": {
+    "repository": {
+      "name": "express",
+      "forkCount": 10400,
+      "licenseInfo": {
+        "name": "MIT License"
+      },
+      "assignableUsers": {
+        "totalCount": 63
+      },
+      "sshUrl": "git@github.com:expressjs/express.git",
+      "latestRelease": {
+        "tagName": "4.18.2"
+      },
+      "hasIssuesEnabled": true,
+      "issues": {
+        "totalCount": 3716
+      },
+      "open_issues": {
+        "totalCount": 105
+      },
+      "defaultBranchRef": {
+        "target": {
+          "history": {
+            "totalCount": 5771
+          }
+        }
+      },
+      "pullRequests": {
+        "totalCount": 268
+      },
+      "last_pushed_at": "2023-04-05T14:52:38Z",
+      "stargazerCount": 60481,
+      "hasVulnerabilityAlertsEnabled": true
+    }
+  }
+}

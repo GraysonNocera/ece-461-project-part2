@@ -31,7 +31,7 @@ export async function graphAPIfetch(
 
     // Get data in usable format
     let data2 = JSON.stringify(data, null, 2);
-    fs.writeFile("jsons/graphql" + repo + ".json", data2, (err) => {
+    fs.writeFile(__dirname + "/jsons/graphql" + repo + ".json", data2, (err) => {
       if (err) {
         console.error(err);
       }
