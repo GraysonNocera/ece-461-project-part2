@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authorizeUser } from '../middleware/authorize_user';
-import { logger } from '../../logging';
+import { logger } from '../logging';
 import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
@@ -11,7 +11,6 @@ import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFile, readFileSync } from "fs";
-import { DataType } from "../param";
 import { Package } from '../model/package';
 
 const express = require("express");

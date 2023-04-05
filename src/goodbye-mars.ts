@@ -1,5 +1,5 @@
 import * as cp from "child_process";
-import { PackageRating } from "./api/model/packageRating";
+import { PackageRating } from "./model/packageRating";
 import { readFile, readFileSync } from "fs";
 
 function demo(url: string) {
