@@ -138,7 +138,7 @@ packageRouter.delete('/byName/:name', authorizeUser, (req: Request, res: Respons
 
 // Rate a package when GET /package/:id/rate is called
 packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
-    logger.info("GET /package/:id/rate");
+  logger.info("GET /package/:id/rate");
 
   let id: number;
   let packageRate: PackageRating;
@@ -284,18 +284,18 @@ packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
-// Search packages via a Regex when POST /package/byRegEx/:regex is called
-packageRouter.post('/byRegEx/:regex', authorizeUser, (req: Request, res: Response) =>  {
+// Search packages via a Regex when POST /package/byRegEx is called
+packageRouter.post('/byRegEx', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("POST /package/byRegEx/{regex}");
 
-    let regex: string;
+    // let regex: string;
     let regex_body: string;
     let auth: string;
     let packageMetadata: PackageMetadata;
     let return_data: Object;
     try {
-        regex = req.params.regex;
-        logger.info("Got regex: " + regex);
+        // regex = req.params.regex;
+        // logger.info("Got regex: " + regex);
 
         auth = req.header('X-Authorization') || "";
         // Require auth
