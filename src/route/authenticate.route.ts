@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authorizeUser } from '../middleware/authorize_user';
-import { logger } from '../../logging';
+import { logger } from '../logging';
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import { AuthenticationRequest } from '../model/authenticationRequest';

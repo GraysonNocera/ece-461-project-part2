@@ -148,7 +148,7 @@ async function main() {
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
-          "../",
+          // "../",
           `/jsons/pinned${user}.json`
         ));
 
@@ -208,7 +208,6 @@ async function main() {
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
-          "../",
           `/jsons/issues${user}.json`
         ));
         // console.log(jsonstring);`
@@ -234,7 +233,7 @@ async function main() {
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
-          "../",
+          // "../",
           `/jsons/contributors${user}.json`
         ));
         // console.log(jsonstring);
@@ -262,7 +261,7 @@ async function main() {
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
-          "../",
+          // "../",
           `/jsons/forks${user}.json`
         ));
         // console.log(jsonstring);
@@ -287,7 +286,7 @@ async function main() {
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
-          "../",
+          // "../",
           `/jsons/license${user}.json`
         ));
         // console.log(jsonstring);
@@ -304,7 +303,8 @@ async function main() {
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
-          "../",
+          // "../",
+          // "../",
           `/jsons/engr${user}.json`
         ));
         // console.log(jsonstring);
@@ -371,7 +371,7 @@ async function main() {
         ? Number(stringgie[8])
         : -1,
     });
-    writeFile("src/score.json", temp, function (err) {
+    writeFile(__dirname + "/score.json", temp, function (err) {
       if (err) throw err;
       //console.log("complete");
     });
