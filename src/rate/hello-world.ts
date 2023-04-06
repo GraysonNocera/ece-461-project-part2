@@ -340,7 +340,7 @@ async function main() {
   let finalOutputStrings = sortOutput(outputStrings, netscores);
   // console.log(finalOutputStrings);
 
-  emptyDirSync("jsons/");
+  emptyDirSync("src/rate/jsons");
 
   var json: string[] = [];
   for (let i = 0; i < finalOutputStrings.length; i++) {
