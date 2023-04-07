@@ -3,6 +3,7 @@ const express = require("express");
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../logging";
 import { User } from "../model/user";
+import { readFileSync } from "fs";
 const jwt = require("jsonwebtoken");
 export const authorizeUser = (
   req: Request,
@@ -11,37 +12,49 @@ export const authorizeUser = (
 ) => {
   // Authentication failed: status 403
   // req.body.authorized = false;
+  const file = readFileSync(__dirname + "/key.json", "utf8");
+  let data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
   //logger.info(JSON.stringify(req.body));
   let auth: string = req.header("X-Authorization") || "";
   logger.info(auth);
+
   try {
     if (auth != "") {
       try {
         let test: string = jwt.verify(auth, "yourmomma.com");
-        logger.info(test);
-        if (test == "ur mom") {
-          req.body.authorized = true;
-          logger.info("authorized");
-          next();
-        } else {
-          res.status(400).send("Invalid Token");
+
+        for (let x in data) {
+          if (test == data[x].Secret.password) {
+            if (data[x].User.isAdmin) {
+              req.body.authorized = true;
+            } else {
+              req.body.authorized = false;
+            }
+            next();
+          }
         }
+        res.status(400).send("Invalid Token");
       } catch (error) {
         logger.info(error);
         res.status(400).send("Invalid Token");
       }
     }
     if (req.body.User.name && req.body.Secret.password) {
-      if (
-        req.body.User.name == "test name" &&
-        req.body.Secret.password == "ur mom"
-      ) {
-        req.body.authorized = true;
-        next();
-      } else {
-        res.status(401).send("Invalid user name or password");
+      for (let x in data) {
+        if (
+          req.body.User.name == data[x].User.name &&
+          req.body.Secret.password == data[x].Secret.password
+        ) {
+          if (data[x].User.isAdmin) {
+            req.body.authorized = true;
+          } else {
+            req.body.authorized = false;
+          }
+          next();
+        }
       }
+      res.status(401).send("Invalid user name or password");
     } else {
       res
         .status(400)
