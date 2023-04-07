@@ -21,18 +21,19 @@ resetRouter.delete('/', authorizeUser, (req: Request, res: Response) =>  {
 
     let auth: string;
     try {
-        logger.info("Request body: " + req.headers);
-        auth = req.header('X-Authorization') || "";
-        logger.info("Auth data: " + auth);
-        // TODO: check authorization
+      logger.info("Request body: " + req.headers);
+      auth = req.header("X-Authorization") || "";
+      logger.info("Auth data: " + auth);
+      // TODO: check authorization
 
-        // TODO: reset registry
+      // TODO: reset registry
 
-        // 200: reset successful
-        // 401: unauthorized
+      // 200: reset successful
+      // 401: unauthorized
+      if (req.body.authorized) {
         res.status(200).send("Registry is reset");
-
-        res.status(401).send("You do not have permission to reset the registry.");
+      }
+      res.status(401).send("You do not have permission to reset the registry.");
     } catch {
         // Request body is not valid JSON
         logger.info("Invalid JSON for DELETE /reset");
