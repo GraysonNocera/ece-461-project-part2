@@ -22,7 +22,7 @@ export const authorizeUser = (
   try {
     if (auth != "") {
       try {
-        let test: string = jwt.verify(auth, "yourmomma.com");
+        let test: string = jwt.verify(auth, "B0!l3r-Up!");
 
         for (let x in data) {
           if (test == data[x].Secret.password) {

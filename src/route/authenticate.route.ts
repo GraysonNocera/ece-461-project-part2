@@ -33,7 +33,7 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     logger.info("Auth data: " + JSON.stringify(authData));
 
     // TODO: encrypt user password
-    authToken = { Token: jwt.sign(authData.Secret.password, "yourmomma.com") };
+    authToken = { Token: jwt.sign(authData.Secret.password, "B0!l3r-Up!") };
     // authToken = { Token: authData.Secret.password };
     if (req.body.authorized) {
       res.status(200).send(authToken);
