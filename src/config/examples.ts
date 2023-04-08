@@ -12,6 +12,10 @@ import { connectToMongo, disconnectFromMongo } from "./config";
 // Not sure if we will need joi in this case, but it might be useful for other things
 // (joi is just an npm package for input validation)
 
+// Mongoose getting started: https://mongoosejs.com/docs/index.html
+// Mongoose documentation: https://mongoosejs.com/docs/guides.html
+// Plugging this again because it's a good read: https://www.mongodb.com/languages/mean-stack-tutorial
+
 async function main() {
 
     await connectToMongo();
