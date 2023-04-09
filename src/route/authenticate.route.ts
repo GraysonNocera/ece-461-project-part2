@@ -1,13 +1,16 @@
 import { Router } from 'express';
 import { authorizeUser } from '../middleware/authorize_user';
-import { logger } from '../../logging';
+import { logger } from '../logging';
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import { AuthenticationRequest } from '../model/authenticationRequest';
 import { AuthenticationToken } from '../model/authenticationToken';
 const express = require('express');
 
-const authRouter: Router = express.Router();
+export const authRouter: Router = express.Router();
+
+// THIS IS ONLY NEEDED FOR THE TOKEN REQUIREMENT, WHICH I THINK WE DROPPED
+// SO MAYBE WE WON'T NEED THIS AND THE X-AUTHORIZATION HEADER
 
 // THIS IS ONLY NEEDED FOR THE TOKEN REQUIREMENT, WHICH I THINK WE DROPPED
 // SO MAYBE WE WON'T NEED THIS AND THE X-AUTHORIZATION HEADER
@@ -41,4 +44,4 @@ authRouter.put('/', authorizeUser, (req: Request, res: Response) =>  {
     // Validate with joi (trivial example)
 });
 
-module.exports = authRouter;
+// module.exports = authRouter;

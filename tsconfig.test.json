@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist_tests"
+  },
+  "include": [
+    "testing/**/*"
+  ]
+}

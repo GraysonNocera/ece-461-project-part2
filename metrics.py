@@ -17,33 +17,33 @@ def main():
     repo = sys.argv[3]
     token = os.environ.get("GITHUB_TOKEN")
     # open("test.json","w").write(json.dumps(f'Input: {func} {user} {repo}, Token: {token}'))
-    if not os.path.exists("jsons/"):
-        os.mkdir("jsons/")
+    if not os.path.exists("src/rate/jsons/"):
+        os.mkdir("src/rate/jsons/")
 
 
     if func == "get_issues":
         result = get_issues(user, repo, token)
-        open(f"jsons/issues{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"src/rate/jsons/issues{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_forks":
         result = get_forks(user, repo, token)
-        open(f"jsons/forks{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"src/rate/jsons/forks{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_contributors":
         result = get_contributors(user, repo, token)
-        open(f"jsons/contributors{user}.json", "w").write(
+        open(f"src/rate/jsons/contributors{user}.json", "w").write(
             json.dumps(f"{func}: {result}")
         )
     elif func == "get_license":
         result = get_license(repo)
         # shutil.rmtree(repo)
-        open(f"jsons/license{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"src/rate/jsons/license{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_clone":
         result = get_clone(user, repo)
     elif func == "get_pinned":
         result = get_pinned(repo)
-        open(f"jsons/pinned{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"src/rate/jsons/pinned{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "get_engr":
         result = get_engr(user, repo, token)
-        open(f"jsons/engr{user}.json", "w").write(json.dumps(f"{func}: {result}"))
+        open(f"src/rate/jsons/engr{user}.json", "w").write(json.dumps(f"{func}: {result}"))
     elif func == "rm_repo":
         shutil.rmtree(repo)
     else:
@@ -67,7 +67,7 @@ def get_clone(user_id: str, repo: str) -> str:
 
 
 def get_issues(user_id: str, repo: str, git_token: str) -> str:
-    gpl_file = f"jsons/graphql{repo}.json"
+    gpl_file = f"src/rate/jsons/graphql{repo}.json"
     if os.path.exists(gpl_file):
         file = open(gpl_file)
         contents = json.load(file)
@@ -80,7 +80,7 @@ def get_issues(user_id: str, repo: str, git_token: str) -> str:
 
 def get_forks(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
-    gpl_file = f"jsons/graphql{repo}.json"
+    gpl_file = f"src/rate/jsons/graphql{repo}.json"
     if os.path.exists(gpl_file):
         file = open(gpl_file)
         contents = json.load(file)
@@ -92,7 +92,7 @@ def get_forks(user_id: str, repo: str, git_token: str) -> str:
 
 def get_contributors(user_id: str, repo: str, git_token: str) -> str:
     # Setting up API
-    gpl_file = f"jsons/graphql{repo}.json"
+    gpl_file = f"src/rate/jsons/graphql{repo}.json"
     if os.path.exists(gpl_file):
         file = open(gpl_file)
         contents = json.load(file)
@@ -166,7 +166,7 @@ def get_engr(user_id: str, repo: str, git_token: str) -> str:
     engr_request = requests.get(engr_url, headers=headers)
     review_pr = engr_request.json()
     if "total_count" in review_pr:
-        gpl_file = f"jsons/graphql{repo}.json"
+        gpl_file = f"src/rate/jsons/graphql{repo}.json"
         if os.path.exists(gpl_file):
             file = open(gpl_file)
             contents = json.load(file)
