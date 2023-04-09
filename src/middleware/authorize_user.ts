@@ -4,7 +4,26 @@ import { Request, Response, NextFunction } from "express";
 import { logger } from "../logging";
 import { User } from "../model/user";
 import { readFileSync } from "fs";
+import mongoose from "mongoose";
+import { UserAuthenticationInfo } from "../model/userAuthenticationInfo";
 const jwt = require("jsonwebtoken");
+
+const user = new mongoose.Schema<User>({
+  name: { type: String, required: true },
+  isAdmin: { type: Boolean, required: true },
+});
+
+const authorize = new mongoose.Schema<UserAuthenticationInfo>({
+  password: { type: String, required: true },
+});
+
+const userdata = new mongoose.Schema({
+  User: { type: user, required: true },
+  Secret: { type: authorize, required: true },
+});
+const info = mongoose.model("user", userdata);
+
+
 export const authorizeUser = (
   req: Request,
   res: Response,
@@ -12,6 +31,7 @@ export const authorizeUser = (
 ) => {
   // Authentication failed: status 403
   // req.body.authorized = false;
+
   const file = readFileSync(__dirname + "/key.json", "utf8");
   let data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
