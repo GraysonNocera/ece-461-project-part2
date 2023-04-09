@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authorizeUser } from '../middleware/authorize_user';
-import { logger } from '../../logging';
+import { logger } from '../logging';
 import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
@@ -11,8 +11,8 @@ import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFile, readFileSync } from "fs";
-import { DataType } from "../param";
 import { Package } from '../model/package';
+import path from 'path';
 
 const express = require("express");
 
@@ -139,7 +139,7 @@ packageRouter.delete('/byName/:name', authorizeUser, (req: Request, res: Respons
 
 // Rate a package when GET /package/:id/rate is called
 packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
-    logger.info("GET /package/:id/rate");
+  logger.info("GET /package/:id/rate");
 
   let id: number;
   let packageRate: PackageRating;
@@ -151,10 +151,12 @@ packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  
     let url: string = "https://www.npmjs.com/package/express";
     // Fill in PackageRating
     // TODO: Hit rate module to get this info
-    terminal_command = `ts-node src/hello-world.ts ${url}`;
+    // const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
+    logger.info("Read file");
+    terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
 
     cp.execSync(terminal_command);
-    const test_file = readFileSync("./src/score.json", "utf8");
+    const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
     packageRate = JSON.parse(test_file);
     console.log(packageRate.GoodEngineeringPractice);
     if (
@@ -285,18 +287,18 @@ packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
     }
 });
 
-// Search packages via a Regex when POST /package/byRegEx/:regex is called
-packageRouter.post('/byRegEx/:regex', authorizeUser, (req: Request, res: Response) =>  {
+// Search packages via a Regex when POST /package/byRegEx is called
+packageRouter.post('/byRegEx', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("POST /package/byRegEx/{regex}");
 
-    let regex: string;
+    // let regex: string;
     let regex_body: string;
     let auth: string;
     let packageMetadata: PackageMetadata;
     let return_data: Object;
     try {
-        regex = req.params.regex;
-        logger.info("Got regex: " + regex);
+        // regex = req.params.regex;
+        // logger.info("Got regex: " + regex);
 
         auth = req.header('X-Authorization') || "";
         // Require auth

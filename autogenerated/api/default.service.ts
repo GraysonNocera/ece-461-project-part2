@@ -15,27 +15,27 @@ import { Inject, Injectable, Optional }                      from '@angular/core
 import { HttpClient, HttpHeaders, HttpParams,
          HttpResponse, HttpEvent, HttpParameterCodec, HttpContext 
         }       from '@angular/common/http';
-import { CustomHttpParameterCodec }                          from '../encoder';
+import { CustomHttpParameterCodec }                          from '../../src/api/encoder';
 import { Observable }                                        from 'rxjs';
 
 // @ts-ignore
-import { AuthenticationRequest } from '../model/authenticationRequest';
+import { AuthenticationRequest } from '../../src/api/model/authenticationRequest';
 // @ts-ignore
-import { Package } from '../model/package';
+import { Package } from '../../src/api/model/package';
 // @ts-ignore
-import { PackageData } from '../model/packageData';
+import { PackageData } from '../../src/api/model/packageData';
 // @ts-ignore
-import { PackageHistoryEntry } from '../model/packageHistoryEntry';
+import { PackageHistoryEntry } from '../../src/api/model/packageHistoryEntry';
 // @ts-ignore
-import { PackageMetadata } from '../model/packageMetadata';
+import { PackageMetadata } from '../../src/api/model/packageMetadata';
 // @ts-ignore
-import { PackageQuery } from '../model/packageQuery';
+import { PackageQuery } from '../../src/api/model/packageQuery';
 // @ts-ignore
-import { PackageRating } from '../model/packageRating';
+import { PackageRating } from '../../src/api/model/packageRating';
 
 // @ts-ignore
-import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
-import { Configuration }                                     from '../configuration';
+import { BASE_PATH, COLLECTION_FORMATS }                     from '../../src/api/variables';
+import { Configuration }                                     from '../../src/api/configuration';
 
 
 

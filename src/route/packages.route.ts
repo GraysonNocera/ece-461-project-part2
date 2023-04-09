@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authorizeUser } from '../middleware/authorize_user';
-import { logger } from '../../logging';
+import { logger } from '../logging';
 import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
