@@ -3,35 +3,14 @@ import { authorizeUser } from '../middleware/authorize_user';
 import { logger } from '../logging';
 import { Request, Response } from 'express';
 import { Package } from "../model/package";
-import mongoose from "mongoose";
 import { PackageMetadata } from "../model/packageMetadata";
 import { PackageData } from "../model/packageData";
+import { PackageModel } from '../model/package';
 import { connectToMongo, disconnectFromMongo } from "../config/config";
 const express = require("express");
 
 export const resetRouter: Router = express.Router();
 
-// This ensures that Content, URL, and JSProgram are all inputted as strings
-// const schema = Joi.object({
-//     Content: Joi.string(),
-//     URL: Joi.string(),
-//     JSProgram: Joi.string(),
-// });
-const meta = new mongoose.Schema<PackageMetadata>({
-  Name: { type: String, required: true },
-  Version: { type: String, required: true },
-  ID: { type: String, required: true },
-});
-const data = new mongoose.Schema<PackageData>({
-  Content: { type: String, required: false },
-  URL: { type: String, required: false },
-  JSProgram: { type: String, required: false },
-});
-const packdata = new mongoose.Schema<Package>({
-  metadata: { type: meta, required: true },
-  data: { type: data, required: true },
-});
-const packages = mongoose.model("package", packdata);
 // Create a package when DELETE /reset is schema
 resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /reset");
@@ -47,7 +26,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
     if (req.body.authorized) {
       await connectToMongo();
-      await packages.deleteMany({});
+      await PackageModel.deleteMany({});
       await disconnectFromMongo();
       res.status(200).send("Registry is reset");
     }

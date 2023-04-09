@@ -30,10 +30,10 @@ export interface PackageData {
     JSProgram?: string;
 }
 
-export const packageDataSchema = new mongoose.Schema<PackageData>({
+export const PackageDataSchema: mongoose.Schema<PackageData> = new mongoose.Schema<PackageData>({
     Content: { type: String, required: false },
     URL: { type: String, required: false },
     JSProgram: { type: String, required: false },
 });
 
-export const PackageDataModel = mongoose.model<PackageData>("PackageData", packageDataSchema);
+export const PackageDataModel = mongoose.model<PackageData>("PackageData", PackageDataSchema);

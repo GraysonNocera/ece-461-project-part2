@@ -4,15 +4,15 @@ import { logger } from '../logging';
 import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
-import { packages } from '../app';
 import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFile, readFileSync } from "fs";
-import { Package } from '../model/package';
+import { Package, PackageModel } from '../model/package';
 import path from 'path';
+import { connectToMongo } from '../config/config';
 
 const express = require("express");
 
@@ -26,25 +26,37 @@ const schema = Joi.object({
 });
 
 // Create a package when POST /package is called
-packageRouter.post("/", authorizeUser, (req: Request, res: Response) => {
+packageRouter.post("/", /*authorizeUser, */ async (req: Request, res: Response) => {
+
+  const upload_schema = Joi.object({
+    Content: Joi.string(),
+    URL: Joi.string(),
+    JSProgram: Joi.string(),
+  }).or("Content", "URL");
+
   logger.info("POST /package");
 
   let packageData: PackageData = {};
   try {
-    packageData = req.body;
+    packageData = req?.body;
     logger.info("Package data: " + JSON.stringify(packageData));
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /package");
   }
+
   const { error, value } = schema.validate(packageData);
   if (error) {
     // Request body is not valid
+    logger.debug("Request body is not valid");
+    res.status(400);
+    return;
   }
 
   // Check the inputted data
 
   // Package already exists: status 409
+  // const query = PackageData.
 
   // Package not updated due to disqualified rating: status 423
 
@@ -56,16 +68,17 @@ packageRouter.post("/", authorizeUser, (req: Request, res: Response) => {
     Version: "1.0.0",
     ID: "1234",
   };
-  packages.push(packageData);
+  // packages.push(packageData);
+
+  let package_received = new PackageModel({
+    metadata: metadata,
+    data: packageData,
+  })
+
+  await package_received.save();
 
   logger.info("POST /package: Package created successfully");
-  res.status(201).send({
-    metadata: metadata,
-    data: {
-      Content: packageData.Content,
-      JSProgram: packageData.JSProgram,
-    },
-  });
+  res.status(201).send(package_received);
 
   // Validate with joi (trivial example)
 
