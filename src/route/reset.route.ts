@@ -27,11 +27,11 @@ const data = new mongoose.Schema<PackageData>({
   URL: { type: String, required: false },
   JSProgram: { type: String, required: false },
 });
-const pack_data = new mongoose.Schema<Package>({
+const packdata = new mongoose.Schema<Package>({
   metadata: { type: meta, required: true },
   data: { type: data, required: true },
 });
-const packages = mongoose.model("package", pack_data);
+const packages = mongoose.model("package", packdata);
 // Create a package when DELETE /reset is schema
 resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /reset");
