@@ -1,0 +1,20 @@
+[
+    {
+        "User": {
+            "name": "test name",
+            "isAdmin": true
+        },
+        "Secret": {
+            "password": "ur mom"
+        }
+    },
+    {
+        "User": {
+            "name": "test me",
+            "isAdmin": false
+        },
+        "Secret": {
+            "password": "big boy"
+        }
+    }
+]

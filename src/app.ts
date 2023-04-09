@@ -7,6 +7,7 @@ import { packageRouter } from './route/package.route';
 import { authRouter } from './route/authenticate.route';
 import { packagesRouter } from './route/packages.route';
 import { resetRouter } from './route/reset.route';
+import { userRouter } from "./route/user.route";
 
 // define app
 const app = express();
@@ -25,6 +26,7 @@ app.use('/package', packageRouter);
 app.use('/authenticate', authRouter);
 app.use('/packages', packagesRouter);
 app.use('/reset', resetRouter);
+app.use("/user", userRouter);
 
 app.listen(3000, () => {
   logger.info("API server listening on port 3000");
