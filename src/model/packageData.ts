@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
 
 /**
  * This is a \"union\" type. - On package upload, either Content or URL should be set. - On package update, exactly one field should be set. - On download, the Content field should be set.
@@ -29,3 +30,10 @@ export interface PackageData {
     JSProgram?: string;
 }
 
+export const packageDataSchema = new mongoose.Schema<PackageData>({
+    Content: { type: String, required: false },
+    URL: { type: String, required: false },
+    JSProgram: { type: String, required: false },
+});
+
+export const PackageDataModel = mongoose.model<PackageData>("PackageData", packageDataSchema);
