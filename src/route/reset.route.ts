@@ -31,7 +31,7 @@ const schema = new mongoose.Schema<Package>({
   metadata: { type: meta, required: true },
   data: { type: data, required: true },
 });
-const package_del = mongoose.model("package", schema);
+const packages = mongoose.model("package", schema);
 // Create a package when DELETE /reset is schema
 resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /reset");
@@ -47,7 +47,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
     if (req.body.authorized) {
       await connectToMongo();
-      await package_del.deleteMany({});
+      await packages.deleteMany({});
       await disconnectFromMongo();
       res.status(200).send("Registry is reset");
     }
