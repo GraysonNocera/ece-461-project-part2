@@ -6,6 +6,7 @@ import { Package } from "../model/package";
 import mongoose from "mongoose";
 import { PackageMetadata } from "../model/packageMetadata";
 import { PackageData } from "../model/packageData";
+import { connectToMongo, disconnectFromMongo } from "../config/config";
 const express = require("express");
 
 export const resetRouter: Router = express.Router();
@@ -32,7 +33,7 @@ const schema = new mongoose.Schema<Package>({
 });
 const package_del = mongoose.model("package", schema);
 // Create a package when DELETE /reset is schema
-resetRouter.delete("/", authorizeUser, (req: Request, res: Response) => {
+resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /reset");
 
   let auth: string;
@@ -45,6 +46,9 @@ resetRouter.delete("/", authorizeUser, (req: Request, res: Response) => {
     // TODO: reset registry
 
     if (req.body.authorized) {
+      await connectToMongo();
+      await package_del.deleteMany({});
+      await disconnectFromMongo();
       res.status(200).send("Registry is reset");
     }
     res.status(401).send("You do not have permission to reset the registry.");
