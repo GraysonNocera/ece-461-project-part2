@@ -26,6 +26,7 @@ const schema = Joi.object({
 });
 
 // Create a package when POST /package is called
+// Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
 packageRouter.post("/", /*authorizeUser, */ async (req: Request, res: Response) => {
 
   const upload_schema = Joi.object({
@@ -34,15 +35,18 @@ packageRouter.post("/", /*authorizeUser, */ async (req: Request, res: Response) 
     JSProgram: Joi.string(),
   }).or("Content", "URL");
 
-  logger.info("POST /package");
+  logger.info(`${__filename}: POST /package`);
 
   let packageData: PackageData = {};
+  let rating: PackageRating;
   try {
     packageData = req?.body;
     logger.info("Package data: " + JSON.stringify(packageData));
   } catch {
     // Request body is not valid JSON
-    logger.info("Invalid JSON for POST /package");
+    logger.debug("Invalid JSON for POST /package");
+    res.status(400);
+    return;
   }
 
   const { error, value } = schema.validate(packageData);
@@ -56,19 +60,36 @@ packageRouter.post("/", /*authorizeUser, */ async (req: Request, res: Response) 
   // Check the inputted data
 
   // Package already exists: status 409
-  // const query = PackageData.
+  const query = PackageModel.find()
+  query.or([{ "data.Content": packageData.Content }, { "data.URL": packageData.URL }])
+  const package_query_results = await query.findOne(); // this should be an async function
+  if (package_query_results) {
+    logger.info("POST /package: Package already exists");
+    res.status(409).send(package_query_results);
+    return;
+  }
 
   // Package not updated due to disqualified rating: status 423
+  if (packageData.URL) {
+    rating = ratePackage(packageData.URL); 
+    if (!verifyRating(rating)) {
+      logger.info("POST /package: Package not updated due to disqualified rating");
+      res.status(423).send("Package not updated due to disqualified rating");
+      return;
+    }
+  }
 
   // Success: status 201
 
   // Get metadata from package (from APIS?)
+  // We probably can get the name a version from something like a GraphQL call
+  // We can get the ID from the database (by mirroring the given _id field that mongoDB provides), 
+  // just gotta figure out how to do that
   let metadata: PackageMetadata = {
     Name: "test",
     Version: "1.0.0",
     ID: "1234",
   };
-  // packages.push(packageData);
 
   let package_received = new PackageModel({
     metadata: metadata,
@@ -80,10 +101,6 @@ packageRouter.post("/", /*authorizeUser, */ async (req: Request, res: Response) 
   logger.info("POST /package: Package created successfully");
   res.status(201).send(package_received);
 
-  // Validate with joi (trivial example)
-
-  // Store this package in database
-  // for now, just store it in memory
 });
 
 // Create a package when GET /package/byName/{name} is called
@@ -172,7 +189,6 @@ packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  
     cp.execSync(terminal_command);
     const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
     packageRate = JSON.parse(test_file);
-    console.log(packageRate.GoodEngineeringPractice);
     if (
       packageRate.NetScore == Number(-1) ||
       packageRate.BusFactor == Number(-1) ||
@@ -353,5 +369,38 @@ packageRouter.post('/byRegEx', authorizeUser, (req: Request, res: Response) =>  
     }
 });
 
+
+function ratePackage(url: string): PackageRating {
+  let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
+
+  cp.execSync(terminal_command);
+  const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
+  const packageRate: PackageRating = JSON.parse(test_file);
+  
+  return packageRate;
+}
+
+function verifyRating(packageRate: PackageRating) {
+
+  // There's gotta be a way to do this is one line with joi
+  const upload_qualifications = Joi.object({
+    NetScore: Joi.number().min(0.5).required(),
+    BusFactor: Joi.number().min(0.5).required(),
+    Correctness: Joi.number().min(0.5).required(),
+    RampUp: Joi.number().min(0.5).required(),
+    ResponsiveMaintainer: Joi.number().min(0.5).required(),
+    LicenseScore: Joi.number().min(0.5).required(),
+    GoodPinningPractice: Joi.number().min(0.5).required(),
+    GoodEngineeringPractice: Joi.number().min(0.5).required(),
+  });
+
+  const { error, value } = upload_qualifications.validate(packageRate);
+  if (error) {
+    logger.debug("Package does not meet qualifications for upload.");
+    return false;
+  }
+
+  return true;
+}
 
 // module.exports = packageRouter;
