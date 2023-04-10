@@ -23,7 +23,6 @@ const userdata = new mongoose.Schema({
 });
 const info = mongoose.model("user", userdata);
 
-
 export const authorizeUser = (
   req: Request,
   res: Response,
@@ -31,7 +30,7 @@ export const authorizeUser = (
 ) => {
   // Authentication failed: status 403
   // req.body.authorized = false;
-
+  let match: Number = 0;
   const file = readFileSync(__dirname + "/key.json", "utf8");
   let data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
@@ -42,19 +41,21 @@ export const authorizeUser = (
   try {
     if (auth != "") {
       try {
-        let test: string = jwt.verify(auth, "B0!l3r-Up!");
-
+        let test: any = jwt.verify(auth, "B0!l3r-Up!");
         for (let x in data) {
-          if (test == data[x].Secret.password) {
+          if (test.data.password == data[x].Secret.password) {
             if (data[x].User.isAdmin) {
               req.body.authorized = true;
             } else {
               req.body.authorized = false;
             }
+            match = 1;
             next();
           }
         }
-        res.status(400).send("Invalid Token");
+        if (match != 1) {
+          res.status(400).send("Invalid Token");
+        }
       } catch (error) {
         logger.info(error);
         res.status(400).send("Invalid Token");
@@ -71,10 +72,14 @@ export const authorizeUser = (
           } else {
             req.body.authorized = false;
           }
+          match = 1;
           next();
         }
       }
-      res.status(401).send("Invalid user name or password");
+      if (match != 1) {
+        res.status(401).send("Invalid user name or passwords");
+      }
+      next();
     } else {
       res
         .status(400)

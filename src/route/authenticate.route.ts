@@ -34,18 +34,20 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
 
     // TODO: encrypt user password
     authToken = {
-      Token: jwt.sign(authData.Secret.password, "B0!l3r-Up!", {
-        expiresIN: "10h",
+      Token: jwt.sign({ data: authData.Secret }, "B0!l3r-Up!", {
+        expiresIn: "10h",
       }),
     };
+
     // authToken = { Token: authData.Secret.password };
     if (req.body.authorized) {
       res.status(200).send(authToken);
     } else {
       res.status(403).send("Authentication Failed");
     }
-  } catch {
+  } catch (error) {
     // Request body is not valid JSON
+    logger.info(error);
     logger.info("Invalid JSON for PUT /authenticate");
   }
 
