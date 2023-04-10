@@ -292,29 +292,34 @@ packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
 });
 
 // Delete a package when DELETE /package/:id is called
-packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
+packageRouter.delete('/:id', authorizeUser, async (req: Request, res: Response) =>  {
     logger.info("DELETE /package/:id");
 
-    let id: number;
-    let auth: string;
-    try {
-        id = parseInt(req.params.id);
-        auth = req.header('X-Authorization') || "";
-        // Require auth
+    let id: number = parseInt(req?.params?.id);
 
-        logger.info("Auth data: " + auth);
-
-        // TODO: Get the package from the database using the id
-        // TODO: Delete package
-
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send("Package is deleted.");
-
-        res.status(404).send("Package does not exist.");
-    } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for PUT /package/:id");
+    // No ID provided or bad auth, return 400
+    if (!id) {
+      res.status(400).send("There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.");
+      return;
     }
+
+    const query = PackageModel.where({ _id: id});
+    const package_received = await query.findOne();
+
+    // Package doesn't exist, return 404
+    if (!package_received) {
+      res.status(404).send("Package does not exist");
+      return;
+    }
+
+    // Delete package
+    const result = await query.deleteOne();
+    if (result) {
+      res.status(404).send("Package does not exist");
+      return;
+    }
+    
+    res.status(200).send("Package is deleted.");
 });
 
 // Search packages via a Regex when POST /package/byRegEx is called
