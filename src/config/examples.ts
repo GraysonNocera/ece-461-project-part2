@@ -60,6 +60,20 @@ async function main() {
     const delete_result = await Model.deleteOne({ name: 'data' });
     console.log(delete_result);
 
+    // This is how you can assign the ID of something to the _id from mongodb
+    // There's probably a better way to do this, but this is what I came up with
+    // So I am basically mirroring the value from _id that mongodb gives us into 
+    // a new field called something like ID (to be in compliance with the PackageMetadata schema)
+    const new_schema = new mongoose.Schema({
+        parentId: String,
+        name: String,
+    });
+    const new_model = mongoose.model("TestingID", new_schema);
+    const new_data = new new_model({ name: "test" });
+    await new_data.save();
+    let res = new_model.updateOne({ name: new_data.name, _id: new_data._id }, { parentId: new_data._id.toString() });
+    console.log((await res).modifiedCount)
+
     disconnectFromMongo();
 }
 
