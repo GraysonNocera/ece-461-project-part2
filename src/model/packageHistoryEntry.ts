@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { User } from './user';
-import { PackageMetadata } from './packageMetadata';
-
+import { User, UserSchema } from './user';
+import { PackageMetadata, PackageMetadataSchema } from './packageMetadata';
+import mongoose from 'mongoose';
 
 /**
  * One entry of the history of this package.
@@ -19,7 +19,7 @@ import { PackageMetadata } from './packageMetadata';
 export interface PackageHistoryEntry { 
     User: User;
     /**
-     * Date of activity.
+     * Date of activity using ISO-8601 Datetime standard in UTC format.
      */
     Date: string;
     PackageMetadata: PackageMetadata;
@@ -38,4 +38,12 @@ export namespace PackageHistoryEntry {
     };
 }
 
+export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> = new mongoose.Schema<PackageHistoryEntry>({
+    User: { type: UserSchema, required: true },
+    Date: { type: String, required: true },
+    PackageMetadata: { type: PackageMetadataSchema, required: true },
+    Action: { type: String, required: true },
+});
+
+export const PackageHistoryEntryModel = mongoose.model("PackageHistoryEntry", PackageHistoryEntrySchema);
 

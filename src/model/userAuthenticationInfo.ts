@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
 
 /**
  * Authentication info for a user
@@ -21,3 +22,9 @@ export interface UserAuthenticationInfo {
     password: string;
 }
 
+
+export const UserAuthenticationInfoSchema: mongoose.Schema<UserAuthenticationInfo> = new mongoose.Schema<UserAuthenticationInfo>({
+    password: { type: String, required: true },
+});
+
+export const UserAuthenticationInfoModel = mongoose.model<UserAuthenticationInfo>("UserAuthenticationInfo", UserAuthenticationInfoSchema);

@@ -4,7 +4,6 @@ import { logger } from '../logging';
 import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
-import { packages } from '../app';
 import Joi from 'joi';
 import { PackageHistoryEntry } from '../model/packageHistoryEntry';
 import { PackageQuery } from '../model/packageQuery';

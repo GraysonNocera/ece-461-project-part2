@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
+
 
 /**
  * 
@@ -25,3 +27,9 @@ export interface PackageQuery {
     Name: string;
 }
 
+export const PackageQuerySchema = new mongoose.Schema<PackageQuery>({
+    Version: { type: String, required: false },
+    Name: { type: String, required: true },
+});
+
+export const PackageQueryModel = mongoose.model<PackageQuery>("PackageQuery", PackageQuerySchema);

@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
+
 
 /**
  * 
@@ -25,3 +27,9 @@ export interface User {
     isAdmin: boolean;
 }
 
+export const UserSchema: mongoose.Schema<User> = new mongoose.Schema<User>({
+    name: { type: String, required: true },
+    isAdmin: { type: Boolean, required: true },
+});
+
+export const UserModel = mongoose.model<User>("User", UserSchema);
