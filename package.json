@@ -18,6 +18,8 @@
     "fs-extra": "^11.1.0",
     "joi": "^17.9.1",
     "json": "^11.0.0",
+    "mongodb": "^5.2.0",
+    "mongoose": "^7.0.3",
     "ndjson": "^2.0.0",
     "node-jq": "^2.3.5",
     "octokit": "^2.0.14",
@@ -35,6 +37,8 @@
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-n": "^15.6.1",
     "eslint-plugin-promise": "^6.1.1",
-    "typescript": "^5.0.2"
+    "jsonwebtoken": "^9.0.0",
+    "typescript": "^5.0.2",
+    "winston": "^3.8.2"
   }
 }

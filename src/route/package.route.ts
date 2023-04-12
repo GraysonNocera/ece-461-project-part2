@@ -37,8 +37,6 @@ packageRouter.post("/", authorizeUser, (req: Request, res: Response) => {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /package");
   }
-
-  // Validate with joi (trivial example)
   const { error, value } = schema.validate(packageData);
   if (error) {
     // Request body is not valid
@@ -58,9 +56,6 @@ packageRouter.post("/", authorizeUser, (req: Request, res: Response) => {
     Version: "1.0.0",
     ID: "1234",
   };
-
-  // Store this package in database
-  // for now, just store it in memory
   packages.push(packageData);
 
   logger.info("POST /package: Package created successfully");
@@ -71,6 +66,11 @@ packageRouter.post("/", authorizeUser, (req: Request, res: Response) => {
       JSProgram: packageData.JSProgram,
     },
   });
+
+  // Validate with joi (trivial example)
+
+  // Store this package in database
+  // for now, just store it in memory
 });
 
 // Create a package when GET /package/byName/{name} is called
@@ -82,6 +82,7 @@ packageRouter.get(
 
     let name: string;
     let packageHistoryEntry: PackageHistoryEntry;
+
     try {
       name = req.params.name;
       logger.info("package name :" + name);
