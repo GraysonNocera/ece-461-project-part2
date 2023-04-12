@@ -29,12 +29,12 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       data: { Content: "abc", URL: "urmom.com" },
     });
     // await connectToMongo();
-    await test1.save();
+    //await test1.save();
     // await disconnectFromMongo();
 
     if (req.body.authorized) {
       // await connectToMongo();
-      // await PackageModel.deleteMany({});
+      await PackageModel.deleteMany({});
       // await disconnectFromMongo();
       res.status(200).send("Registry is reset");
     }
