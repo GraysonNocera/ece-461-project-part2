@@ -33,7 +33,7 @@ export async function disconnectFromMongo() {
 
     logger.info("disconnectFromMongo(): Disconnecting from MongoDB...");
 
-    mongoose.connection.close();
+    await mongoose.connection.close();
 
     logger.info("disconnectFromMongo(): Disconnected from MongoDB");
 }
