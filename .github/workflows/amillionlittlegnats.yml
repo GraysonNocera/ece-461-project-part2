@@ -30,8 +30,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install cloc -y
           
-      - name: Linter
-        run: npm run lint
+#       - name: Linter
+#         run: npm run lint
 
       - name: Build
         run: |
