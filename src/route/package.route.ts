@@ -230,36 +230,53 @@ packageRouter.get('/:id', authorizeUser, (req: Request, res: Response) =>  {
 });
 
 // Update a package when PUT /package/:id is called
-packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
+packageRouter.put("/:id", authorizeUser, async (req: Request, res: Response) => {
     logger.info("PUT /package/:id");
 
     let id: number;
     let auth: string;
     let packageInfo: Package;
     try {
-        id = parseInt(req.params.id);
-        auth = req.header('X-Authorization') || "";
-        // Require auth
+      id = parseInt(req.params.id);
+      auth = req.header("X-Authorization") || "";
+      // Require auth
 
-        logger.info("Auth data: " + auth);
+      logger.info("Auth data: " + auth);
 
-        packageInfo = req.body; // Get user-inputted package details
-        // Validate with joi
+      packageInfo = req.body; // Get user-inputted package details
+      // Validate with joi
 
-        // TODO: Get the package from the database using the id
-        // TODO: Update contents with new contents
+      const query = PackageModel.where({ _id: id });
+      const package_received = await query.findOne();
 
-        packageInfo.data.Content = "new content yaya";
+      // Package doesn't exist, return 404
+      if (!package_received) {
+        res.status(404).send("Package does not exist");
+        return;
+      }
 
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send(packageInfo);
+      // Update contents with new contents
+      if (packageInfo.data.Content) {
+        package_received.data.Content = packageInfo.data.Content;
+      }
+      if (packageInfo.data.URL) {
+        package_received.data.URL = packageInfo.data.URL;
+      }
+      if (packageInfo.data.JSProgram) {
+        package_received.data.JSProgram = packageInfo.data.JSProgram;
+      }
 
-        res.status(404).send("Package does not exist.");
+      await package_received.save();
+
+      // If status is 200, ok. Send 404 if package doesn't exist.
+      res.status(200).send(package_received.toJSON());
+
     } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for PUT /package/:id");
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for PUT /package/:id");
     }
 });
+
 
 // Delete a package when DELETE /package/:id is called
 packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
