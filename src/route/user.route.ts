@@ -11,7 +11,7 @@ import { connectToMongo, disconnectFromMongo } from "../config/config";
 import { UserAuthenticationInfo } from "../model/userAuthenticationInfo";
 const express = require("express");
 
-export const userRouter: Router = express.router();
+export const userRouter: Router = express.Router();
 
 const user = new mongoose.Schema<User>({
   name: { type: String, required: true },
@@ -26,7 +26,7 @@ const userdata = new mongoose.Schema({
   User: { type: user, required: true },
   Secret: { type: authorize, required: true },
 });
-const info = mongoose.model("user", userdata);
+const info = mongoose.model("info", userdata);
 
 userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
   logger.info("DELETE /user");
