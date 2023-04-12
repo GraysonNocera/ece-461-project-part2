@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
+
 
 /**
  * The \"Name\" and \"Version\" are used as a unique identifier pair when uploading a package.  The \"ID\" is used as an internal identifier for interacting with existing packages.
@@ -29,3 +31,10 @@ export interface PackageMetadata {
     ID: string;
 }
 
+export const PackageMetadataSchema = new mongoose.Schema<PackageMetadata>({
+    Name: { type: String, required: true },
+    Version: { type: String, required: true },
+    ID: { type: String, required: true },
+});
+
+export const PackageMetadataModel = mongoose.model<PackageMetadata>("PackageMetadata", PackageMetadataSchema);

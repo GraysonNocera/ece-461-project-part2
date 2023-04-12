@@ -10,9 +10,17 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
 
-export interface ModelError { 
+
+export interface Error { 
     code: number;
     message: string;
 }
 
+export const ErrorSchema: mongoose.Schema<Error> = new mongoose.Schema<Error>({
+    code: { type: Number, required: true },
+    message: { type: String, required: true },
+});
+
+export const ErrorModel = mongoose.model<Error>("Error", ErrorSchema);

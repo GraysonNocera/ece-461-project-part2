@@ -10,6 +10,8 @@
  * Do not edit the class manually.
  */
 
+import mongoose from "mongoose";
+
 
 /**
  * Package rating (cf. Project 1).  If the Project 1 that you inherited does not support one or more of the original properties, denote this with the value \"-1\".
@@ -44,3 +46,15 @@ export interface PackageRating {
   GoodEngineeringPractice: number;
 }
 
+export const PackageRatingSchema: mongoose.Schema<PackageRating> = new mongoose.Schema<PackageRating>({
+  NetScore: { type: Number, required: true },
+  BusFactor: { type: Number, required: true },
+  Correctness: { type: Number, required: true },
+  RampUp: { type: Number, required: true },
+  ResponsiveMaintainer: { type: Number, required: true },
+  LicenseScore: { type: Number, required: true },
+  GoodPinningPractice: { type: Number, required: true },
+  GoodEngineeringPractice: { type: Number, required: true },
+});
+
+export const PackageRatingModel = mongoose.model<PackageRating>("User", PackageRatingSchema);
