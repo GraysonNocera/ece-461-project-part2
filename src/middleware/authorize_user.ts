@@ -87,7 +87,10 @@ export const authorizeUser = (
           "There is missing field(s) in the AuthenticationRequest or it is not formed properly"
         );
     }
-  } catch (error) {}
+  } catch (error) {
+    logger.info("Internal Error");
+    next();
+  }
 
   //next();
 };
