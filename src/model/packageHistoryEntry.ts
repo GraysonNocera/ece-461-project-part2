@@ -26,16 +26,7 @@ export interface PackageHistoryEntry {
     /**
      * 
      */
-    Action: PackageHistoryEntry.ActionEnum;
-}
-export namespace PackageHistoryEntry {
-    export type ActionEnum = 'CREATE' | 'UPDATE' | 'DOWNLOAD' | 'RATE';
-    export const ActionEnum = {
-        Create: 'CREATE' as ActionEnum,
-        Update: 'UPDATE' as ActionEnum,
-        Download: 'DOWNLOAD' as ActionEnum,
-        Rate: 'RATE' as ActionEnum
-    };
+    Action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE";
 }
 
 export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> = new mongoose.Schema<PackageHistoryEntry>({
