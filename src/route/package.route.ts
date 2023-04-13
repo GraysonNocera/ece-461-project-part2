@@ -38,23 +38,26 @@ packageRouter.post(
       Content: Joi.string(),
       URL: Joi.string(),
       JSProgram: Joi.string(),
-    }).or("Content", "URL");
+    }).xor("Content", "URL");
 
-    logger.info(`${__filename}: POST /package`);
+    logger.info(`packageRouter: POST /package`);
 
     let packageData: PackageData = {};
     let rating: PackageRating;
     try {
       packageData = req?.body;
-      logger.info("Package data: " + JSON.stringify(packageData));
+      logger.info("POST /package: Package data: " + JSON.stringify(packageData));
     } catch {
       // Request body is not valid JSON
-      logger.debug("Invalid JSON for POST /package");
+      logger.debug("POST /package: Invalid JSON for POST /package");
       res.status(400);
       return;
     }
 
-    const { error, value } = schema.validate(packageData);
+    // let test = new Date();
+    // test.toISOString();
+
+    const { error, value } = schema.validate(upload_schema);
     if (error) {
       // Request body is not valid
       logger.debug("Request body is not valid");

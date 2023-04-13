@@ -19,7 +19,7 @@ const schema = Joi.object({
   JSProgram: Joi.string(),
 });
 
-// Create a package when POST /package is called
+// Create a package when PUT /authenticate is called
 authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
   logger.info("PUT /authenticate");
 
@@ -41,6 +41,8 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     // Request body is not valid JSON
     logger.info("Invalid JSON for PUT /authenticate");
   }
+
+  res.status(500).send("Internal Server Error");
 
   // Validate with joi (trivial example)
 });

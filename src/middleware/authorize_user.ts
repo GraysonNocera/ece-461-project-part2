@@ -37,7 +37,7 @@ export const authorizeUser = (
   logger.info("authorizeUser: Authorizing user...");
   //logger.info(JSON.stringify(req.body));
   let auth: string = req.header("X-Authorization") || "";
-  logger.info(auth);
+  logger.info("authorizeUser: Auth received " + auth);
 
   try {
     if (auth != "") {
@@ -56,7 +56,7 @@ export const authorizeUser = (
         }
         res.status(400).send("Invalid Token");
       } catch (error) {
-        logger.info(error);
+        logger.debug(error);
         res.status(400).send("Invalid Token");
       }
     }
@@ -82,7 +82,10 @@ export const authorizeUser = (
           "There is missing field(s) in the AuthenticationRequest or it is not formed properly"
         );
     }
-  } catch (error) {}
+  } catch (error) {
+
+    logger.debug(error);
+  }
 
   //next();
 };

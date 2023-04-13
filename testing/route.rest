@@ -88,7 +88,7 @@ X-Authorization: ur brotha
 
 ###
 
-POST http://localhost:3000/package/byRegEx/.*test.*?rate
+POST http://localhost:3000/package/byRegEx
 X-Authorization: ur sistah
 Content-Type: application/json
 
@@ -98,3 +98,23 @@ Content-Type: application/json
 
 ###
 
+PUT http://localhost:3000/authenticate
+Content-Type: application/json
+
+{
+  "User": {
+    "name": "ece30861defaultadminuser",
+    "isAdmin": true
+  },
+  "Secret": {
+    "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+  }
+}
+
+###
+
+POST http://localhost:3000/user
+
+###
+
+DELETE http://localhost:3000/user
