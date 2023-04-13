@@ -30,19 +30,19 @@ export const authorizeUser = (
 ) => {
   // Authentication failed: status 403
   // req.body.authorized = false;
-  let match: Number = 0;
+  let match = 0;
   const file = readFileSync(__dirname + "/key.json", "utf8");
-  let data = JSON.parse(file);
+  const data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
   //logger.info(JSON.stringify(req.body));
-  let auth: string = req.header("X-Authorization") || "";
+  const auth: string = req.header("X-Authorization") || "";
   logger.info(auth);
 
   try {
     if (auth != "") {
       try {
-        let test: any = jwt.verify(auth, "B0!l3r-Up!");
-        for (let x in data) {
+        const test: any = jwt.verify(auth, "B0!l3r-Up!");
+        for (const x in data) {
           if (test.data.password == data[x].Secret.password) {
             if (data[x].User.isAdmin) {
               req.body.authorized = true;
@@ -62,7 +62,7 @@ export const authorizeUser = (
       }
     }
     if (req.body.User.name && req.body.Secret.password) {
-      for (let x in data) {
+      for (const x in data) {
         if (
           req.body.User.name == data[x].User.name &&
           req.body.Secret.password == data[x].Secret.password

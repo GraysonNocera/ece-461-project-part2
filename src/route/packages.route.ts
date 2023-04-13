@@ -15,7 +15,7 @@ export const packagesRouter: Router = express.Router();
 packagesRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("POST /packages");
 
-    let offset: Number;
+    let offset: number;
     let packageQuery: PackageQuery;
     let packageMetadata: PackageMetadata;
     let returnObject;

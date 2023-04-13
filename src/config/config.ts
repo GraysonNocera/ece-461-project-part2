@@ -18,7 +18,7 @@ export async function connectToMongo() {
     // We connect to the database, which will hold a bunch of collections
     // Probably one collection for each file in models/ 
     // Those collections will hold a bunch of documents
-    const DATABASE: string = "database";
+    const DATABASE = "database";
     const uri = `mongodb://${USERNAME}:${PASSWORD}@ac-buchowe-shard-00-00.bcmdhkp.mongodb.net:27017,ac-buchowe-shard-00-01.bcmdhkp.mongodb.net:27017,ac-buchowe-shard-00-02.bcmdhkp.mongodb.net:27017/${DATABASE}?ssl=true&replicaSet=atlas-zpmc7p-shard-0&authSource=admin&retryWrites=true&w=majority`
     
     await mongoose.connect(uri);

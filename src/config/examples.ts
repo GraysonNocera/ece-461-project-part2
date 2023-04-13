@@ -71,7 +71,7 @@ async function main() {
     const new_model = mongoose.model("TestingID", new_schema);
     const new_data = new new_model({ name: "test" });
     await new_data.save();
-    let res = new_model.updateOne({ name: new_data.name, _id: new_data._id }, { parentId: new_data._id.toString() });
+    const res = new_model.updateOne({ name: new_data.name, _id: new_data._id }, { parentId: new_data._id.toString() });
     console.log((await res).modifiedCount)
 
     disconnectFromMongo();

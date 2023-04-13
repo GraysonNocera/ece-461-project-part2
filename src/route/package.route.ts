@@ -91,13 +91,13 @@ packageRouter.post(
     // We probably can get the name a version from something like a GraphQL call
     // We can get the ID from the database (by mirroring the given _id field that mongoDB provides),
     // just gotta figure out how to do that
-    let metadata: PackageMetadata = {
+    const metadata: PackageMetadata = {
       Name: "test",
       Version: "1.0.0",
       ID: "1234",
     };
 
-    let package_received = new PackageModel({
+    const package_received = new PackageModel({
       metadata: metadata,
       data: packageData,
     });
@@ -189,7 +189,7 @@ packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
     id = parseInt(req.params.id);
 
     // TODO: Get the package from the database using the id
-    let url: string = "https://www.npmjs.com/package/express";
+    const url = "https://www.npmjs.com/package/express";
     // Fill in PackageRating
     // TODO: Hit rate module to get this info
     // const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
@@ -234,7 +234,7 @@ packageRouter.get(
   async (req: Request, res: Response) => {
     logger.info("GET /package/:id");
 
-    let id: number = parseInt(req?.params?.id);
+    const id: number = parseInt(req?.params?.id);
 
     // No ID provided or bad auth, return 400
     if (!id) {
@@ -311,7 +311,7 @@ packageRouter.delete(
   async (req: Request, res: Response) => {
     logger.info("DELETE /package/:id");
 
-    let id: number = parseInt(req?.params?.id);
+    const id: number = parseInt(req?.params?.id);
 
     // No ID provided or bad auth, return 400
     if (!id) {
@@ -351,7 +351,7 @@ packageRouter.post("/byRegEx", authorizeUser, (req: Request, res: Response) => {
   let regex_body: string;
   let auth: string;
   let packageMetadata: PackageMetadata;
-  let return_data: Object;
+  let return_data: object;
   try {
     // regex = req.params.regex;
     // logger.info("Got regex: " + regex);
@@ -396,7 +396,7 @@ packageRouter.post("/byRegEx", authorizeUser, (req: Request, res: Response) => {
 });
 
 function ratePackage(url: string): PackageRating {
-  let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
+  const terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
 
   cp.execSync(terminal_command);
   const test_file = readFileSync(

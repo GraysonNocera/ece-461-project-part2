@@ -24,7 +24,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
     // TODO: reset registry
 
-    let test1 = new PackageModel({
+    const test1 = new PackageModel({
       metadata: { Name: "test", Version: "1.01", ID: "420" },
       data: { Content: "abc", URL: "urmom.com" },
     });
