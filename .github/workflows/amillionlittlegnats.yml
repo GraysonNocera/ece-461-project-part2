@@ -48,8 +48,8 @@ jobs:
       - name: Start API
         run: |
           tsc --project tsconfig.json
-          ls dist/api
-          node dist/api/app.js &
+          ls dist/
+          node dist/app.js &
 
       - name: Run API tests
         run: | 
@@ -57,7 +57,7 @@ jobs:
           npm test -- --verbose
 
       - name: Find and Kill API Process
-        run: ps aux | grep 'ts-node src/api/app.ts' | grep -v grep | awk '{print $2}' | xargs -r kill
+        run: ps aux | grep 'ts-node src/app.ts' | grep -v grep | awk '{print $2}' | xargs -r kill
 
   deploy:
     needs: build-and-test
