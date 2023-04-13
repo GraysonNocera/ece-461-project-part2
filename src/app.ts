@@ -13,7 +13,7 @@ import { connectToMongo, disconnectFromMongo } from "./config/config";
 // define app
 const app = express();
 
-async function defineServer() {
+function defineServer() {
 
   logger.info("Starting up the API server...");
 
