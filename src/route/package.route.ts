@@ -135,7 +135,7 @@ packageRouter.get(
           Version: "1.0.0",
           ID: "1234",
         },
-        Action: PackageHistoryEntry.ActionEnum.Create,
+        Action: "CREATE",
       };
 
       res.status(200).send([packageHistoryEntry, packageHistoryEntry]);
