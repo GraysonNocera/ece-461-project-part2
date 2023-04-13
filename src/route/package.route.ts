@@ -6,6 +6,8 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
 import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
+import { PackageHistoryEntryModel } from '../model/packageHistoryEntry';
+
 import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
@@ -13,6 +15,8 @@ import { readFile, readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import path from "path";
 import { connectToMongo } from "../config/config";
+import { DateTime } from 'luxon';
+
 
 const express = require("express");
 
@@ -113,38 +117,45 @@ packageRouter.post(
 packageRouter.get(
   "/byName/:name",
   authorizeUser,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     logger.info("GET /package/byName/{name}");
 
-    let name: string;
-    let packageHistoryEntry: PackageHistoryEntry;
+    const packageName = req.params.name;
+    // let packageHistoryEntry: PackageHistoryEntry;
 
     try {
-      name = req.params.name;
-      logger.info("package name :" + name);
+      logger.info("package name :" + packageName);
 
       // TODO: Hit database to get package version information
-      packageHistoryEntry = {
-        User: {
-          name: name,
-          isAdmin: true,
-        },
-        Date: "2021-04-01",
-        PackageMetadata: {
-          Name: "test package metadata",
-          Version: "1.0.0",
-          ID: "1234",
-        },
-        Action: "CREATE",
-      };
+      // packageHistoryEntry = {
+      //   User: {
+      //     name: name,
+      //     isAdmin: true,
+      //   },
+      //   Date: "2021-04-01",
+      //   PackageMetadata: {
+      //     Name: "test package metadata",
+      //     Version: "1.0.0",
+      //     ID: "1234",
+      //   },
+      //   Action: "CREATE",
+      // };
 
-      res.status(200).send([packageHistoryEntry, packageHistoryEntry]);
+      const packageHistory = await PackageHistoryEntryModel.find({ 'PackageMetadata.Name': packageName }).exec();
+
+      if (!packageHistory || packageHistory.length === 0) {
+        return res.status(404).json({ message: 'No such package.' });
+      }
+  
+
+      res.status(200).send([packageHistory]);
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for GET /package/byName/{name}");
+      res.status(500).json({ message: 'Unexpected error.'});
     }
 
-    // Validate with joi (trivial example)
+    
   }
 );
 
