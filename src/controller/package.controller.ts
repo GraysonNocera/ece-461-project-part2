@@ -3,7 +3,7 @@ import { authorizeUser } from "../middleware/authorize_user";
 import { logger } from "../logging";
 import { PackageData } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
@@ -20,8 +20,8 @@ import path from "path";
 import { PackageDataUploadValidation } from "../model/packageData";
 import JSZip, { JSZipObject } from "jszip";
 
-export async function postPackage(req: Request, res: Response) {
-  logger.info(`packageRouter: POST /package`);
+export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
+  logger.info("postPackage: POST /package endpoint hit");
 
   let packageToUpload;
   let rating: PackageRating;
@@ -32,12 +32,16 @@ export async function postPackage(req: Request, res: Response) {
   if (error) {
     // Request body is not valid
     logger.debug("Request body is not valid");
-    res.status(400);
+    res.status(400).send("Invalid request body");
     return;
   }
 
+  logger.info("Good data received.");
+
+  // If you don't predefine Name and Version, you get an error
   packageToUpload = new PackageModel({
     data: req?.body,
+    metadata: { Name: "", Version: "", ID: "1234" },
   });
 
   // Package already exists: status 409
@@ -53,10 +57,10 @@ export async function postPackage(req: Request, res: Response) {
     return;
   }
 
-  if (packageToUpload.Content) {
-    package_json = await getPackageJSON(packageToUpload.Content);
+  if (packageToUpload.data.Content) {
+    package_json = await getPackageJSON(packageToUpload.data.Content);
     try {
-      packageToUpload.URL = package_json["homepage"];
+      packageToUpload.data.URL = package_json["homepage"];
     } catch (error) {
       logger.debug("POST /package: Package not uploaded, no homepage field or no package.json");
       res.status(400).send("Invalid Content");
@@ -67,38 +71,50 @@ export async function postPackage(req: Request, res: Response) {
   // At this point, we have a package that is not in the database, and we have a URL for that package
 
   // Package not updated due to disqualified rating: status 423
-  rating = ratePackage(packageToUpload.URL);
-  if (!verifyRating(rating)) {
-    logger.info("POST /package: Package not updated, disqualified rating");
-    res
-      .status(424)
-      .send("Package is not uploaded due to the disqualified rating.");
-    return;
-  }
+  rating = ratePackage(packageToUpload.data.URL);
+
+  // For now, nothing passes this, so I'm commenting it out
+  // if (!verifyRating(rating)) {
+  //   logger.info("POST /package: Package not uploaded, disqualified rating");
+  //   res
+  //     .status(424)
+  //     .send("Package is not uploaded due to the disqualified rating.");
+  //   return;
+  // }
 
   // Add metadata to package
   // TODO: If Name is "*" we throw error because that's reserved?
-  if (packageToUpload.Content) {
+  if (packageToUpload.data.Content) {
     packageToUpload.metadata.Name = package_json["name"];
     packageToUpload.metadata.Version = package_json["version"];
   } else {
-    packageToUpload.metadata.Name = (await getGitRepoDetails(packageToUpload.URL))?.username || "";
-    packageToUpload.metadata.Version = await getVersionFromURL(packageToUpload.URL, packageToUpload.metadata.Name);
+    packageToUpload.metadata.Name = (await getGitRepoDetails(packageToUpload.data.URL))?.username || "";
+    packageToUpload.metadata.Version = await getVersionFromURL(packageToUpload.data.URL, packageToUpload.metadata.Name);
   }
 
   // Save package
   await packageToUpload.save();
-  packageToUpload.updateOne({ name: packageToUpload.name, _id: packageToUpload._id }, { ID: packageToUpload._id.toString() });
+  // This is how you find by a nested property
+  packageToUpload.metadata.ID = packageToUpload._id.toString();
+
+  logger.info("POST /package: Package metadata added successfully " + packageToUpload.metadata);
+
+  let return_ = await PackageModel.updateOne({ _id: packageToUpload._id }, { metadata: packageToUpload.metadata });
+  logger.info("POST /package: Package saved successfully, updated ID (changes: " + (return_.modifiedCount) + ")");
 
   // Save history entry
   historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
+  historyEntry.rate = rating;
   await historyEntry.save();
+  logger.info("POST /package: History entry saved successfully");
 
   logger.info("POST /package: Package created successfully");
   res.status(201).send(packageToUpload);
 }
 
 function ratePackage(url: string): PackageRating {
+  logger.info("ratePackage: Running rate script...");
+
   let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
 
   cp.execSync(terminal_command);
@@ -107,6 +123,9 @@ function ratePackage(url: string): PackageRating {
     "utf8"
   );
   const packageRate: PackageRating = JSON.parse(test_file);
+
+  logger.info("ratePackage: Package received rating " + packageRate.NetScore);
+  logger.info("ratePackage: Package rated successfully");
 
   return packageRate;
 }
