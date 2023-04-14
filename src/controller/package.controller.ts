@@ -15,9 +15,9 @@ import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import path from "path";
 import { PackageDataUploadValidation } from "../model/packageData";
+import JSZip, { JSZipObject } from "jszip";
 
 export async function postPackage(req: Request, res: Response) {
-
   logger.info(`packageRouter: POST /package`);
 
   let packageData: PackageData = {};
@@ -127,3 +127,38 @@ function verifyRating(packageRate: PackageRating) {
 
   return true;
 }
+
+async function getPackageURL(content: string): Promise<string> {
+
+  logger.info("getPackageURL: Getting url from content base64 string");
+
+  let zip: JSZip = new JSZip();
+  zip = await zip.loadAsync(content, { base64: true, createFolders: true });
+
+  // console.log(await zip.file("exceptions/CommcourierException.java")?.async("string"));
+  let package_json_path: string = zip.file(/package.json/)[0]?.name;
+  // console.log(package_json_path);
+
+  let package_json_contents: string | undefined = await zip
+    .file(package_json_path)
+    ?.async("string");
+  // console.log(package_json_contents);
+
+  let package_json_object: Object;
+  if (package_json_contents) {
+    package_json_object = JSON.parse(package_json_contents);
+    if (package_json_object["homepage"]) {
+      logger.info("getPackageURL: Found homepage in package.json: " + package_json_object["homepage"]);
+      return package_json_object["homepage"];
+    }
+    logger.debug("getPackageURL: No homepage found in package.json");
+  }
+
+  logger.debug("getPackageURL: No url found in package.json");
+  return "";
+}
+
+// async function main() {
+//     console.log(await getPackageURL(""));
+// }
+// main();
