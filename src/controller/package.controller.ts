@@ -58,6 +58,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     return;
   }
 
+  // Try to fetch the URL from the package_json
   if (packageToUpload.data.Content) {
     package_json = await getPackageJSON(packageToUpload.data.Content);
     try {
@@ -68,6 +69,8 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
       return;
     }
   }
+
+  packageToUpload.metadata = getMetadata(packageToUpload, package_json);
 
   // At this point, we have a package that is not in the database, and we have a URL for that package
 
@@ -82,16 +85,6 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   //     .send("Package is not uploaded due to the disqualified rating.");
   //   return;
   // }
-
-  // Add metadata to package
-  // TODO: If Name is "*" we throw error because that's reserved?
-  if (packageToUpload.data.Content) {
-    packageToUpload.metadata.Name = package_json["name"];
-    packageToUpload.metadata.Version = package_json["version"];
-  } else {
-    packageToUpload.metadata.Name = (await getGitRepoDetails(packageToUpload.data.URL))?.repoName || "";
-    packageToUpload.metadata.Version = await getVersionFromURL(packageToUpload.data.URL, packageToUpload.metadata.Name);
-  }
 
   // Save package
   await packageToUpload.save();
@@ -211,7 +204,7 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param url: string url
   // :param name: string name of package
 
-  // Could someone who worked closely with the APIs in Part 1 do this part :)
+  // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
 
   return "1.0.0";
 };
@@ -234,10 +227,27 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
     isAdmin: true,
   }
 
-  // if (rate)
-  //   historyEntry.rate = rate;
-
   return historyEntry;
+}
+
+async function getMetadata(packageData: PackageData, package_json: Object): Promise<PackageMetadata> {
+  // Function description
+  // :param packageData: PackageData
+  // :return: PackageMetadata
+
+  let metadata: PackageMetadata = { Name: "", Version: "", ID: "" };
+
+  // Add metadata to package
+  // TODO: If Name is "*" we throw error because that's reserved?
+  if (packageData.Content) {
+    metadata.Name = package_json["name"];
+    metadata.Version = package_json["version"];
+  } else {
+    metadata.Name = (await getGitRepoDetails(packageData.URL || ""))?.repoName || "";
+    metadata.Version = await getVersionFromURL(packageData.URL || "", metadata.Name);
+  }
+
+  return metadata;
 }
 
 // async function main() {
