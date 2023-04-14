@@ -4,7 +4,7 @@ import { logger } from "../logging";
 import { PackageData } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
-import Joi, { number } from "joi";
+// import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 
@@ -13,7 +13,7 @@ import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
-import path from "path";
+import * as path from "path";
 import { postPackage } from "../controller/package.controller";
 
 const express = require("express");
@@ -285,7 +285,7 @@ packageRouter.delete(
 );
 
 // Search packages via a Regex when POST /package/byRegEx is called
-packageRouter.post("/byRegEx", authorizeUser, (req: Request, res: Response) => {
+packageRouter.post("/byRegEx", authorizeUser, async (req: Request, res: Response) => {
   logger.info("POST /package/byRegEx/{regex}");
 
   // let regex: string;
@@ -294,7 +294,10 @@ packageRouter.post("/byRegEx", authorizeUser, (req: Request, res: Response) => {
   let packageMetadata: PackageMetadata;
   let return_data: Object;
   try {
-    // regex = req.params.regex;
+    // regex will be in the body of the request; Example request:
+    // {
+    //   "Regex": "string"
+    // }
     // logger.info("Got regex: " + regex);
 
     auth = req.header("X-Authorization") || "";
@@ -307,32 +310,57 @@ packageRouter.post("/byRegEx", authorizeUser, (req: Request, res: Response) => {
     logger.info("Got regex body: " + regex_body);
 
     // TODO: Get the package from the database using the regex
-    // TODO: Return package
+    // TODO: Return a list of packages
+    const regex = new RegExp(regex_body, 'i');
+    const packages = await PackageModel.find({ "data.Name": regex }).exec();
+
+    // EXAMPLE RESPONSE:
+    // [
+    //   {
+    //     "Version": "1.2.3",
+    //     "Name": "Underscore"
+    //   },
+    //   {
+    //     "Version": "1.2.3-2.1.0",
+    //     "Name": "Lodash"
+    //   },
+    //   {
+    //     "Version": "^1.2.3",
+    //     "Name": "React"
+    //   }
+    // ]
 
     // TODO: Hit database for this metadata
-    packageMetadata = {
-      Name: "test",
-      Version: "1.0.0",
-      ID: "1234",
-    };
+    // packageMetadata = {
+    //   Name: "test",
+    //   Version: "1.0.0",
+    //   ID: "1234",
+    // };
 
     logger.info("Preparing return_data");
 
     // According to YML spec, return only name and version
-    return_data = {
-      Name: packageMetadata.Name,
-      Version: packageMetadata.Version,
-    };
+    return_data = packages.map(pkg => {
+      return {
+        Name: packageMetadata.Name,
+        Version: packageMetadata.Version
+      };
+    });
 
     logger.info("Sending status");
 
     // If status is 200, ok. Send 404 if package doesn't exist.
-    res.status(200).send([return_data, return_data]);
-
+    if (return_data.length > 0) {
+      res.status(200).send(return_data);
+    } else {
+      res.status(404).send("No package found under this regex.");
+    }
     //res.status(404).send("No package found under this regex.");
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /RegEx/{regex}");
+    // is this the right error to throw?
+    res.status(400).send("Invalid JSON");
   }
 });
 
