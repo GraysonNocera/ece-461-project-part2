@@ -6,11 +6,9 @@ import { User } from "../model/user";
 import { readFileSync } from "fs";
 import mongoose from "mongoose";
 const jwt = require("jsonwebtoken");
-import { userdata } from "../model/user";
+import { ProfileModel } from "../model/user";
 
-const info = mongoose.model("user", userdata);
-
-export const authorizeUser = (
+export const authorizeUser = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -27,29 +25,33 @@ export const authorizeUser = (
     if (auth != "") {
       try {
         let test: any = jwt.verify(auth, "B0!l3r-Up!");
-
-        for (let x in data) {
-          if (test.data.Secret.password == data[x].Secret.password) {
-            if (data[x].User.name == test.data.User.name) {
-              if (data[x].User.isAdmin) {
+        let query = ProfileModel.findOne({
+          User: { name: test.data.User.name },
+          Secret: { pasword: test.data.Secret.password },
+        });
+        data = await query;
+        if (data) {
+          if (test.data.Secret.password == data.Secret.password) {
+            if (data.User.name == test.data.User.name) {
+              if (data.User.isAdmin) {
                 req.headers["admin"] = true;
                 match = 1;
               } else {
                 req.headers["admin"] = false;
               }
-              if (data[x].User.isUpload) {
+              if (data.User.isUpload) {
                 req.headers["upload"] = true;
                 match = 1;
               } else {
                 req.headers["upload"] = false;
               }
-              if (data[x].User.isSearch) {
+              if (data.User.isSearch) {
                 req.headers["search"] = true;
                 match = 1;
               } else {
                 req.headers["search"] = false;
               }
-              if (data[x].User.isDownload) {
+              if (data.User.isDownload) {
                 req.headers["download"] = true;
                 match = 1;
               } else {
@@ -72,27 +74,32 @@ export const authorizeUser = (
       }
     }
     if (req.body.User.name && req.body.Secret.password) {
-      for (let x in data) {
+      let query = ProfileModel.findOne({
+        User: { name: req.body.User.name },
+        Secret: { pasword: req.body.Secret.password },
+      });
+      data = await query;
+      if (data) {
         if (
-          req.body.User.name == data[x].User.name &&
-          req.body.Secret.password == data[x].Secret.password
+          req.body.User.name == data.User.name &&
+          req.body.Secret.password == data.Secret.password
         ) {
-          if (data[x].User.isAdmin) {
+          if (data.User.isAdmin) {
             req.headers["admin"] = true;
           } else {
             req.headers["admin"] = false;
           }
-          if (data[x].User.isUpload) {
+          if (data.User.isUpload) {
             req.headers["upload"] = true;
           } else {
             req.headers["upload"] = false;
           }
-          if (data[x].User.isSearch) {
+          if (data.User.isSearch) {
             req.headers["search"] = true;
           } else {
             req.headers["search"] = false;
           }
-          if (data[x].User.isDownload) {
+          if (data.User.isDownload) {
             req.headers["download"] = true;
           } else {
             req.headers["download"] = false;

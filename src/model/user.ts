@@ -45,3 +45,5 @@ export const userdata: mongoose.Schema = new mongoose.Schema({
   Secret: { type: authorize, required: true },
 });
 
+
+export const ProfileModel = mongoose.model("user", userdata);
