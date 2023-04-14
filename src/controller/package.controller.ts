@@ -20,22 +20,14 @@ import JSZip, { JSZipObject } from "jszip";
 export async function postPackage(req: Request, res: Response) {
   logger.info(`packageRouter: POST /package`);
 
-  let packageData: PackageData = {};
+  let packageToUpload;
   let rating: PackageRating;
-  try {
-    packageData = req?.body;
-    logger.info("POST /package: Package data: " + JSON.stringify(packageData));
-  } catch {
-    // Request body is not valid JSON
-    logger.debug("POST /package: Invalid JSON for POST /package");
-    res.status(400);
-    return;
-  }
+  let url: string;
 
   // let test = new Date();
   // test.toISOString();
 
-  const { error } = PackageDataUploadValidation.validate(packageData);
+  const { error } = PackageDataUploadValidation.validate(req?.body);
   if (error) {
     // Request body is not valid
     logger.debug("Request body is not valid");
@@ -43,13 +35,15 @@ export async function postPackage(req: Request, res: Response) {
     return;
   }
 
-  // Check the inputted data
+  packageToUpload = new PackageModel({
+    data: req?.body,
+  });
 
   // Package already exists: status 409
   const query = PackageModel.find();
   query.or([
-    { "data.Content": packageData.Content },
-    { "data.URL": packageData.URL },
+    { "data.Content": packageToUpload.data.Content },
+    { "data.URL": packageToUpload.data.URL },
   ]);
   const package_query_results = await query.findOne(); // this should be an async function
   if (package_query_results) {
@@ -58,16 +52,20 @@ export async function postPackage(req: Request, res: Response) {
     return;
   }
 
+  if (packageToUpload.Content) {
+    url = await getPackageURL(packageToUpload.Content);
+  } else {
+    url = packageToUpload.URL;
+  }
+
   // Package not updated due to disqualified rating: status 423
-  if (packageData.URL) {
-    rating = ratePackage(packageData.URL);
-    if (!verifyRating(rating)) {
-      logger.info(
-        "POST /package: Package not updated due to disqualified rating"
-      );
-      res.status(423).send("Package not updated due to disqualified rating");
-      return;
-    }
+  rating = ratePackage(packageToUpload.URL);
+  if (!verifyRating(rating)) {
+    logger.info(
+      "POST /package: Package not updated due to disqualified rating"
+    );
+    res.status(423).send("Package not updated due to disqualified rating");
+    return;
   }
 
   // Success: status 201
@@ -82,15 +80,14 @@ export async function postPackage(req: Request, res: Response) {
     ID: "1234",
   };
 
-  let package_received = new PackageModel({
-    metadata: metadata,
-    data: packageData,
-  });
+  packageToUpload.metadata = metadata;
 
-  await package_received.save();
+  // Create history entry
+
+  await packageToUpload.save();
 
   logger.info("POST /package: Package created successfully");
-  res.status(201).send(package_received);
+  res.status(201).send(packageToUpload);
 }
 
 function ratePackage(url: string): PackageRating {
