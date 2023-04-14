@@ -5,24 +5,15 @@ import { logger } from "../logging";
 import { User } from "../model/user";
 import { readFileSync } from "fs";
 import mongoose from "mongoose";
-import { UserAuthenticationInfo } from "../model/userAuthenticationInfo";
 const jwt = require("jsonwebtoken");
-
-const user = new mongoose.Schema<User>({
-  name: { type: String, required: true },
-  isAdmin: { type: Boolean, required: true },
-});
-
-const authorize = new mongoose.Schema<UserAuthenticationInfo>({
-  password: { type: String, required: true },
-});
+import { user } from "../model/user";
+import { authorize } from "../model/userAuthenticationInfo";
 
 const userdata = new mongoose.Schema({
   User: { type: user, required: true },
   Secret: { type: authorize, required: true },
 });
 const info = mongoose.model("user", userdata);
-
 
 export const authorizeUser = (
   req: Request,
@@ -31,30 +22,52 @@ export const authorizeUser = (
 ) => {
   // Authentication failed: status 403
   // req.body.authorized = false;
-
+  let match: Number = 0;
   const file = readFileSync(__dirname + "/key.json", "utf8");
   let data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
   //logger.info(JSON.stringify(req.body));
   let auth: string = req.header("X-Authorization") || "";
+<<<<<<< HEAD
   logger.info("authorizeUser: Auth received " + auth);
 
+=======
+  logger.info(auth);
+>>>>>>> d130eba0072c6f7219bd73f708649618782d387a
   try {
     if (auth != "") {
       try {
-        let test: string = jwt.verify(auth, "B0!l3r-Up!");
+        let test: any = jwt.verify(auth, "B0!l3r-Up!");
 
         for (let x in data) {
-          if (test == data[x].Secret.password) {
-            if (data[x].User.isAdmin) {
-              req.body.authorized = true;
+          if (test.data.Secret.password == data[x].Secret.password) {
+            if (data[x].User.name == test.data.User.name) {
+              if (data[x].User.isAdmin) {
+                req.body.authorized = true;
+                match = 1;
+              }
+              if (data[x].User.isUpload) {
+                req.body.upload = true;
+                match = 1;
+              }
+              if (data[x].User.isSearch) {
+                req.body.search = true;
+                match = 1;
+              }
+              if (data[x].User.isDownload) {
+                req.body.download = true;
+                match = 1;
+              }
+              next();
+              logger.info("auth success");
             } else {
               req.body.authorized = false;
             }
-            next();
           }
         }
-        res.status(400).send("Invalid Token");
+        if (match != 1) {
+          res.status(400).send("Invalid Token");
+        }
       } catch (error) {
         logger.debug(error);
         res.status(400).send("Invalid Token");
@@ -71,10 +84,14 @@ export const authorizeUser = (
           } else {
             req.body.authorized = false;
           }
+          match = 1;
           next();
         }
       }
-      res.status(401).send("Invalid user name or password");
+      if (match != 1) {
+        res.status(401).send("Invalid user name or passwords");
+      }
+      next();
     } else {
       res
         .status(400)

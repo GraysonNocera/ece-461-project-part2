@@ -25,7 +25,7 @@ Content-Type: application/json
         "isAdmin": true
     },
     "Secret": {
-        "password": "test password"
+        "password": "ur mom"
     }
 }
 
@@ -54,8 +54,7 @@ GET http://localhost:3000/package/4/rate
 ###
 
 DELETE http://localhost:3000/reset
-X-Authorization: "ur mom"
-
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJ1ciBtb20ifSwiYXV0aG9yaXplZCI6dHJ1ZX0sImlhdCI6MTY4MTQ4MjA1MywiZXhwIjoxNjgxNTE4MDUzfQ.a-MIkMyDmsroBkLLA2iO8BSSmt79mNANBQ1F65bJnno
 ###
 
 GET http://localhost:3000/package/5

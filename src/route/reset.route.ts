@@ -24,6 +24,14 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
     // TODO: reset registry
 
+    let test1 = new packages({
+      metadata: { Name: "test", Version: "1.01", ID: "420" },
+      data: { Content: "abc", URL: "urmom.com" },
+    });
+    // await connectToMongo();
+    // await test1.save();
+    // await disconnectFromMongo();
+
     if (req.body.authorized) {
       await connectToMongo();
       await PackageModel.deleteMany({});

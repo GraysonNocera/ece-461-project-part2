@@ -11,15 +11,14 @@
  */
 
 import mongoose from "mongoose";
-
 /**
  * Authentication info for a user
  */
-export interface UserAuthenticationInfo { 
-    /**
-     * Password for a user. Per the spec, this should be a \"strong\" password.
-     */
-    password: string;
+export interface UserAuthenticationInfo {
+  /**
+   * Password for a user. Per the spec, this should be a \"strong\" password.
+   */
+  password: string;
 }
 
 
@@ -28,3 +27,8 @@ export const UserAuthenticationInfoSchema: mongoose.Schema<UserAuthenticationInf
 });
 
 export const UserAuthenticationInfoModel = mongoose.model<UserAuthenticationInfo>("UserAuthenticationInfo", UserAuthenticationInfoSchema);
+export const authorize: mongoose.Schema<UserAuthenticationInfo> =
+  new mongoose.Schema<UserAuthenticationInfo>({
+    password: { type: String, required: true },
+  });
+  
