@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { User, UserSchema } from './user';
+import { User, user } from './user';
 import { PackageMetadata, PackageMetadataSchema } from './packageMetadata';
 import mongoose from 'mongoose';
 
@@ -30,7 +30,7 @@ export interface PackageHistoryEntry {
 }
 
 export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> = new mongoose.Schema<PackageHistoryEntry>({
-    User: { type: UserSchema, required: true },
+    User: { type: user, required: true },
     Date: { type: String, required: true },
     PackageMetadata: { type: PackageMetadataSchema, required: true },
     Action: { type: String, required: true },

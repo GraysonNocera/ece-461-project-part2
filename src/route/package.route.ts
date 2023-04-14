@@ -196,7 +196,7 @@ packageRouter.get(
 // Update a package when PUT /package/:id is called
 packageRouter.put(
   "/:id",
-  authorizeUser,
+  /*authorizeUser, */
   async (req: Request, res: Response) => {
     logger.info("PUT /package/:id");
 
@@ -240,6 +240,7 @@ packageRouter.put(
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for PUT /package/:id");
+      res.status(400).send("Invalid JSON");
     }
   }
 );
