@@ -28,9 +28,6 @@ export async function postPackage(req: Request, res: Response) {
   let package_json: Object = {};
   let historyEntry;
 
-  // let test = new Date();
-  // test.toISOString();
-
   const { error } = PackageDataUploadValidation.validate(req?.body);
   if (error) {
     // Request body is not valid
@@ -79,11 +76,6 @@ export async function postPackage(req: Request, res: Response) {
     return;
   }
 
-  // Success: status 201
-
-  // Get metadata from package (from APIS?)
-  // We probably can get the name a version from something like a GraphQL call
-
   // Add metadata to package
   // TODO: If Name is "*" we throw error because that's reserved?
   if (packageToUpload.Content) {
@@ -98,17 +90,9 @@ export async function postPackage(req: Request, res: Response) {
   await packageToUpload.save();
   packageToUpload.updateOne({ name: packageToUpload.name, _id: packageToUpload._id }, { ID: packageToUpload._id.toString() });
 
-  // Add package to history
-  historyEntry = new PackageHistoryEntryModel({});
-
-  // TODO: Koltan :) how do we know the user that uploaded this?
-  historyEntry.User = {
-    name: "test",
-    isAdmin: true,
-  }
-
-  historyEntry.Date = new Date().toISOString();
-  historyEntry.PackageMetadata = packageToUpload.metadata;
+  // Save history entry
+  historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
+  await historyEntry.save();
 
   logger.info("POST /package: Package created successfully");
   res.status(201).send(packageToUpload);
@@ -206,6 +190,27 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
 
   return "1.0.0";
 };
+
+function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE") {
+  // Function description
+  // :param metadata: PackageMetadata
+  // :param action: string
+  // :return: PackageHistoryEntry
+
+  let historyEntry: PackageHistoryEntry = new PackageHistoryEntryModel({});
+  historyEntry.Date = new Date().toISOString();
+  historyEntry.PackageMetadata = metadata;
+  historyEntry.Action = action;
+
+  // Assign user that performed action
+  // TODO: Koltan :) how do we know the user that uploaded this?
+  historyEntry.User = {
+    name: "test",
+    isAdmin: true,
+  }
+
+  return historyEntry;
+}
 
 // async function main() {
 //     console.log(await getPackageURL(""));
