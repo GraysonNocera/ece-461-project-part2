@@ -8,7 +8,10 @@ import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 
-import { PackageRating, PackageRatingUploadValidation } from "../model/packageRating";
+import {
+  PackageRating,
+  PackageRatingUploadValidation,
+} from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFileSync } from "fs";
@@ -22,7 +25,8 @@ export async function postPackage(req: Request, res: Response) {
 
   let packageToUpload;
   let rating: PackageRating;
-  let url: string;
+  let package_json: Object = {};
+  let historyEntry;
 
   // let test = new Date();
   // test.toISOString();
@@ -48,23 +52,30 @@ export async function postPackage(req: Request, res: Response) {
   const package_query_results = await query.findOne(); // this should be an async function
   if (package_query_results) {
     logger.info("POST /package: Package already exists");
-    res.status(409).send(package_query_results);
+    res.status(409).send("Package exists already.");
     return;
   }
 
   if (packageToUpload.Content) {
-    url = await getPackageURL(packageToUpload.Content);
-  } else {
-    url = packageToUpload.URL;
+    package_json = await getPackageJSON(packageToUpload.Content);
+    try {
+      packageToUpload.URL = package_json["homepage"];
+    } catch (error) {
+      logger.debug("POST /package: Package not uploaded, no homepage field or no package.json");
+      res.status(400).send("Invalid Content");
+      return;
+    }
   }
+
+  // At this point, we have a package that is not in the database, and we have a URL for that package
 
   // Package not updated due to disqualified rating: status 423
   rating = ratePackage(packageToUpload.URL);
   if (!verifyRating(rating)) {
-    logger.info(
-      "POST /package: Package not updated due to disqualified rating"
-    );
-    res.status(423).send("Package not updated due to disqualified rating");
+    logger.info("POST /package: Package not updated, disqualified rating");
+    res
+      .status(424)
+      .send("Package is not uploaded due to the disqualified rating.");
     return;
   }
 
@@ -72,19 +83,32 @@ export async function postPackage(req: Request, res: Response) {
 
   // Get metadata from package (from APIS?)
   // We probably can get the name a version from something like a GraphQL call
-  // We can get the ID from the database (by mirroring the given _id field that mongoDB provides),
-  // just gotta figure out how to do that
-  let metadata: PackageMetadata = {
-    Name: "test",
-    Version: "1.0.0",
-    ID: "1234",
-  };
 
-  packageToUpload.metadata = metadata;
+  // Add metadata to package
+  // TODO: If Name is "*" we throw error because that's reserved?
+  if (packageToUpload.Content) {
+    packageToUpload.metadata.Name = package_json["name"];
+    packageToUpload.metadata.Version = package_json["version"];
+  } else {
+    packageToUpload.metadata.Name = (await getGitRepoDetails(packageToUpload.URL))?.username || "";
+    packageToUpload.metadata.Version = await getVersionFromURL(packageToUpload.URL, packageToUpload.metadata.Name);
+  }
 
-  // Create history entry
-
+  // Save package
   await packageToUpload.save();
+  packageToUpload.updateOne({ name: packageToUpload.name, _id: packageToUpload._id }, { ID: packageToUpload._id.toString() });
+
+  // Add package to history
+  historyEntry = new PackageHistoryEntryModel({});
+
+  // TODO: Koltan :) how do we know the user that uploaded this?
+  historyEntry.User = {
+    name: "test",
+    isAdmin: true,
+  }
+
+  historyEntry.Date = new Date().toISOString();
+  historyEntry.PackageMetadata = packageToUpload.metadata;
 
   logger.info("POST /package: Package created successfully");
   res.status(201).send(packageToUpload);
@@ -108,7 +132,9 @@ function verifyRating(packageRate: PackageRating) {
 
   const { error, value } = PackageRatingUploadValidation.validate(packageRate);
   if (error) {
-    logger.debug("verifyRating: Package does not meet qualifications for upload.");
+    logger.debug(
+      "verifyRating: Package does not meet qualifications for upload."
+    );
     return false;
   }
 
@@ -116,8 +142,7 @@ function verifyRating(packageRate: PackageRating) {
   return true;
 }
 
-async function getPackageURL(content: string): Promise<string> {
-
+async function getPackageJSON(content: string): Promise<Object> {
   logger.info("getPackageURL: Getting url from content base64 string");
 
   let zip: JSZip = new JSZip();
@@ -135,16 +160,52 @@ async function getPackageURL(content: string): Promise<string> {
   let package_json_object: Object;
   if (package_json_contents) {
     package_json_object = JSON.parse(package_json_contents);
-    if (package_json_object["homepage"]) {
-      logger.info("getPackageURL: Found homepage in package.json: " + package_json_object["homepage"]);
-      return package_json_object["homepage"];
+    if (package_json_object) {
+      logger.info("getPackageJSON: Found package.json");
+      return package_json_object;
     }
-    logger.debug("getPackageURL: No homepage found in package.json");
+    logger.debug("getPackageJSON: Unable to parse package.json");
   }
 
-  logger.debug("getPackageURL: No url found in package.json");
-  return "";
+  logger.debug("getPackageJSON: No package.json found");
+  return {};
 }
+
+async function getGitRepoDetails(url: string): Promise<{ username: string; repoName: string } | null> {
+  // Function description
+  // :param url: string url to parse
+  // :return: Promise of a username and reponame extracted from
+  // url or null
+
+  let match: RegExpMatchArray | null;
+
+  if (url.startsWith("git:")) {
+    // Parse ssh gitHub link
+    match = url.match(/git:\/\/github\.com\/([^\/]+)\/([^\/]+)\.git/);
+  } else {
+    // Parse https github link
+    match = url.match(/(?:https:\/\/github\.com\/)([^\/]+)\/([^\/]+)(?:\/|$)/);
+  }
+
+  // Assign username and repoName from URL regex
+  if (match) {
+    let repoName = match[2];
+    let username = match[1];
+    return { username, repoName };
+  }
+
+  return null;
+}
+
+async function getVersionFromURL(url: string, name: string): Promise<string> {
+  // API call to get the version of a package from its url and name
+  // :param url: string url
+  // :param name: string name of package
+
+  // Could someone who worked closely with the APIs in Part 1 do this part :)
+
+  return "1.0.0";
+};
 
 // async function main() {
 //     console.log(await getPackageURL(""));
