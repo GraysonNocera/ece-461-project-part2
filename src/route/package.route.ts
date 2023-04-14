@@ -92,6 +92,9 @@ packageRouter.get(
         User: {
           name: name,
           isAdmin: true,
+          isUpload: true,
+          isSearch: true,
+          isDownload: true,
         },
         Date: "2021-04-01",
         PackageMetadata: {

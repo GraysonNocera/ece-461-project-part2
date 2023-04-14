@@ -5,17 +5,9 @@ import { logger } from "../logging";
 import { User } from "../model/user";
 import { readFileSync } from "fs";
 import mongoose from "mongoose";
-import { UserAuthenticationInfo } from "../model/userAuthenticationInfo";
 const jwt = require("jsonwebtoken");
-
-const user = new mongoose.Schema<User>({
-  name: { type: String, required: true },
-  isAdmin: { type: Boolean, required: true },
-});
-
-const authorize = new mongoose.Schema<UserAuthenticationInfo>({
-  password: { type: String, required: true },
-});
+import { user } from "../model/user";
+import { authorize } from "../model/userAuthenticationInfo";
 
 const userdata = new mongoose.Schema({
   User: { type: user, required: true },
@@ -44,13 +36,28 @@ export const authorizeUser = (
 
         for (let x in data) {
           if (test.data.Secret.password == data[x].Secret.password) {
-            if (data[x].User.isAdmin) {
-              req.body.authorized = true;
+            if (data[x].User.name == test.data.User.name) {
+              if (data[x].User.isAdmin) {
+                req.body.authorized = true;
+                match = 1;
+              }
+              if (data[x].User.isUpload) {
+                req.body.upload = true;
+                match = 1;
+              }
+              if (data[x].User.isSearch) {
+                req.body.search = true;
+                match = 1;
+              }
+              if (data[x].User.isDownload) {
+                req.body.download = true;
+                match = 1;
+              }
+              next();
+              logger.info("auth success");
             } else {
               req.body.authorized = false;
             }
-            match = 1;
-            next();
           }
         }
         if (match != 1) {
