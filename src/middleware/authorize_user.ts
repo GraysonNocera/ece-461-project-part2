@@ -28,12 +28,8 @@ export const authorizeUser = (
   logger.info("authorizeUser: Authorizing user...");
   //logger.info(JSON.stringify(req.body));
   let auth: string = req.header("X-Authorization") || "";
-<<<<<<< HEAD
   logger.info("authorizeUser: Auth received " + auth);
 
-=======
-  logger.info(auth);
->>>>>>> d130eba0072c6f7219bd73f708649618782d387a
   try {
     if (auth != "") {
       try {

@@ -5,7 +5,7 @@ import { Request, Response } from "express";
 import { Package } from "../model/package";
 import { User } from "../model/user";
 import mongoose from "mongoose";
-import { UserModel } from "../model/user";
+// import { UserModel } from "../model/user";
 import { PackageMetadata } from "../model/packageMetadata";
 import { PackageData } from "../model/packageData";
 import { connectToMongo, disconnectFromMongo } from "../config/config";
