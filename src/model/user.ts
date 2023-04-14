@@ -11,6 +11,7 @@
  */
 
 import mongoose from "mongoose";
+import { authorize } from "./userAuthenticationInfo";
 /**
  *
  */
@@ -37,5 +38,10 @@ export const user: mongoose.Schema<User> = new mongoose.Schema<User>({
   isUpload: { type: Boolean, required: false },
   isDownload: { type: Boolean, required: false },
   isSearch: { type: Boolean, required: false },
+});
+
+export const userdata: mongoose.Schema = new mongoose.Schema({
+  User: { type: user, required: true },
+  Secret: { type: authorize, required: true },
 });
 

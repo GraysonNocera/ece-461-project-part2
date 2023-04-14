@@ -40,7 +40,7 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     };
 
     // authToken = { Token: authData.Secret.password };
-    if (req.body.authorized) {
+    if (req.headers["auth"]) {
       res.status(200).send(authToken);
     } else {
       res.status(403).send("Authentication Failed");

@@ -6,7 +6,6 @@ import { Package } from "../model/package";
 import mongoose from "mongoose";
 import { PackageMetadata } from "../model/packageMetadata";
 import { PackageData } from "../model/packageData";
-import { connectToMongo, disconnectFromMongo } from "../config/config";
 const express = require("express");
 
 export const resetRouter: Router = express.Router();
@@ -39,24 +38,23 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   let auth: string;
   try {
     logger.info("Request body: " + req.headers);
-    auth = req.header("X-Authorization") || "";
-    logger.info("Auth data: " + auth);
     // TODO: check authorization
 
     // TODO: reset registry
 
-    let test1 = new packages({
-      metadata: { Name: "test", Version: "1.01", ID: "420" },
-      data: { Content: "abc", URL: "urmom.com" },
-    });
+    // let test1 = new packages({
+    //   metadata: { Name: "test", Version: "1.01", ID: "420" },
+    //   data: { Content: "abc", URL: "urmom.com" },
+    // });
     // await connectToMongo();
     // await test1.save();
     // await disconnectFromMongo();
 
-    if (req.body.authorized) {
-      await connectToMongo();
+    if (req.headers["auth"]) {
+      //await connectToMongo();
       await packages.deleteMany({});
-      await disconnectFromMongo();
+      //await disconnectFromMongo();
+      logger.info("await mongo");
       res.status(200).send("Registry is reset");
     }
     res.status(401).send("You do not have permission to reset the registry.");
