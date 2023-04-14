@@ -37,13 +37,13 @@ export const authorizeUser = (
   //logger.info(JSON.stringify(req.body));
   let auth: string = req.header("X-Authorization") || "";
   logger.info(auth);
-
   try {
     if (auth != "") {
       try {
         let test: any = jwt.verify(auth, "B0!l3r-Up!");
+
         for (let x in data) {
-          if (test.data.password == data[x].Secret.password) {
+          if (test.data.Secret.password == data[x].Secret.password) {
             if (data[x].User.isAdmin) {
               req.body.authorized = true;
             } else {

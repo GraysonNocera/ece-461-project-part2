@@ -34,7 +34,7 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
 
     // TODO: encrypt user password
     authToken = {
-      Token: jwt.sign({ data: authData.Secret }, "B0!l3r-Up!", {
+      Token: jwt.sign({ data: authData }, "B0!l3r-Up!", {
         expiresIn: "10h",
       }),
     };
