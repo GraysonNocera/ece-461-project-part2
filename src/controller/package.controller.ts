@@ -10,6 +10,7 @@ import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 
 import {
   PackageRating,
+  PackageRatingModel,
   PackageRatingUploadValidation,
 } from "../model/packageRating";
 import * as cp from "child_process";
@@ -88,7 +89,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     packageToUpload.metadata.Name = package_json["name"];
     packageToUpload.metadata.Version = package_json["version"];
   } else {
-    packageToUpload.metadata.Name = (await getGitRepoDetails(packageToUpload.data.URL))?.username || "";
+    packageToUpload.metadata.Name = (await getGitRepoDetails(packageToUpload.data.URL))?.repoName || "";
     packageToUpload.metadata.Version = await getVersionFromURL(packageToUpload.data.URL, packageToUpload.metadata.Name);
   }
 
@@ -104,9 +105,14 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
 
   // Save history entry
   historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
-  historyEntry.rate = rating;
   await historyEntry.save();
   logger.info("POST /package: History entry saved successfully");
+
+  // Save rating
+  let rateEntry = new PackageRatingModel(rating);
+  rateEntry._id = historyEntry._id;
+  await rateEntry.save();
+  logger.info("POST /package: Rating saved successfully");
 
   logger.info("POST /package: Package created successfully");
   res.status(201).send(packageToUpload);
@@ -210,7 +216,7 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   return "1.0.0";
 };
 
-function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE") {
+function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE"): PackageHistoryEntry {
   // Function description
   // :param metadata: PackageMetadata
   // :param action: string
@@ -227,6 +233,9 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
     name: "test",
     isAdmin: true,
   }
+
+  // if (rate)
+  //   historyEntry.rate = rate;
 
   return historyEntry;
 }
