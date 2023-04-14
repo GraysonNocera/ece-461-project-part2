@@ -8,7 +8,7 @@ import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 
-import { PackageRating } from "../model/packageRating";
+import { PackageRating, PackageRatingUploadValidation } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFileSync } from "fs";
@@ -108,23 +108,14 @@ function ratePackage(url: string): PackageRating {
 
 function verifyRating(packageRate: PackageRating) {
   // There's gotta be a way to do this is one line with joi
-  const upload_qualifications = Joi.object({
-    NetScore: Joi.number().min(0.5).required(),
-    BusFactor: Joi.number().min(0.5).required(),
-    Correctness: Joi.number().min(0.5).required(),
-    RampUp: Joi.number().min(0.5).required(),
-    ResponsiveMaintainer: Joi.number().min(0.5).required(),
-    LicenseScore: Joi.number().min(0.5).required(),
-    GoodPinningPractice: Joi.number().min(0.5).required(),
-    GoodEngineeringPractice: Joi.number().min(0.5).required(),
-  });
 
-  const { error, value } = upload_qualifications.validate(packageRate);
+  const { error, value } = PackageRatingUploadValidation.validate(packageRate);
   if (error) {
-    logger.debug("Package does not meet qualifications for upload.");
+    logger.debug("verifyRating: Package does not meet qualifications for upload.");
     return false;
   }
 
+  logger.info("verifyRating: Package meets qualifications for upload.");
   return true;
 }
 
