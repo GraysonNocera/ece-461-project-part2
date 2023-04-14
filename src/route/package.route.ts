@@ -6,115 +6,23 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
 import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
-import { PackageHistoryEntryModel } from '../model/packageHistoryEntry';
+import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 
 import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
-import { readFile, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import path from "path";
-import { connectToMongo } from "../config/config";
-import { DateTime } from 'luxon';
-
+import { postPackage } from "../controller/package.controller";
 
 const express = require("express");
 
 export const packageRouter: Router = express.Router();
 
-// This ensures that Content, URL, and JSProgram are all inputted as strings
-const schema = Joi.object({
-  Content: Joi.string(),
-  URL: Joi.string(),
-  JSProgram: Joi.string(),
-});
-
 // Create a package when POST /package is called
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
-packageRouter.post(
-  "/",
-  /*authorizeUser, */ async (req: Request, res: Response) => {
-    const upload_schema = Joi.object({
-      Content: Joi.string(),
-      URL: Joi.string(),
-      JSProgram: Joi.string(),
-    }).xor("Content", "URL");
-
-    logger.info(`packageRouter: POST /package`);
-
-    let packageData: PackageData = {};
-    let rating: PackageRating;
-    try {
-      packageData = req?.body;
-      logger.info("POST /package: Package data: " + JSON.stringify(packageData));
-    } catch {
-      // Request body is not valid JSON
-      logger.debug("POST /package: Invalid JSON for POST /package");
-      res.status(400);
-      return;
-    }
-
-    // let test = new Date();
-    // test.toISOString();
-
-    const { error, value } = schema.validate(upload_schema);
-    if (error) {
-      // Request body is not valid
-      logger.debug("Request body is not valid");
-      res.status(400);
-      return;
-    }
-
-    // Check the inputted data
-
-    // Package already exists: status 409
-    const query = PackageModel.find();
-    query.or([
-      { "data.Content": packageData.Content },
-      { "data.URL": packageData.URL },
-    ]);
-    const package_query_results = await query.findOne(); // this should be an async function
-    if (package_query_results) {
-      logger.info("POST /package: Package already exists");
-      res.status(409).send(package_query_results);
-      return;
-    }
-
-    // Package not updated due to disqualified rating: status 423
-    if (packageData.URL) {
-      rating = ratePackage(packageData.URL);
-      if (!verifyRating(rating)) {
-        logger.info(
-          "POST /package: Package not updated due to disqualified rating"
-        );
-        res.status(423).send("Package not updated due to disqualified rating");
-        return;
-      }
-    }
-
-    // Success: status 201
-
-    // Get metadata from package (from APIS?)
-    // We probably can get the name a version from something like a GraphQL call
-    // We can get the ID from the database (by mirroring the given _id field that mongoDB provides),
-    // just gotta figure out how to do that
-    let metadata: PackageMetadata = {
-      Name: "test",
-      Version: "1.0.0",
-      ID: "1234",
-    };
-
-    let package_received = new PackageModel({
-      metadata: metadata,
-      data: packageData,
-    });
-
-    await package_received.save();
-
-    logger.info("POST /package: Package created successfully");
-    res.status(201).send(package_received);
-  }
-);
+packageRouter.post("/", /*authorizeUser, */ postPackage);
 
 // Create a package when GET /package/byName/{name} is called
 packageRouter.get(
@@ -144,21 +52,20 @@ packageRouter.get(
       //   Action: "CREATE",
       // };
 
-      const packageHistory = await PackageHistoryEntryModel.find({ 'PackageMetadata.Name': packageName }).exec();
+      const packageHistory = await PackageHistoryEntryModel.find({
+        "PackageMetadata.Name": packageName,
+      }).exec();
 
       if (!packageHistory || packageHistory.length === 0) {
-        return res.status(404).json({ message: 'No such package.' });
+        return res.status(404).json({ message: "No such package." });
       }
-  
 
       res.status(200).send([packageHistory]);
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for GET /package/byName/{name}");
-      res.status(500).json({ message: 'Unexpected error.'});
+      res.status(500).json({ message: "Unexpected error." });
     }
-
-    
   }
 );
 
@@ -287,7 +194,10 @@ packageRouter.get(
 );
 
 // Update a package when PUT /package/:id is called
-packageRouter.put("/:id", authorizeUser, async (req: Request, res: Response) => {
+packageRouter.put(
+  "/:id",
+  authorizeUser,
+  async (req: Request, res: Response) => {
     logger.info("PUT /package/:id");
 
     let id: number;
@@ -327,13 +237,12 @@ packageRouter.put("/:id", authorizeUser, async (req: Request, res: Response) => 
 
       // If status is 200, ok. Send 404 if package doesn't exist.
       res.status(200).send(package_received.toJSON());
-
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for PUT /package/:id");
     }
-});
-
+  }
+);
 
 // Delete a package when DELETE /package/:id is called
 packageRouter.delete(
@@ -425,40 +334,5 @@ packageRouter.post("/byRegEx", authorizeUser, (req: Request, res: Response) => {
     logger.info("Invalid JSON for POST /RegEx/{regex}");
   }
 });
-
-function ratePackage(url: string): PackageRating {
-  let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
-
-  cp.execSync(terminal_command);
-  const test_file = readFileSync(
-    path.join(__dirname, "../", "rate/score.json"),
-    "utf8"
-  );
-  const packageRate: PackageRating = JSON.parse(test_file);
-
-  return packageRate;
-}
-
-function verifyRating(packageRate: PackageRating) {
-  // There's gotta be a way to do this is one line with joi
-  const upload_qualifications = Joi.object({
-    NetScore: Joi.number().min(0.5).required(),
-    BusFactor: Joi.number().min(0.5).required(),
-    Correctness: Joi.number().min(0.5).required(),
-    RampUp: Joi.number().min(0.5).required(),
-    ResponsiveMaintainer: Joi.number().min(0.5).required(),
-    LicenseScore: Joi.number().min(0.5).required(),
-    GoodPinningPractice: Joi.number().min(0.5).required(),
-    GoodEngineeringPractice: Joi.number().min(0.5).required(),
-  });
-
-  const { error, value } = upload_qualifications.validate(packageRate);
-  if (error) {
-    logger.debug("Package does not meet qualifications for upload.");
-    return false;
-  }
-
-  return true;
-}
 
 // module.exports = packageRouter;
