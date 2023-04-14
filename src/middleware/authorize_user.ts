@@ -6,13 +6,8 @@ import { User } from "../model/user";
 import { readFileSync } from "fs";
 import mongoose from "mongoose";
 const jwt = require("jsonwebtoken");
-import { user } from "../model/user";
-import { authorize } from "../model/userAuthenticationInfo";
+import { userdata } from "../model/user";
 
-const userdata = new mongoose.Schema({
-  User: { type: user, required: true },
-  Secret: { type: authorize, required: true },
-});
 const info = mongoose.model("user", userdata);
 
 export const authorizeUser = (
@@ -26,7 +21,6 @@ export const authorizeUser = (
   const file = readFileSync(__dirname + "/key.json", "utf8");
   let data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
-  //logger.info(JSON.stringify(req.body));
   let auth: string = req.header("X-Authorization") || "";
   logger.info("authorizeUser: Auth received " + auth);
 
@@ -39,25 +33,34 @@ export const authorizeUser = (
           if (test.data.Secret.password == data[x].Secret.password) {
             if (data[x].User.name == test.data.User.name) {
               if (data[x].User.isAdmin) {
-                req.body.authorized = true;
+                req.headers["admin"] = true;
                 match = 1;
+              } else {
+                req.headers["admin"] = false;
               }
               if (data[x].User.isUpload) {
-                req.body.upload = true;
+                req.headers["upload"] = true;
                 match = 1;
+              } else {
+                req.headers["upload"] = false;
               }
               if (data[x].User.isSearch) {
-                req.body.search = true;
+                req.headers["search"] = true;
                 match = 1;
+              } else {
+                req.headers["search"] = false;
               }
               if (data[x].User.isDownload) {
-                req.body.download = true;
+                req.headers["download"] = true;
                 match = 1;
+              } else {
+                req.headers["download"] = false;
               }
+              req.headers["auth"] = true;
               next();
               logger.info("auth success");
             } else {
-              req.body.authorized = false;
+              req.headers["auth"] = false;
             }
           }
         }
@@ -76,11 +79,28 @@ export const authorizeUser = (
           req.body.Secret.password == data[x].Secret.password
         ) {
           if (data[x].User.isAdmin) {
-            req.body.authorized = true;
+            req.headers["admin"] = true;
           } else {
-            req.body.authorized = false;
+            req.headers["admin"] = false;
           }
+          if (data[x].User.isUpload) {
+            req.headers["upload"] = true;
+          } else {
+            req.headers["upload"] = false;
+          }
+          if (data[x].User.isSearch) {
+            req.headers["search"] = true;
+          } else {
+            req.headers["search"] = false;
+          }
+          if (data[x].User.isDownload) {
+            req.headers["download"] = true;
+          } else {
+            req.headers["download"] = false;
+          }
+          req.headers["auth"] = true;
           match = 1;
+          logger.info("auth success");
           next();
         }
       }
