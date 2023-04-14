@@ -13,9 +13,6 @@ export const authRouter: Router = express.Router();
 // THIS IS ONLY NEEDED FOR THE TOKEN REQUIREMENT, WHICH I THINK WE DROPPED
 // SO MAYBE WE WON'T NEED THIS AND THE X-AUTHORIZATION HEADER
 
-// THIS IS ONLY NEEDED FOR THE TOKEN REQUIREMENT, WHICH I THINK WE DROPPED
-// SO MAYBE WE WON'T NEED THIS AND THE X-AUTHORIZATION HEADER
-
 // This ensures that Content, URL, and JSProgram are all inputted as strings
 const schema = Joi.object({
   Content: Joi.string(),

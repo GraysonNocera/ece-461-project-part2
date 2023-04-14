@@ -11,6 +11,7 @@
  */
 
 import mongoose from "mongoose";
+
 /**
  * Authentication info for a user
  */

@@ -3,7 +3,6 @@ const express = require("express");
 import { Request, Response, NextFunction } from "express";
 import { logger } from "../logging";
 import { User } from "../model/user";
-import { readFileSync } from "fs";
 import mongoose from "mongoose";
 const jwt = require("jsonwebtoken");
 import { ProfileModel } from "../model/user";
@@ -13,17 +12,14 @@ export const authorizeUser = async (
   res: Response,
   next: NextFunction
 ) => {
-
-  let data2 = new ProfileModel({
-    User: { name: "test name", isAdmin: true },
-    Secret: { password: "ur mom" },
-  });
-  data2.save();
+  // let data2 = new ProfileModel({
+  //   User: { name: "test name", isAdmin: true },
+  //   Secret: { password: "ur mom" },
+  // });
+  // data2.save();
   // Authentication failed: status 403
   // req.body.authorized = false;
   let match: Number = 0;
-  const file = readFileSync(__dirname + "/key.json", "utf8");
-  let data = JSON.parse(file);
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
   logger.info(auth);
@@ -31,12 +27,15 @@ export const authorizeUser = async (
     if (auth != "") {
       try {
         let test: any = jwt.verify(auth, "B0!l3r-Up!");
-        let query = ProfileModel.findOne({
-          User: { name: test.data.User.name },
-          Secret: { pasword: test.data.Secret.password },
-        });
-        data = await query;
-        if (data) {
+        const query = ProfileModel.find();
+        query.or([
+          {
+            "User.name": test.data.User.name,
+          },
+          { "Secret.password": test.data.Secret.password },
+        ]);
+        const data = await query.findOne();
+        if (data != null) {
           if (test.data.Secret.password == data.Secret.password) {
             if (data.User.name == test.data.User.name) {
               if (data.User.isAdmin) {
@@ -80,12 +79,15 @@ export const authorizeUser = async (
       }
     }
     if (req.body.User.name && req.body.Secret.password) {
-      let query = ProfileModel.findOne({
-        User: { name: req.body.User.name },
-        Secret: { pasword: req.body.Secret.password },
-      });
-      data = await query;
-      if (data) {
+      const query = ProfileModel.find();
+      query.or([
+        {
+          "User.name": req.body.User.name,
+        },
+        { "Secret.password": req.body.Secret.password },
+      ]);
+      const data = await query.findOne();
+      if (data != null) {
         if (
           req.body.User.name == data.User.name &&
           req.body.Secret.password == data.Secret.password
