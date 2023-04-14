@@ -5,7 +5,8 @@ import { Request, Response } from 'express';
 import Joi from 'joi';
 import { AuthenticationRequest } from '../model/authenticationRequest';
 import { AuthenticationToken } from '../model/authenticationToken';
-const express = require('express');
+import { ProfileModel } from "../model/user";
+const express = require("express");
 const jwt = require("jsonwebtoken");
 export const authRouter: Router = express.Router();
 
@@ -31,7 +32,6 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
   try {
     authData = req.body;
     logger.info("Auth data: " + JSON.stringify(authData));
-
     // TODO: encrypt user password
     authToken = {
       Token: jwt.sign({ data: authData }, "B0!l3r-Up!", {

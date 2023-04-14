@@ -13,6 +13,12 @@ export const authorizeUser = async (
   res: Response,
   next: NextFunction
 ) => {
+
+  let data2 = new ProfileModel({
+    User: { name: "test name", isAdmin: true },
+    Secret: { password: "ur mom" },
+  });
+  data2.save();
   // Authentication failed: status 403
   // req.body.authorized = false;
   let match: Number = 0;
