@@ -54,7 +54,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     }
   }
 
-  packageToUpload.metadata = await getMetadata(packageToUpload.data, package_json);
+  packageToUpload.metadata = await getMetadata(packageToUpload.data.URL, package_json);
 
   // Package not updated due to disqualified rating: status 423
   rating = ratePackage(packageToUpload.data.URL);
@@ -207,7 +207,7 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
   return historyEntry;
 }
 
-async function getMetadata(packageData: PackageData, package_json: Object): Promise<PackageMetadata> {
+async function getMetadata(url: string, package_json: Object): Promise<PackageMetadata> {
   // Function description
   // :param packageData: PackageData
   // :return: PackageMetadata
@@ -216,13 +216,24 @@ async function getMetadata(packageData: PackageData, package_json: Object): Prom
 
   // Add metadata to package
   // TODO: If Name is "*" we throw error because that's reserved?
-  if (packageData.Content) {
+  if (package_json && package_json["name"] && package_json["version"]) {
     metadata.Name = package_json["name"];
     metadata.Version = package_json["version"];
   } else {
-    metadata.Name = (await getGitRepoDetails(packageData.URL || ""))?.repoName || "";
-    metadata.Version = await getVersionFromURL(packageData.URL || "", metadata.Name);
+    metadata.Name = (await getGitRepoDetails(url || ""))?.repoName || "";
+    metadata.Version = await getVersionFromURL(url || "", metadata.Name);
   }
 
   return metadata;
+}
+
+// Export all non-exported functions just for testing
+export const exportedForTesting = {
+  ratePackage,
+  verifyRating,
+  getPackageJSON,
+  getGitRepoDetails,
+  getVersionFromURL,
+  buildHistoryEntry,
+  getMetadata,
 }
