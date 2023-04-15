@@ -36,6 +36,7 @@ async function main() {
 
     // We can save this as a document in the database, and it will automatically be saved
     // into the models collection
+    console.log(data1._id);
     await data1.save(); // this should be an async function
     await data2.save();
 
