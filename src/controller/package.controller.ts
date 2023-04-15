@@ -85,7 +85,8 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   await rateEntry.save();
 
   logger.info("POST /package: Package created successfully");
-  return res.status(201).send(packageToUpload);
+
+  return res.status(201).send(packageToUpload.toObject());
 }
 
 function ratePackage(url: string): PackageRating {
