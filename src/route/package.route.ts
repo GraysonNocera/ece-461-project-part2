@@ -286,7 +286,7 @@ packageRouter.delete(
 );
 
 // Search packages via a Regex when POST /package/byRegEx is called
-packageRouter.post("/byRegEx", authorizeUser, async (req: Request, res: Response) => {
+packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //authorizeUser,
   logger.info("POST /package/byRegEx/{regex}");
 
   // let regex: string;
@@ -313,7 +313,7 @@ packageRouter.post("/byRegEx", authorizeUser, async (req: Request, res: Response
     // TODO: Get the package from the database using the regex
     // TODO: Return a list of packages
     const regex = new RegExp(regex_body, 'i');
-    const packages = await PackageModel.find({ "data.Name": regex }).exec();
+    const packages = await PackageModel.find({ "metadata.Name": regex }).exec();
 
     // EXAMPLE RESPONSE:
     // [
@@ -327,7 +327,7 @@ packageRouter.post("/byRegEx", authorizeUser, async (req: Request, res: Response
     //   },
     //   {
     //     "Version": "^1.2.3",
-    //     "Name": "React"
+    //     "Name": "Re
     //   }
     // ]
 
@@ -339,12 +339,13 @@ packageRouter.post("/byRegEx", authorizeUser, async (req: Request, res: Response
     // };
 
     logger.info("Preparing return_data");
+    // logger.info()
 
     // According to YML spec, return only name and version
     return_data = packages.map(pkg => {
       return {
-        Name: packageMetadata.Name,
-        Version: packageMetadata.Version
+        Name: pkg.metadata.Name,
+        Version: pkg.metadata.Version
       };
     });
 
