@@ -23,7 +23,10 @@ Content-Type: application/json
 {
     "User": {
         "name": "test name",
-        "isAdmin": true
+        "isAdmin": true,
+        "isUpload": false,
+        "isDownload": true, 
+        "isSearch": false
     },
     "Secret": {
         "password": "ur mom"
@@ -55,8 +58,7 @@ GET http://localhost:3000/package/4/rate
 ###
 
 DELETE http://localhost:3000/reset
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJ1ciBtb20ifSwiYXV0aG9yaXplZCI6dHJ1ZX0sImlhdCI6MTY4MTQ4MjA1MywiZXhwIjoxNjgxNTE4MDUzfQ.a-MIkMyDmsroBkLLA2iO8BSSmt79mNANBQ1F65bJnno
-###
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjpmYWxzZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoidXIgbW9tIn19LCJpYXQiOjE2ODE1MjMzODEsImV4cCI6MTY4MTU1OTM4MX0.VldgL74-uTMT4WTDBkpBt_Sss5LZevzVUfncjakO9kY
 
 GET http://localhost:3000/package/5
 X-Authorization: ur dad
@@ -93,4 +95,42 @@ Content-Type: application/json
 
 {
     "PackageRegEx": ".*test.*?rate"
+}
+
+###
+
+POST http://localhost:3000/user
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjpmYWxzZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoidXIgbW9tIn19LCJpYXQiOjE2ODE1MjMzODEsImV4cCI6MTY4MTU1OTM4MX0.VldgL74-uTMT4WTDBkpBt_Sss5LZevzVUfncjakO9kY
+Content-Type: application/json
+
+{
+        "User": {
+        "name": "ur_mom",
+        "isAdmin": true,
+        "isUpload": false,
+        "isDownload": true, 
+        "isSearch": false
+    },
+    "Secret": {
+        "password": "ece"
+    }
+}
+
+###
+
+DELETE http://localhost:3000/user
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjpmYWxzZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoidXIgbW9tIn19LCJpYXQiOjE2ODE1MjMzODEsImV4cCI6MTY4MTU1OTM4MX0.VldgL74-uTMT4WTDBkpBt_Sss5LZevzVUfncjakO9kY
+Content-Type: application/json
+
+{
+        "User": {
+        "name": "ur_mom",
+        "isAdmin": true,
+        "isUpload": false,
+        "isDownload": true, 
+        "isSearch": false
+    },
+    "Secret": {
+        "password": "ece"
+    }
 }

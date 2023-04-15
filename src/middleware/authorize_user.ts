@@ -63,6 +63,7 @@ export const authorizeUser = async (
                 req.headers["download"] = false;
               }
               req.headers["auth"] = true;
+              req.headers["username"] = test.data.User.name;
               next();
               logger.info("auth success");
             } else {
@@ -113,6 +114,7 @@ export const authorizeUser = async (
             req.headers["download"] = false;
           }
           req.headers["auth"] = true;
+          req.headers["username"] = req.body.User.name;
           match = 1;
           logger.info("auth success");
           next();

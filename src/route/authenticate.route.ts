@@ -4,8 +4,7 @@ import { logger } from '../logging';
 import { Request, Response } from 'express';
 import Joi from 'joi';
 import { AuthenticationRequest } from '../model/authenticationRequest';
-import { AuthenticationToken } from '../model/authenticationToken';
-import { ProfileModel } from "../model/user";
+import { AuthenticationToken } from "../model/authenticationToken";
 const express = require("express");
 const jwt = require("jsonwebtoken");
 export const authRouter: Router = express.Router();
@@ -35,7 +34,6 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
         expiresIn: "10h",
       }),
     };
-
     // authToken = { Token: authData.Secret.password };
     if (req.headers["auth"]) {
       res.status(200).send(authToken);

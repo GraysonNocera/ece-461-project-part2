@@ -15,17 +15,14 @@ export const resetRouter: Router = express.Router();
 resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /reset");
 
-  let auth: string;
   try {
     logger.info("Request body: " + req.headers);
     // TODO: check authorization
 
     // TODO: reset registry
 
-    if (req.body.authorized) {
-      await connectToMongo();
+    if (req.headers["admin"]) {
       await PackageModel.deleteMany({});
-      await disconnectFromMongo();
       res.status(200).send("Registry is reset");
     }
     res.status(401).send("You do not have permission to reset the registry.");

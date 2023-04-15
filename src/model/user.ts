@@ -25,19 +25,19 @@ export interface User {
    */
   isAdmin: boolean;
 
-  isUpload?: boolean;
+  isUpload: boolean;
 
-  isSearch?: boolean;
+  isSearch: boolean;
 
-  isDownload?: boolean;
+  isDownload: boolean;
 }
 
 export const user: mongoose.Schema<User> = new mongoose.Schema<User>({
   name: { type: String, required: true },
   isAdmin: { type: Boolean, required: true },
-  isUpload: { type: Boolean, required: false },
-  isDownload: { type: Boolean, required: false },
-  isSearch: { type: Boolean, required: false },
+  isUpload: { type: Boolean, required: true },
+  isDownload: { type: Boolean, required: true },
+  isSearch: { type: Boolean, required: true },
 });
 
 export const userdata: mongoose.Schema = new mongoose.Schema({
