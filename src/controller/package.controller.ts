@@ -29,20 +29,10 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let package_json: Object = {};
   let historyEntry;
 
-  const { error } = PackageDataUploadValidation.validate(req?.body);
-  if (error) {
-    // Request body is not valid
-    logger.debug("Request body is not valid");
-    res.status(400).send("Invalid request body");
-    return;
-  }
-
-  logger.info("Good data received.");
-
   // If you don't predefine Name and Version, you get an error
   packageToUpload = new PackageModel({
     data: req?.body,
-    metadata: { Name: "", Version: "", ID: "1234" },
+    metadata: { Name: "1234", Version: "1234", ID: "1234" },
   });
 
   // Package already exists: status 409
@@ -70,9 +60,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     }
   }
 
-  packageToUpload.metadata = getMetadata(packageToUpload, package_json);
-
-  // At this point, we have a package that is not in the database, and we have a URL for that package
+  packageToUpload.metadata = await getMetadata(packageToUpload.data, package_json);
 
   // Package not updated due to disqualified rating: status 423
   rating = ratePackage(packageToUpload.data.URL);
@@ -87,8 +75,9 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   // }
 
   // Save package
+  logger.info("POST /package: Saving package: " + packageToUpload);
+  // packageToUpload.metadata.ID = packageToUpload._id.toString();
   await packageToUpload.save();
-  // This is how you find by a nested property
   packageToUpload.metadata.ID = packageToUpload._id.toString();
 
   logger.info("POST /package: Package metadata added successfully " + packageToUpload.metadata);
@@ -112,7 +101,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
 }
 
 function ratePackage(url: string): PackageRating {
-  logger.info("ratePackage: Running rate script...");
+  logger.info("ratePackage: Running rate script on url " + url + "...");
 
   let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
 
@@ -235,7 +224,7 @@ async function getMetadata(packageData: PackageData, package_json: Object): Prom
   // :param packageData: PackageData
   // :return: PackageMetadata
 
-  let metadata: PackageMetadata = { Name: "", Version: "", ID: "" };
+  let metadata: PackageMetadata = { Name: "1234", Version: "1234", ID: "1234" };
 
   // Add metadata to package
   // TODO: If Name is "*" we throw error because that's reserved?
@@ -243,7 +232,7 @@ async function getMetadata(packageData: PackageData, package_json: Object): Prom
     metadata.Name = package_json["name"];
     metadata.Version = package_json["version"];
   } else {
-    metadata.Name = (await getGitRepoDetails(packageData.URL || ""))?.repoName || "";
+    metadata.Name = (await getGitRepoDetails(packageData.URL || ""))?.repoName || "1234";
     metadata.Version = await getVersionFromURL(packageData.URL || "", metadata.Name);
   }
 
