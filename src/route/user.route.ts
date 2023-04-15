@@ -33,7 +33,7 @@ export const userRouter: Router = express.Router();
 userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
   logger.info("DELETE /user");
   try {
-    if (req.headers["admin"]) {
+    if (res.locals.isAdmin) {
       // const query = PackageModel.where({ _id: id });
       // const package_received = await query.findOne();
       const query = ProfileModel.find();
@@ -42,12 +42,11 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
           "User.name": req.body.User.name,
         },
       ]);
-      let test = await query.deleteMany();
+      let test = await query.deleteOne();
       if (test.acknowledged) {
-        res.status(200).send("User profile successfuly deleted");
-        return;
+        return res.status(200).send("User profile successfuly deleted");
       }
-    } else if (req.headers["username"] == req.body.User.name) {
+    } else if (res.locals.username == req.body.User.name) {
       const query = ProfileModel.find();
       query.or([
         {
@@ -56,18 +55,16 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
       ]);
       let test = await query.deleteOne();
       if (test.acknowledged) {
-        res.status(200).send("User profile successfuly deleted");
-        return;
+        return res.status(200).send("User profile successfuly deleted");
       }
     } else {
-      res
+      return res
         .status(401)
         .send("You don't have the proper permissions to delete this account");
     }
 
     // add in stuff for checking admin if not admin check if user is the same as the profile trying to be deleted if not any of that then return no rights
   } catch (error) {
-    console.log(error);
     logger.info("Internal Error");
   }
 });
@@ -76,7 +73,7 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Request) => {
   logger.info("POST /user");
   try {
     //add in stuff for checking admin and creating new user
-    if (req.headers["admin"]) {
+    if (res.locals.isAdmin) {
       let account = new ProfileModel({
         User: {
           name: req.body.User.name,
@@ -88,9 +85,9 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Request) => {
         Secret: { password: req.body.Secret.password },
       });
       await account.save();
-      res.status(200).send("Account successfully created");
+      return res.status(200).send("Account successfully created");
     } else {
-      res
+      return res
         .status(401)
         .send("You don't have proper permissions to add an account");
     }

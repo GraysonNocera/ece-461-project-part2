@@ -21,7 +21,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
     // TODO: reset registry
 
-    if (req.headers["admin"]) {
+    if (res.locals.auth) {
       await PackageModel.deleteMany({});
       res.status(200).send("Registry is reset");
     }

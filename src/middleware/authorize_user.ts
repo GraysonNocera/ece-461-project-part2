@@ -23,6 +23,7 @@ export const authorizeUser = async (
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
   logger.info(auth);
+  res.locals.auth = false;
   try {
     if (auth != "") {
       try {
@@ -39,47 +40,43 @@ export const authorizeUser = async (
           if (test.data.Secret.password == data.Secret.password) {
             if (data.User.name == test.data.User.name) {
               if (data.User.isAdmin) {
-                req.headers["admin"] = true;
+                res.locals.isAdmin = true;
                 match = 1;
               } else {
-                req.headers["admin"] = false;
+                res.locals.isAdmin = false;
               }
               if (data.User.isUpload) {
-                req.headers["upload"] = true;
+                res.locals.upload = true;
                 match = 1;
               } else {
-                req.headers["upload"] = false;
+                res.locals.upload = false;
               }
               if (data.User.isSearch) {
-                req.headers["search"] = true;
+                res.locals.search = true;
                 match = 1;
               } else {
-                req.headers["search"] = false;
+                res.locals.search = false;
               }
               if (data.User.isDownload) {
-                req.headers["download"] = true;
+                res.locals.download = true;
                 match = 1;
               } else {
-                req.headers["download"] = false;
+                res.locals.download = false;
               }
-              req.headers["auth"] = true;
-              req.headers["username"] = test.data.User.name;
+              res.locals.auth = true;
+              res.locals.username = test.data.User.name;
               next();
               logger.info("auth success");
-            } else {
-              req.headers["auth"] = false;
             }
           }
         }
         if (match != 1) {
-          res.status(400).send("Invalid Token");
+          return res.status(400).send("Invalid Token");
         }
       } catch (error) {
-        logger.info(error);
-        res.status(400).send("Invalid Token");
+        return res.status(400).send("Invalid Token");
       }
-    }
-    if (req.body.User.name && req.body.Secret.password) {
+    } else if (req.body.User.name && req.body.Secret.password) {
       const query = ProfileModel.find();
       query.or([
         {
@@ -94,44 +91,47 @@ export const authorizeUser = async (
           req.body.Secret.password == data.Secret.password
         ) {
           if (data.User.isAdmin) {
-            req.headers["admin"] = true;
+            res.locals.isAdmin = true;
+            match = 1;
           } else {
-            req.headers["admin"] = false;
+            res.locals.isAdmin = false;
           }
           if (data.User.isUpload) {
-            req.headers["upload"] = true;
+            res.locals.upload = true;
+            match = 1;
           } else {
-            req.headers["upload"] = false;
+            res.locals.upload = false;
           }
           if (data.User.isSearch) {
-            req.headers["search"] = true;
+            res.locals.search = true;
+            match = 1;
           } else {
-            req.headers["search"] = false;
+            res.locals.search = false;
           }
           if (data.User.isDownload) {
-            req.headers["download"] = true;
+            res.locals.download = true;
+            match = 1;
           } else {
-            req.headers["download"] = false;
+            res.locals.download = false;
           }
-          req.headers["auth"] = true;
-          req.headers["username"] = req.body.User.name;
-          match = 1;
-          logger.info("auth success");
+          res.locals.auth = true;
+          res.locals.username = req.body.User.name;
           next();
         }
       }
       if (match != 1) {
-        res.status(401).send("Invalid user name or passwords");
+        return res.status(401).send("Invalid user name or passwords");
       }
-      next();
     } else {
-      res
+      return res
         .status(400)
         .send(
           "There is missing field(s) in the AuthenticationRequest or it is not formed properly"
         );
     }
-  } catch (error) {}
+  } catch (error) {
+    logger.info("Internal Error");
+  }
 
   //next();
 };
