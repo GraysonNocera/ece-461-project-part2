@@ -1,10 +1,8 @@
-import { Router } from "express";
 import { authorizeUser } from "../middleware/authorize_user";
 import { logger } from "../logging";
 import { PackageData } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
-import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 
@@ -18,8 +16,7 @@ import * as cp from "child_process";
 import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import path from "path";
-import { PackageDataUploadValidation } from "../model/packageData";
-import JSZip, { JSZipObject } from "jszip";
+import JSZip from "jszip";
 
 export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
   logger.info("postPackage: POST /package endpoint hit");
@@ -29,10 +26,9 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let package_json: Object = {};
   let historyEntry;
 
-  // If you don't predefine Name and Version, you get an error
+  // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
     data: req?.body,
-    metadata: { Name: "1234", Version: "1234", ID: "1234" },
   });
 
   // Package already exists: status 409
@@ -41,11 +37,10 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     { "data.Content": packageToUpload.data.Content },
     { "data.URL": packageToUpload.data.URL },
   ]);
-  const package_query_results = await query.findOne(); // this should be an async function
+  const package_query_results = await query.findOne();
   if (package_query_results) {
     logger.info("POST /package: Package already exists");
-    res.status(409).send("Package exists already.");
-    return;
+    return res.status(409).send("Package exists already.");
   }
 
   // Try to fetch the URL from the package_json
@@ -55,8 +50,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
       packageToUpload.data.URL = package_json["homepage"];
     } catch (error) {
       logger.debug("POST /package: Package not uploaded, no homepage field or no package.json");
-      res.status(400).send("Invalid Content");
-      return;
+      return res.status(400).send("Invalid Content");
     }
   }
 
@@ -76,14 +70,9 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
 
   // Save package
   logger.info("POST /package: Saving package: " + packageToUpload);
-  // packageToUpload.metadata.ID = packageToUpload._id.toString();
-  await packageToUpload.save();
   packageToUpload.metadata.ID = packageToUpload._id.toString();
-
+  await packageToUpload.save();
   logger.info("POST /package: Package metadata added successfully " + packageToUpload.metadata);
-
-  let return_ = await PackageModel.updateOne({ _id: packageToUpload._id }, { metadata: packageToUpload.metadata });
-  logger.info("POST /package: Package saved successfully, updated ID (changes: " + (return_.modifiedCount) + ")");
 
   // Save history entry
   historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
@@ -94,10 +83,9 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let rateEntry = new PackageRatingModel(rating);
   rateEntry._id = historyEntry._id;
   await rateEntry.save();
-  logger.info("POST /package: Rating saved successfully");
 
   logger.info("POST /package: Package created successfully");
-  res.status(201).send(packageToUpload);
+  return res.status(201).send(packageToUpload);
 }
 
 function ratePackage(url: string): PackageRating {
@@ -224,7 +212,7 @@ async function getMetadata(packageData: PackageData, package_json: Object): Prom
   // :param packageData: PackageData
   // :return: PackageMetadata
 
-  let metadata: PackageMetadata = { Name: "1234", Version: "1234", ID: "1234" };
+  let metadata: PackageMetadata = { Name: "", Version: "", ID: "" };
 
   // Add metadata to package
   // TODO: If Name is "*" we throw error because that's reserved?
@@ -232,14 +220,9 @@ async function getMetadata(packageData: PackageData, package_json: Object): Prom
     metadata.Name = package_json["name"];
     metadata.Version = package_json["version"];
   } else {
-    metadata.Name = (await getGitRepoDetails(packageData.URL || ""))?.repoName || "1234";
+    metadata.Name = (await getGitRepoDetails(packageData.URL || ""))?.repoName || "";
     metadata.Version = await getVersionFromURL(packageData.URL || "", metadata.Name);
   }
 
   return metadata;
 }
-
-// async function main() {
-//     console.log(await getPackageURL(""));
-// }
-// main();
