@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authorizeUser } from '../middleware/authorize_user';
+import { authorizeUser } from '../middleware/authorizeUser';
 import { logger } from '../logging';
 import { Request, Response } from 'express';
 import Joi from 'joi';

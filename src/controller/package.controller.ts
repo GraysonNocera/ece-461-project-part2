@@ -1,4 +1,4 @@
-import { authorizeUser } from "../middleware/authorize_user";
+import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
 import { PackageData } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
