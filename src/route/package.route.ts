@@ -16,6 +16,7 @@ import { Package, PackageModel } from "../model/package";
 import * as path from "path";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
+import mongoose from "mongoose";
 
 const express = require("express");
 
@@ -249,39 +250,26 @@ packageRouter.put(
 // Delete a package when DELETE /package/:id is called
 packageRouter.delete(
   "/:id",
-  authorizeUser,
+  /*authorizeUser, */
   async (req: Request, res: Response) => {
     logger.info("DELETE /package/:id");
 
-    let id: number = parseInt(req?.params?.id);
+    let package_received;
+    let id: string = req?.params?.id;
 
-    // No ID provided or bad auth, return 400
-    if (!id) {
-      res
-        .status(400)
-        .send(
-          "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
-        );
-      return;
+    try {
+      const query = PackageModel.where({ _id: new mongoose.Types.ObjectId(id) });
+      package_received = await query.deleteOne();
+    } catch {
+      return res.status(400).send("Invalid ID");
     }
-
-    const query = PackageModel.where({ _id: id });
-    const package_received = await query.findOne();
 
     // Package doesn't exist, return 404
-    if (!package_received) {
-      res.status(404).send("Package does not exist");
-      return;
+    if (!package_received.deletedCount) {
+      return res.status(404).send("Package does not exist.");
     }
 
-    // Delete package
-    const result = await query.deleteOne();
-    if (result) {
-      res.status(404).send("Package does not exist");
-      return;
-    }
-
-    res.status(200).send("Package is deleted.");
+    return res.status(200).send("Package is deleted.");
   }
 );
 

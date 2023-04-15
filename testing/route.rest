@@ -81,7 +81,7 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/package/5
+DELETE http://localhost:3000/package/643adfae80c2fd3135350df5
 X-Authorization: ur brotha
 
 ###

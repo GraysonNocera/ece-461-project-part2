@@ -11,6 +11,7 @@
  */
 
 import mongoose from "mongoose";
+import { transform } from "./transform";
 
 
 /**
@@ -36,5 +37,7 @@ export const PackageMetadataSchema = new mongoose.Schema<PackageMetadata>({
     Version: { type: String, required: true },
     ID: { type: String, required: true },
 });
+
+PackageMetadataSchema.set("toObject", { transform });
 
 export const PackageMetadataModel = mongoose.model<PackageMetadata>("PackageMetadata", PackageMetadataSchema);
