@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authorizeUser } from "../middleware/authorize_user";
 import { logger } from "../logging";
-import { PackageData } from "../model/packageData";
+import { PackageData, PackageDataUploadValidation } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
 // import Joi, { number } from "joi";
@@ -15,6 +15,7 @@ import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import * as path from "path";
 import { postPackage } from "../controller/package.controller";
+import { Validate } from "../middleware/validate";
 
 const express = require("express");
 
@@ -22,7 +23,7 @@ export const packageRouter: Router = express.Router();
 
 // Create a package when POST /package is called
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
-packageRouter.post("/", /*authorizeUser, */ postPackage);
+packageRouter.post("/", /*authorizeUser, */ Validate(PackageDataUploadValidation), postPackage);
 
 // Create a package when GET /package/byName/{name} is called
 packageRouter.get(
@@ -350,12 +351,12 @@ packageRouter.post("/byRegEx", authorizeUser, async (req: Request, res: Response
     logger.info("Sending status");
 
     // If status is 200, ok. Send 404 if package doesn't exist.
-    if (return_data.length > 0) {
+    if (packages.length > 0) {
       res.status(200).send(return_data);
     } else {
       res.status(404).send("No package found under this regex.");
     }
-    //res.status(404).send("No package found under this regex.");
+    res.status(404).send("No package found under this regex.");
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /RegEx/{regex}");
