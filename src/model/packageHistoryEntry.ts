@@ -34,7 +34,7 @@ export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> = n
     Date: { type: String, required: true },
     PackageMetadata: { type: PackageMetadataSchema, required: true },
     Action: { type: String, required: true },
-});
+  });
 
 export const PackageHistoryEntryModel = mongoose.model("PackageHistoryEntry", PackageHistoryEntrySchema);
 

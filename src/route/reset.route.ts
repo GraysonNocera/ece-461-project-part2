@@ -7,6 +7,7 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { PackageData } from "../model/packageData";
 import { PackageModel } from '../model/package';
 import { connectToMongo, disconnectFromMongo } from "../config/config";
+import { ProfileModel } from "../model/user";
 const express = require("express");
 
 export const resetRouter: Router = express.Router();
@@ -15,30 +16,34 @@ export const resetRouter: Router = express.Router();
 resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /reset");
 
-  let auth: string;
   try {
     logger.info("Request body: " + req.headers);
     // TODO: check authorization
 
     // TODO: reset registry
-
-    // let test1 = new packages({
-    //   metadata: { Name: "test", Version: "1.01", ID: "420" },
-    //   data: { Content: "abc", URL: "urmom.com" },
-    // });
-    // await connectToMongo();
-    // await test1.save();
-    // await disconnectFromMongo();
-
-    if (req.headers["auth"]) {
-      //await connectToMongo();
-      //await packages.deleteMany({});
-      //await disconnectFromMongo();
-      logger.info("await mongo");
+    const defaultuser = new ProfileModel({
+      User: {
+        name: "ece461defaultadminuser",
+        isAdmin: true,
+        isUpload: true,
+        isDownload: true,
+        isSearch: true,
+      },
+      Secret: {
+        password:
+          "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;",
+      },
+    });
+    //await defaultuser.save();
+    if (res.locals.isAdmin) {
+      await PackageModel.deleteMany({});
+      await ProfileModel.deleteMany({});
+      await defaultuser.save();
       res.status(200).send("Registry is reset");
+      return;
     }
     res.status(401).send("You do not have permission to reset the registry.");
-  } catch {
+  } catch (error) {
     // Request body is not valid JSON
     logger.info("Invalid JSON for DELETE /reset");
   }

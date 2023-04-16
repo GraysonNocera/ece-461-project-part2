@@ -11,6 +11,7 @@
  */
 
 import mongoose from "mongoose";
+
 /**
  * Authentication info for a user
  */
@@ -31,4 +32,5 @@ export const authorize: mongoose.Schema<UserAuthenticationInfo> =
   new mongoose.Schema<UserAuthenticationInfo>({
     password: { type: String, required: true },
   });
+  
   
