@@ -10,8 +10,7 @@ POST http://localhost:3000/package
 Content-Type: application/json
 
 {
-    "Content": "This is a test",
-    "URL": "https://github.com/winstonjs/winston",
+    "URL": "https://github.com/expressjs/express",
     "JSProgram": "console.log('Hello World')"
 }
 
@@ -84,17 +83,32 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/package/5
+DELETE http://localhost:3000/package/643adfae80c2fd3135350df5
 X-Authorization: ur brotha
 
 ###
 
-POST http://localhost:3000/package/byRegEx/.*test.*?rate
+POST http://localhost:3000/package/byRegEx
 X-Authorization: ur sistah
 Content-Type: application/json
 
 {
     "PackageRegEx": ".*test.*?rate"
+}
+
+###
+
+PUT http://localhost:3000/authenticate
+Content-Type: application/json
+
+{
+  "User": {
+    "name": "ece30861defaultadminuser",
+    "isAdmin": true
+  },
+  "Secret": {
+    "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+  }
 }
 
 ###

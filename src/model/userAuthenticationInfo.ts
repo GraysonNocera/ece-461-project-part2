@@ -22,8 +22,15 @@ export interface UserAuthenticationInfo {
   password: string;
 }
 
+
+export const UserAuthenticationInfoSchema: mongoose.Schema<UserAuthenticationInfo> = new mongoose.Schema<UserAuthenticationInfo>({
+    password: { type: String, required: true },
+});
+
+export const UserAuthenticationInfoModel = mongoose.model<UserAuthenticationInfo>("UserAuthenticationInfo", UserAuthenticationInfoSchema);
 export const authorize: mongoose.Schema<UserAuthenticationInfo> =
   new mongoose.Schema<UserAuthenticationInfo>({
     password: { type: String, required: true },
   });
+  
   

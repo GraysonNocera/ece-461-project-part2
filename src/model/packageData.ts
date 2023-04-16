@@ -11,6 +11,8 @@
  */
 
 import mongoose from "mongoose";
+import Joi from "joi";
+import { transform } from "./transform";
 
 /**
  * This is a \"union\" type. - On package upload, either Content or URL should be set. - On package update, exactly one field should be set. - On download, the Content field should be set.
@@ -36,4 +38,12 @@ export const PackageDataSchema: mongoose.Schema<PackageData> = new mongoose.Sche
     JSProgram: { type: String, required: false },
 });
 
+PackageDataSchema.set("toObject", { transform });
+
 export const PackageDataModel = mongoose.model<PackageData>("PackageData", PackageDataSchema);
+
+export const PackageDataUploadValidation = Joi.object({
+    Content: Joi.string(),
+    URL: Joi.string(),
+    JSProgram: Joi.string(),
+}).xor("Content", "URL");

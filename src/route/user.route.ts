@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { authorizeUser } from "../middleware/authorize_user";
+import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
 import { Request, Response } from "express";
 import { Package } from "../model/package";
@@ -15,6 +15,7 @@ const express = require("express");
 
 export const userRouter: Router = express.Router();
 
+// This was moved to the model/ files
 // const user = new mongoose.Schema<User>({
 //   name: { type: String, required: true },
 //   isAdmin: { type: Boolean, required: true },
@@ -28,7 +29,7 @@ export const userRouter: Router = express.Router();
 //   User: { type: user, required: true },
 //   Secret: { type: authorize, required: true },
 // });
-//const info = mongoose.model("info", userdata);
+// const info = mongoose.model("user", userdata);
 
 userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
   logger.info("DELETE /user");

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { authorizeUser } from '../middleware/authorize_user';
+import { authorizeUser } from '../middleware/authorizeUser';
 import { logger } from '../logging';
 import { Request, Response } from 'express';
 import Joi from 'joi';
@@ -19,7 +19,7 @@ const schema = Joi.object({
   JSProgram: Joi.string(),
 });
 
-// Create a package when POST /package is called
+// Create a package when PUT /authenticate is called
 authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
   logger.info("PUT /authenticate");
 
@@ -45,6 +45,8 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     logger.info(error);
     logger.info("Invalid JSON for PUT /authenticate");
   }
+
+  res.status(500).send("Internal Server Error");
 
   // Validate with joi (trivial example)
 });

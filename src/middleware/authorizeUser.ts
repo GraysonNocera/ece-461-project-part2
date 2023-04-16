@@ -28,6 +28,8 @@ export const authorizeUser = async (
   let match: Number = 0;
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
+  logger.info("authorizeUser: Auth received " + auth);
+
   logger.info(auth);
   res.locals.auth = false;
   try {
@@ -80,6 +82,7 @@ export const authorizeUser = async (
           return res.status(400).send("Invalid Token");
         }
       } catch (error) {
+        logger.debug(error);
         return res.status(400).send("Invalid Token");
       }
     } else if (req.body.User.name && req.body.Secret.password) {
@@ -136,7 +139,8 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-    logger.info("Internal Error");
+
+    logger.debug(error);
   }
 
   //next();

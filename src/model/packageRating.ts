@@ -10,6 +10,7 @@
  * Do not edit the class manually.
  */
 
+import Joi from "joi";
 import mongoose from "mongoose";
 
 
@@ -57,4 +58,15 @@ export const PackageRatingSchema: mongoose.Schema<PackageRating> = new mongoose.
   GoodEngineeringPractice: { type: Number, required: true },
 });
 
-export const PackageRatingModel = mongoose.model<PackageRating>("User", PackageRatingSchema);
+export const PackageRatingModel = mongoose.model<PackageRating>("PackageRating", PackageRatingSchema);
+
+export const PackageRatingUploadValidation = Joi.object({
+  NetScore: Joi.number().min(0.5).required(),
+  BusFactor: Joi.number().min(0.5).required(),
+  Correctness: Joi.number().min(0.5).required(),
+  RampUp: Joi.number().min(0.5).required(),
+  ResponsiveMaintainer: Joi.number().min(0.5).required(),
+  LicenseScore: Joi.number().min(0.5).required(),
+  GoodPinningPractice: Joi.number().min(0.5).required(),
+  GoodEngineeringPractice: Joi.number().min(0.5).required(),
+});
