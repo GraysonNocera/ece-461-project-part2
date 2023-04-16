@@ -9,8 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PackageMetadata } from './packageMetadata';
-import { PackageData } from './packageData';
+import { PackageMetadata, PackageMetadataSchema } from './packageMetadata';
+import { PackageData, PackageDataSchema } from './packageData';
+import mongoose from 'mongoose';
 
 
 export interface Package { 
@@ -18,3 +19,9 @@ export interface Package {
     data: PackageData;
 }
 
+export const PackageSchema: mongoose.Schema<Package> = new mongoose.Schema<Package>({
+    metadata: { type: PackageMetadataSchema, required: true },
+    data: { type: PackageDataSchema, required: true },
+});
+
+export const PackageModel = mongoose.model("package", PackageSchema);

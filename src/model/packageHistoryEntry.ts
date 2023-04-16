@@ -9,33 +9,42 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { User } from './user';
-import { PackageMetadata } from './packageMetadata';
-
+import { User, userdata } from "./user";
+import { PackageMetadata, PackageMetadataSchema } from "./packageMetadata";
+import mongoose from "mongoose";
 
 /**
  * One entry of the history of this package.
  */
-export interface PackageHistoryEntry { 
-    User: User;
-    /**
-     * Date of activity.
-     */
-    Date: string;
-    PackageMetadata: PackageMetadata;
-    /**
-     * 
-     */
-    Action: PackageHistoryEntry.ActionEnum;
+export interface PackageHistoryEntry {
+  User: User;
+  /**
+   * Date of activity using ISO-8601 Datetime standard in UTC format.
+   */
+  Date: string;
+  PackageMetadata: PackageMetadata;
+  /**
+   *
+   */
+  Action: PackageHistoryEntry.ActionEnum;
 }
 export namespace PackageHistoryEntry {
-    export type ActionEnum = 'CREATE' | 'UPDATE' | 'DOWNLOAD' | 'RATE';
-    export const ActionEnum = {
-        Create: 'CREATE' as ActionEnum,
-        Update: 'UPDATE' as ActionEnum,
-        Download: 'DOWNLOAD' as ActionEnum,
-        Rate: 'RATE' as ActionEnum
-    };
+  export type ActionEnum = "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE";
+  export const ActionEnum = {
+    Create: "CREATE" as ActionEnum,
+    Update: "UPDATE" as ActionEnum,
+    Download: "DOWNLOAD" as ActionEnum,
+    Rate: "RATE" as ActionEnum,
+  };
 }
 
+export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> =
+  new mongoose.Schema<PackageHistoryEntry>({
+    User: { type: userdata, required: true },
+    Date: { type: String, required: true },
+    PackageMetadata: { type: PackageMetadataSchema, required: true },
+    Action: { type: String, required: true },
+  });
+
+export const PackageHistoryEntryModel = mongoose.model("PackageHistoryEntry", PackageHistoryEntrySchema);
 
