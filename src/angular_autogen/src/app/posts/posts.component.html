@@ -1,5 +1,10 @@
-<h1> Totally working front end</h1>
-<textarea rows="6" #postInput></textarea>
+<h1> Totally working, ADA compliant front end</h1>
+<label for="API Request URL">Enter Request to Registry API: The Base URL is already defined and you just need to type in the rest of the path
+<br> <br>
+
+
+<textarea style="border:solid 2px black;" rows="1" #postInput></textarea> </label>
+
 <p></p>
-<button (click)="onAddPost(postInput)">Command me</button>
+<button (click)="onAddPost(postInput)">Send Request</button>
 <p>{{newPost}}</p>
