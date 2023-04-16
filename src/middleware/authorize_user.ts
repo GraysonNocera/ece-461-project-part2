@@ -13,7 +13,13 @@ export const authorizeUser = async (
   next: NextFunction
 ) => {
   // let data2 = new ProfileModel({
-  //   User: { name: "test name", isAdmin: true },
+  //   User: {
+  //     name: "test name",
+  //     isAdmin: true,
+  //     isUpload: true,
+  //     isDownload: true,
+  //     isSearch: true,
+  //   },
   //   Secret: { password: "ur mom" },
   // });
   // data2.save();
