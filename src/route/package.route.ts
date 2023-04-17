@@ -22,78 +22,21 @@ export const packageRouter: Router = express.Router();
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
 packageRouter.post("/", authorizeUser, Validate(PackageDataUploadValidation), postPackage);
 
-// Create a package when GET /package/byName/{name} is called
 packageRouter.get(
   "/byName/:name",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("GET /package/byName/{name}");
-
-    const packageName = req.params.name;
-    // let packageHistoryEntry: PackageHistoryEntry;
-
-    try {
-      logger.info("package name :" + packageName);
-
-      // TODO: Hit database to get package version information
-      // packageHistoryEntry = {
-      //   User: {
-      //     name: name,
-      //     isAdmin: true,
-      //   },
-      //   Date: "2021-04-01",
-      //   PackageMetadata: {
-      //     Name: "test package metadata",
-      //     Version: "1.0.0",
-      //     ID: "1234",
-      //   },
-      //   Action: "CREATE",
-      // };
-
-      const packageHistory = await PackageHistoryEntryModel.find({
-        "PackageMetadata.Name": packageName,
-      }).exec();
-
-      if (!packageHistory || packageHistory.length === 0) {
-        return res.status(404).json({ message: "No such package." });
-      }
-
-      res.status(200).send([packageHistory]);
-    } catch {
-      // Request body is not valid JSON
-      logger.info("Invalid JSON for GET /package/byName/{name}");
-      res.status(500).json({ message: "Unexpected error." });
-    }
+    logger.info("GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.");
+    return res.status(400).send("Not implementing this requirement.");
   }
 );
 
-// Return a package when DELETE /package/byName/{name} is called
 packageRouter.delete(
   "/byName/:name",
   authorizeUser,
   (req: Request, res: Response) => {
-    logger.info("DELETE /package/byName/{name}");
-
-    let name: string;
-    let auth: string;
-    try {
-      name = req.params.name;
-      auth = req.header("X-Authorization") || "";
-      // Require auth
-
-      logger.info("Auth data: " + auth);
-
-      // TODO: Get the package from the database using the name
-      // TODO: Delete package
-
-      // If status is 200, ok. Send 404 if package doesn't exist.
-      res.status(200).send("Package is deleted.");
-
-      res.status(404).send("Package does not exist.");
-    } catch {
-      // Request body is not valid JSON
-      logger.info("Invalid JSON for DELETE /package/:id");
-    }
+    logger.info("DELETE /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.");
+    return res.status(400).send("Not implementing this requirement.");
   }
 );
 
