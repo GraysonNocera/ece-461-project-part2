@@ -200,10 +200,10 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
 
   // Assign user that performed action
   // TODO: Koltan :) how do we know the user that uploaded this?
-  historyEntry.User = {
-    name: "test",
-    isAdmin: true,
-  }
+  // historyEntry.User = {
+  //   name: "test",
+  //   isAdmin: true,
+  // }
 
   return historyEntry;
 }

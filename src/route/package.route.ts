@@ -1,16 +1,12 @@
 import { Router } from "express";
 import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
-import { PackageData, PackageDataUploadValidation } from "../model/packageData";
+import { PackageDataUploadValidation } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
-// import Joi, { number } from "joi";
-import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-
 import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
-// import { PackageRating } from "./api/model/packageRating";
 import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import * as path from "path";
@@ -24,7 +20,7 @@ export const packageRouter: Router = express.Router();
 
 // Create a package when POST /package is called
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
-packageRouter.post("/", /*authorizeUser, */ Validate(PackageDataUploadValidation), postPackage);
+packageRouter.post("/", authorizeUser, Validate(PackageDataUploadValidation), postPackage);
 
 // Create a package when GET /package/byName/{name} is called
 packageRouter.get(

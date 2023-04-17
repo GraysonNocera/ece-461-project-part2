@@ -2,22 +2,11 @@ import { Router } from 'express';
 import { authorizeUser } from '../middleware/authorizeUser';
 import { logger } from '../logging';
 import { Request, Response } from 'express';
-import Joi from 'joi';
 import { AuthenticationRequest } from '../model/authenticationRequest';
 import { AuthenticationToken } from "../model/authenticationToken";
 const express = require("express");
 const jwt = require("jsonwebtoken");
 export const authRouter: Router = express.Router();
-
-// THIS IS ONLY NEEDED FOR THE TOKEN REQUIREMENT, WHICH I THINK WE DROPPED
-// SO MAYBE WE WON'T NEED THIS AND THE X-AUTHORIZATION HEADER
-
-// This ensures that Content, URL, and JSProgram are all inputted as strings
-const schema = Joi.object({
-  Content: Joi.string(),
-  URL: Joi.string(),
-  JSProgram: Joi.string(),
-});
 
 // Create a package when PUT /authenticate is called
 authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
