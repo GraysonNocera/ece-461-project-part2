@@ -3,28 +3,35 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=0.8">
     <title>Access Registry API</title>
 </head>
 
-
-<h1> Access Registry API </h1>
-<label for="username">Username:</label>
-<input type="text" id="username" name="username" aria-label="Username input field">
-<br><br>
-<label for="password">Password:</label>
-<input type="password" id="password" name="password" aria-label="Password input field">
-<br><br>
-<label for="API Request URL">API Request URL: The Base URL is already defined and you just need to type in the rest of
-    the path</label>
-<br><br>
-<textarea style="border: solid 2px black;" rows="2" #postInput aria-label="API request input field"></textarea>
-<br><br>
-<button (click)="onAddPost(postInput)" aria-label="Send request button">Send Request</button>
-<br><br>
-<div *ngIf="newPost" aria-live="polite">
-    <h2>Request:</h2>
-    <pre>localhost:3000/{{postInput.value}}</pre>
-    <h2>Server Response:</h2>
-    <pre>{{newPost}}</pre>
-</div>
+<body>
+    <main>
+        <h1>Access Registry API</h1>
+        <div class="input-container">
+            <div class="input-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" aria-label="Username input field">
+            </div>
+            <div class="input-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" aria-label="Password input field">
+            </div>
+        </div>
+        <br>
+        <label for="API Request URL">API Request URL: The Base URL is already defined and you just need to type in the
+            rest of the path</label>
+        <textarea style="border: solid 2px black;" rows="1" #postInput aria-label="API request input field"></textarea>
+        <br><br>
+        <button (click)="onAddPost(postInput)" aria-label="Send request button">Send Request</button>
+        <br><br>
+        <div *ngIf="newPost" aria-live="polite">
+            <h2>Request:</h2>
+            <pre>localhost:3000/{{postInput.value}}</pre>
+            <h2>Server Response:</h2>
+            <pre>{{newPost}}</pre>
+        </div>
+    </main>
+</body>
