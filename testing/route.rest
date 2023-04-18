@@ -46,8 +46,8 @@ POST http://localhost:3000/packages
 Content-Type: application/json
 
 {
-    "Name": "name of package",
-    "Version": "version of package"
+    "Name": "express",
+    "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
 }
 
 ###
