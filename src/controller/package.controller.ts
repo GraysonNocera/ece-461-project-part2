@@ -203,6 +203,9 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
   historyEntry.User = {
     name: "test",
     isAdmin: true,
+    isUpload: true,
+    isSearch: true,
+    isDownload: true
   }
 
   return historyEntry;
