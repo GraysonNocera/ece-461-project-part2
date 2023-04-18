@@ -1,47 +1,103 @@
 import { Router } from "express";
 import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
-import { PackageData } from "../model/packageData";
-import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
-import Joi from "joi";
-import { PackageHistoryEntry } from "../model/packageHistoryEntry";
-import { PackageQuery } from "../model/packageQuery";
+import { PackageQuery, PackageQueryValidation } from "../model/packageQuery";
+import { Validate } from "../middleware/validate";
+import { PackageModel } from "../model/package";
 
 const express = require("express");
 export const packagesRouter: Router = express.Router();
 
 // Create a package when POST /packages is called
-packagesRouter.post("/", authorizeUser, (req: Request, res: Response) => {
-  logger.info("POST /packages");
+packagesRouter.post(
+  "/",
+  /* authorizeUser, */ Validate(PackageQueryValidation),
+  async (req: Request, res: Response) => {
+    logger.info("POST /packages");
 
-  let offset: Number;
-  let packageQuery: PackageQuery;
-  let packageMetadata: PackageMetadata;
-  let returnObject;
-  try {
-    offset = Number(req.query.offset) || 0;
-    logger.info("package offset: " + offset);
-    packageQuery = req.body;
+    let offset: number;
+    let packageQuery: PackageQuery;
+    let packages: any[] = [];
+    let verionsToSearch: string[];
+    let results;
+    try {
+      offset = parseInt(req.query.offset) || 1;
+      logger.info("package offset: " + offset);
+      packageQuery = req.body;
 
-    // TODO: Search database for packages matching the query
-    packageMetadata = {
-      Name: packageQuery.Name,
-      Version: packageQuery.Version || "1.0.0",
-      ID: "1234567890",
-    };
+      verionsToSearch = getVersions(packageQuery.Version || "");
 
-    returnObject = {
-      Version: packageQuery.Version || "1.0.0",
-      Name: packageQuery.Name,
-    };
-    res.status(200).send([returnObject, returnObject]);
-  } catch {
-    // Request body is not valid JSON
-    logger.info("Invalid JSON for POST /packages");
+      logger.info("Versions to search: " + verionsToSearch);
+      logger.info("Name: " + packageQuery.Name);
+
+      if (packageQuery.Name == "*") {
+        results = await PackageModel.find({})
+          .select({ metadata: { Name: 1, Version: 1 } })
+          .exec();
+        if (results) {
+          logger.info("result: " + results);
+          results.forEach((result) => {
+            packages.push({
+              Name: result.metadata.Name,
+              Version: result.metadata.Version,
+            });
+          });
+        }
+
+        packages = packages.slice((offset - 1) * 30, offset * 30);
+
+        return res.status(200).send(packages);
+      }
+
+      // For each versions to search, search the database for a package
+      // with that version number and name
+      await Promise.all(verionsToSearch.map(async (version) => {
+        console.log(version);
+        console.log(
+          await PackageModel.find({ metadata: { Version: version } }).exec()
+        );
+        results = await PackageModel.find({
+          "metadata.Name": packageQuery.Name,
+          "metadata.Version": version,
+        })
+          .select({ metadata: { Name: 1, Version: 1 } })
+          .exec();
+        if (results) {
+          logger.info("result: " + results);
+          results.forEach((result) => {
+            logger.info("Adding result to packages: " + result);
+            let new_length = packages.push({
+              Name: result.metadata.Name,
+              Version: result.metadata.Version,
+            });
+            console.log("new length: " + new_length);
+          });
+        }
+      }));
+
+      console.log(packages);
+      packages = packages.slice((offset - 1) * 30, offset * 30);
+
+      return res.status(200).send(packages);
+    } catch {
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for POST /packages");
+      return res.status(400).send("Invalid JSON");
+    }
   }
+);
 
-  // Validate with joi (trivial example)
-});
+// Regex to get the version numbers from a string like this:
+// Exact (1.2.3) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+// Return a list of whatever is in the parentheses
+// The output of this would be ["1.2.3", "1.2.3-2.1.0", "^1.2.3", "~1.2.0"] (include the ^, ~, etc)
+function getVersions(versionString: string): string[] {
+  const regex = /\((.*?)\)/g;
+  const matches = versionString.match(regex);
+  if (matches === null) {
+    return [];
+  }
+  return matches.map((match) => match.slice(1, -1));
+}
 
-// module.exports = packagesRouter;
