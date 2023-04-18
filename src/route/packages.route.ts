@@ -115,3 +115,8 @@ function addResultToPackages(results: any[], packages: any[]): any[] {
 
   return packages;
 }
+
+// Export all non-exported functions just for testing
+export const exportedForTesting = {
+    addResultToPackages,
+}
