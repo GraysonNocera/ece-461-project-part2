@@ -20,7 +20,6 @@ packagesRouter.post(
     let packageQuery: PackageQuery;
     let packages: any[] = [];
     let verionsToSearch: string[];
-    let results;
     try {
       offset = parseInt(req.query.offset) || 1;
       logger.info("package offset: " + offset);
@@ -32,52 +31,23 @@ packagesRouter.post(
       logger.info("Name: " + packageQuery.Name);
 
       if (packageQuery.Name == "*") {
-        results = await PackageModel.find({})
-          .select({ metadata: { Name: 1, Version: 1 } })
-          .exec();
-        if (results) {
-          logger.info("result: " + results);
-          results.forEach((result) => {
-            packages.push({
-              Name: result.metadata.Name,
-              Version: result.metadata.Version,
-            });
-          });
-        }
-
-        packages = packages.slice((offset - 1) * 30, offset * 30);
+        packages = await getAllPackages(packages, offset);
 
         return res.status(200).send(packages);
       }
 
-      // For each versions to search, search the database for a package
+      // For each version to search, search the database for a package
       // with that version number and name
-      await Promise.all(verionsToSearch.map(async (version) => {
-        console.log(version);
-        console.log(
-          await PackageModel.find({ metadata: { Version: version } }).exec()
-        );
-        results = await PackageModel.find({
-          "metadata.Name": packageQuery.Name,
-          "metadata.Version": version,
+      await Promise.all(
+        verionsToSearch.map(async (version) => {
+          packages = await getPackagesByVersionName(
+            version,
+            packageQuery.Name,
+            packages,
+            offset
+          );
         })
-          .select({ metadata: { Name: 1, Version: 1 } })
-          .exec();
-        if (results) {
-          logger.info("result: " + results);
-          results.forEach((result) => {
-            logger.info("Adding result to packages: " + result);
-            let new_length = packages.push({
-              Name: result.metadata.Name,
-              Version: result.metadata.Version,
-            });
-            console.log("new length: " + new_length);
-          });
-        }
-      }));
-
-      console.log(packages);
-      packages = packages.slice((offset - 1) * 30, offset * 30);
+      );
 
       return res.status(200).send(packages);
     } catch {
@@ -101,3 +71,47 @@ function getVersions(versionString: string): string[] {
   return matches.map((match) => match.slice(1, -1));
 }
 
+async function getAllPackages(packages: any[], offset: number): Promise<any[]> {
+  // Search the database for all packages
+  let results: any[] = await PackageModel.find({})
+    .select({ metadata: { Name: 1, Version: 1 } })
+    .exec();
+
+  // Add the packages to the list of packages
+  packages = addResultToPackages(results, packages);
+
+  return packages.slice((offset - 1) * 30, offset * 30);
+}
+
+async function getPackagesByVersionName(
+  version: string,
+  name: string,
+  packages: any[],
+  offset: number
+): Promise<any[]> {
+  // Search the database for all packages
+  let results: any[] = await PackageModel.find({
+    "metadata.Name": name,
+    "metadata.Version": version,
+  })
+    .select({ metadata: { Name: 1, Version: 1 } })
+    .exec();
+
+  // Add the packages to the list of packages
+  packages = addResultToPackages(results, packages);
+
+  return packages.slice((offset - 1) * 30, offset * 30);
+}
+
+function addResultToPackages(results: any[], packages: any[]): any[] {
+  logger.info("Adding result to packages: " + results);
+
+  results.forEach((result) => {
+    packages.push({
+      Name: result.metadata.Name,
+      Version: result.metadata.Version,
+    });
+  });
+
+  return packages;
+}
