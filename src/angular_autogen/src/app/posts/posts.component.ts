@@ -103,7 +103,6 @@ export class PostsComponent {
     const password = (<HTMLInputElement>document.getElementById('password')).value;
     alert ("Logging In: Username - " + username + " Password - " + password );
     this.authenticate(username, password);
-    this.isLoggedIn = true;
   }
 
   logout() {
