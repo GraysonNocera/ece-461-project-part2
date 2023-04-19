@@ -34,12 +34,12 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   // Package already exists: status 409
   const query = PackageModel.find();
   query.or([
-    { "data.Content": packageToUpload.data.Content },
-    { "data.URL": packageToUpload.data.URL },
+    { "data.Content": { $exists: true,  $eq: packageToUpload.data.Content} },
+    { "data.URL": { $exists: true,  $eq: packageToUpload.data.URL } },
   ]);
   const package_query_results = await query.findOne();
   if (package_query_results) {
-    logger.info("POST /package: Package already exists");
+    logger.info("POST /package: Package already exists, got package: " + package_query_results);
     return res.status(409).send("Package exists already.");
   }
 
