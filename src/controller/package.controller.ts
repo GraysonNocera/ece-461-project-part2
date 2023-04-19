@@ -5,6 +5,7 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
+const isGitHubUrl = require("is-github-url");
 
 import {
   PackageRating,
@@ -17,6 +18,8 @@ import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
 import path from "path";
 import JSZip from "jszip";
+import { AxiosResponse } from "axios";
+import axios from "axios";
 
 export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
   logger.info("postPackage: POST /package endpoint hit");
@@ -30,6 +33,8 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   packageToUpload = new PackageModel({
     data: req?.body,
   });
+
+  packageToUpload.data.URL = packageToUpload.data.URL.startsWith("https://www.npmjs.com/package/") ? await npm_2_git(packageToUpload.data.URL) : packageToUpload.data.URL;
 
   // Package already exists: status 409
   const query = PackageModel.find();
@@ -55,6 +60,10 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   }
 
   packageToUpload.metadata = await getMetadata(packageToUpload.data.URL, package_json);
+  if (!packageToUpload.metadata) {
+    logger.info("POST /package: Package not uploaded, invalid metadata");
+    return res.status(400).send("Invalid Content or URL");
+  }
 
   // Package not updated due to disqualified rating: status 423
   rating = ratePackage(packageToUpload.data.URL);
@@ -211,7 +220,7 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
   return historyEntry;
 }
 
-async function getMetadata(url: string, package_json: Object): Promise<PackageMetadata> {
+async function getMetadata(url: string, package_json: Object): Promise<PackageMetadata | undefined> {
   // Function description
   // :param packageData: PackageData
   // :return: PackageMetadata
@@ -228,7 +237,84 @@ async function getMetadata(url: string, package_json: Object): Promise<PackageMe
     metadata.Version = await getVersionFromURL(url || "", metadata.Name);
   }
 
+  if (!metadata.Name || !metadata.Version) {
+    // We choked on the package trying to get its name and version
+    return undefined;
+  }
+
   return metadata;
+}
+
+export async function npm_2_git(npmUrl: string): Promise<string> {
+  // Takes a NPM package URL and returns the GitHub URL
+  // :param npmUrl: npm URL provided by text file
+  // :return: Promise of corresponding GitHub url string
+
+  // extract the package name from the npm URL
+  const packageName = npmUrl.split("/").pop();
+  let retries = 0;
+
+  while (retries < 1) {
+    try {
+      logger.info("Converting npm link (" + npmUrl + ") to GitHub link...");
+
+      // use the npm registry API to get the package information
+      const response: AxiosResponse = await axios.get(
+        `https://registry.npmjs.org/${packageName}`
+      );
+      const packageInfo = response.data;
+
+      // check if package has repository
+      if (!packageInfo.repository) {
+        logger.debug(`No repository found for package: ${packageName}`);
+        return Promise.resolve("");
+      }
+      let new_url = packageInfo.repository.url;
+
+      // Convert ssh to https url
+      if (new_url.startsWith("git+ssh://git@github.com")) {
+        new_url = new_url.replace(
+          "git+ssh://git@github.com",
+          "git://github.com"
+        );
+
+        logger.info("Converted npm link to " + new_url);
+
+        return new_url;
+      }
+      // check if repository is on github
+      if (isGitHubUrl(packageInfo.repository.url)) {
+        return packageInfo.repository.url.replace("git+https", "git");
+      } else {
+        logger.debug(`Repository of package: ${packageName} is not on GitHub`);
+        return Promise.resolve("");
+      }
+    } catch (error: any) {
+      // Error in getting GitHub url
+      logger.debug("Received error: " + error);
+      if (error.response && error.response.status === 404) {
+        logger.debug(`Package not found: ${packageName}`);
+        return Promise.resolve("");
+      } else if (error.response && error.response.status === 429) {
+        logger.debug(
+          `Rate limit exceeded: ${error.response.headers["Retry-After"]} seconds`
+        );
+        return Promise.resolve("");
+      } else if (error.code === "ECONNREFUSED") {
+        logger.debug(`Error: ${error.code}. Retrying...`);
+        retries++;
+        continue;
+      } else {
+        logger.debug(
+          "Respository of package: " + packageName + " is not on GitHub"
+        );
+        return Promise.resolve("");
+      }
+    }
+  }
+
+  logger.debug(`Error: Maximum retries exceeded for package: ${packageName}`);
+  return Promise.resolve("");
 }
 
 // Export all non-exported functions just for testing
