@@ -10,28 +10,23 @@ export class PostsComponent {
   constructor(public PostService: PostService) { }
 
   newPost = '';
-  enteredValue = '';
-  test = 'http://localhost:3000/';
   isLoggedIn = false;
+  apiUrl = 'http://localhost:3000/';
 
   addPost(postInput: HTMLTextAreaElement) {
-    const apiUrl = 'http://localhost:3000';
     const authToken = localStorage.getItem('jwtToken_461_API');
-    const requestUrl = `${apiUrl}${postInput.value}`;
+    const requestUrl = `${this.apiUrl}${postInput.value}`;
     const requestHeaders = new Headers({
       'Content-Type': 'application/json',
       'X-Authorization': `Bearer ${authToken}`
     });
-
-
-    console.log (requestUrl);
-
+    
     this.sendRequest(requestUrl, requestHeaders);
   }
 
   authenticate(username: string, password: string) {
-    const apiUrl = 'http://localhost:3000';
-    const authUrl = `${apiUrl}/authenticate`;
+    const authUrl = `${this.apiUrl}authenticate`;
+    alert ("Authenticating at " + authUrl);
     const authRequestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -52,6 +47,7 @@ export class PostsComponent {
     fetch(authUrl, authRequestOptions)
       .then(response => {
         if (!response.ok) {
+          alert ('Authentication failed.');
           throw new Error('Authentication failed.');
         }
         return response.json();
@@ -59,24 +55,28 @@ export class PostsComponent {
       .then(data => {
         const newAuthToken = data;
         localStorage.setItem('jwtToken_461_API', newAuthToken);
-        const requestUrl = `${apiUrl}${this.newPost}`;
+        const requestUrl = `${this.apiUrl}${this.newPost}`;
         const requestHeaders = new Headers({
           'Content-Type': 'application/json',
           'X-Authorization': `Bearer ${newAuthToken}`
         });
         this.isLoggedIn = true;
+        alert ("Authentication Successful");
         this.sendRequest(requestUrl, requestHeaders);
       })
       .catch(error => {
+        alert ("Authentication Failed");
         console.error('Error:', error);
       });
   }
 
   sendRequest(requestUrl: string, requestHeaders: Headers) {
+    alert ("Sending Request at " + requestUrl);
     console.log('Making request to URL:', requestUrl, 'with headers:', requestHeaders);
     fetch(requestUrl, { headers: requestHeaders })
       .then(response => {
         if (!response.ok) {
+          alert ("Request Failed");
           throw new Error('Request failed.');
         }
         return response.json();
@@ -88,12 +88,12 @@ export class PostsComponent {
       .catch(error => {
         console.error('Error:', error);
         if (error.message === 'Request failed.') {
+          alert ("Authentication Token Expired. Please enter username and password");
           console.log('Auth token expired. Prompting user to enter username and password.');
           // const usernameInput = prompt('Please enter your username:');
           // const passwordInput = prompt('Please enter your password:');
           // this.authenticate(usernameInput, passwordInput);
 
-          alert ("Authentication Token Expired. Please enter username and password");
         }
       });
   }
