@@ -89,6 +89,7 @@ async function getPackagesByVersionName(
   packages: any[],
   offset: number
 ): Promise<any[]> {
+
   // Search the database for all packages
   let results: any[] = await PackageModel.find({
     "metadata.Name": name,
@@ -119,4 +120,6 @@ function addResultToPackages(results: any[], packages: any[]): any[] {
 // Export all non-exported functions just for testing
 export const exportedForTesting = {
     addResultToPackages,
+    getPackagesByVersionName,
+    getVersions,
 }

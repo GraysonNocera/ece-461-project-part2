@@ -1,6 +1,6 @@
 // Write tests for the functions found in ../src/route/packages.route.ts
 import { exportedForTesting } from "../src/route/packages.route";
-const { addResultToPackages } = exportedForTesting;
+const { addResultToPackages, getVersions } = exportedForTesting;
 
 describe("Test for packages route", () => {
 
@@ -19,6 +19,20 @@ describe("Test for packages route", () => {
       expect(package_.Name).toBe(results[index].metadata.Name);
       expect(package_.Version).toBe(results[index].metadata.Version);
     })
+  });
+
+  test('returns the versions in parentheses', () => {
+    const versionString = 'Exact (1.2.3) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)';
+    const expected = ['1.2.3', '1.2.3-2.1.0', '^1.2.3', '~1.2.0'];
+    const result = getVersions(versionString);
+    expect(result).toEqual(expected);
+  });
+
+  test('returns an empty array for a string with no parentheses', () => {
+    const versionString = 'No parentheses';
+    const expected: string[] = [];
+    const result = getVersions(versionString);
+    expect(result).toEqual(expected);
   });
 });
 
@@ -44,8 +58,6 @@ function getRandomString(length: number): string {
   let result = "";
   let characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let charactersLength = characters.length;
-
-  // Use the seed to get 
 
   for (let i = 0; i < length; i++) {
     result += characters.charAt(Math.floor(Math.random() * charactersLength));
