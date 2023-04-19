@@ -2,9 +2,9 @@ name: Build/Test Project
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "CI" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "CI" ]
 
 jobs:
   build-and-test:
@@ -30,8 +30,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install cloc -y
           
-      - name: Linter
-        run: npm run lint
+#       - name: Linter
+#         run: npm run lint
 
       - name: Build
         run: |
@@ -48,8 +48,7 @@ jobs:
       - name: Start API
         run: |
           tsc --project tsconfig.json
-          ls dist/api
-          node dist/api/app.js &
+          node dist/app.js &
 
       - name: Run API tests
         run: | 

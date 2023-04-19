@@ -9,8 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { User } from './user';
-import { UserAuthenticationInfo } from './userAuthenticationInfo';
+import mongoose from 'mongoose';
+import { User, UserSchema } from './user';
+import { UserAuthenticationInfo, UserAuthenticationInfoSchema } from './userAuthenticationInfo';
 
 
 /**
@@ -21,3 +22,9 @@ export interface AuthenticationRequest {
     Secret: UserAuthenticationInfo;
 }
 
+export const AuthenticationRequestSchema: mongoose.Schema<AuthenticationRequest> = new mongoose.Schema<AuthenticationRequest>({
+    User: { type: UserSchema, required: true },
+    Secret: { type: UserAuthenticationInfoSchema, required: true },
+});
+
+export const AuthenticationRequestModel = mongoose.model("AuthenticationRequest", AuthenticationRequestSchema);

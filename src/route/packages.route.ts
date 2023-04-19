@@ -1,10 +1,9 @@
 import { Router } from 'express';
-import { authorizeUser } from '../middleware/authorize_user';
+import { authorizeUser } from '../middleware/authorizeUser';
 import { logger } from '../logging';
 import { PackageData } from '../model/packageData';
 import { PackageMetadata } from '../model/packageMetadata';
 import { Request, Response } from 'express';
-import { packages } from '../app';
 import Joi from 'joi';
 import { PackageHistoryEntry } from '../model/packageHistoryEntry';
 import { PackageQuery } from '../model/packageQuery';

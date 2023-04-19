@@ -10,8 +10,7 @@ POST http://localhost:3000/package
 Content-Type: application/json
 
 {
-    "Content": "This is a test",
-    "URL": "https://github.com/winstonjs/winston",
+    "URL": "https://github.com/expressjs/express",
     "JSProgram": "console.log('Hello World')"
 }
 
@@ -23,10 +22,13 @@ Content-Type: application/json
 {
     "User": {
         "name": "test name",
-        "isAdmin": true
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true, 
+        "isSearch": true
     },
     "Secret": {
-        "password": "test password"
+        "password": "ur mom"
     }
 }
 
@@ -55,9 +57,7 @@ GET http://localhost:3000/package/4/rate
 ###
 
 DELETE http://localhost:3000/reset
-X-Authorization: "ur mom"
-
-###
+X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwNjMwLCJleHAiOjE2ODE2NTY2MzB9.Md7lT4KK-cpxczJmYkyXMyD7g2mNPMrpFq7nXne66_0
 
 GET http://localhost:3000/package/5
 X-Authorization: ur dad
@@ -83,15 +83,68 @@ Content-Type: application/json
 
 ###
 
-DELETE http://localhost:3000/package/5
+DELETE http://localhost:3000/package/643adfae80c2fd3135350df5
 X-Authorization: ur brotha
 
 ###
 
-POST http://localhost:3000/package/byRegEx/.*test.*?rate
+POST http://localhost:3000/package/byRegEx
 X-Authorization: ur sistah
 Content-Type: application/json
 
 {
     "PackageRegEx": ".*test.*?rate"
+}
+
+###
+
+PUT http://localhost:3000/authenticate
+Content-Type: application/json
+
+{
+  "User": {
+    "name": "ece30861defaultadminuser",
+    "isAdmin": true
+  },
+  "Secret": {
+    "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+  }
+}
+
+###
+
+POST http://localhost:3000/user
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwMzY1LCJleHAiOjE2ODE2NTYzNjV9.svQ_rAvHSkSMGnRr1X96jrVtmk4U0y4D3BmaytUUPNY
+Content-Type: application/json
+
+{
+        "User": {
+        "name": "ece461defaultadminuser",
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true, 
+        "isSearch": true
+    },
+    "Secret": {
+        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+    }
+}
+
+###
+
+DELETE http://localhost:3000/user
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjpmYWxzZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoidXIgbW9tIn19LCJpYXQiOjE2ODE2MTk3NDQsImV4cCI6MTY4MTY1NTc0NH0.brIJG9rX2V2WuVzOP7w_8IX_od8cu2unMNPACNpneog
+Content-Type: application/json
+
+{
+        "User": {
+        "name": "ur_mom",
+        "isAdmin": true,
+        "isUpload": false,
+        "isDownload": true, 
+        "isSearch": false
+    },
+    "Secret": {
+        "password": "ece"
+    }
 }

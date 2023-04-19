@@ -1,7 +1,19 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Ignore downloaded packages
 node_modules/**
-dist/**
-package-lock.json
 node_modules
+
+# Ignore compiled files
+dist/**
+
+package-lock.json
 .DS_Store
 *.log
+
+# Some bug in Grayson's OS or something not sure
 **/*2*
+
+# Ignore the score.json file and jsons/ output of rate module
+**/score.json
+**/jsons

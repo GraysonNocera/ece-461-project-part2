@@ -1,144 +1,108 @@
-import { Router } from 'express';
-import { authorizeUser } from '../middleware/authorize_user';
-import { logger } from '../logging';
-import { PackageData } from '../model/packageData';
-import { PackageMetadata } from '../model/packageMetadata';
-import { Request, Response } from 'express';
-import { packages } from '../app';
-import Joi, { number } from "joi";
+import { Router } from "express";
+import { authorizeUser } from "../middleware/authorizeUser";
+import { logger } from "../logging";
+import { PackageData, PackageDataUploadValidation } from "../model/packageData";
+import { PackageMetadata } from "../model/packageMetadata";
+import { Request, Response } from "express";
+// import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
+import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
+
 import { PackageRating } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
-import { readFile, readFileSync } from "fs";
-import { Package } from '../model/package';
-import path from 'path';
+import { readFileSync } from "fs";
+import { Package, PackageModel } from "../model/package";
+import * as path from "path";
+import { postPackage } from "../controller/package.controller";
+import { Validate } from "../middleware/validate";
+import mongoose from "mongoose";
 
 const express = require("express");
 
 export const packageRouter: Router = express.Router();
 
-// This ensures that Content, URL, and JSProgram are all inputted as strings
-const schema = Joi.object({
-  Content: Joi.string(),
-  URL: Joi.string(),
-  JSProgram: Joi.string(),
-});
-
 // Create a package when POST /package is called
-packageRouter.post("/", authorizeUser, (req: Request, res: Response) => {
-  logger.info("POST /package");
-
-  let packageData: PackageData = {};
-  try {
-    packageData = req.body;
-    logger.info("Package data: " + JSON.stringify(packageData));
-  } catch {
-    // Request body is not valid JSON
-    logger.info("Invalid JSON for POST /package");
-  }
-
-  // Validate with joi (trivial example)
-  const { error, value } = schema.validate(packageData);
-  if (error) {
-    // Request body is not valid
-  }
-
-  // Check the inputted data
-
-  // Package already exists: status 409
-
-  // Package not updated due to disqualified rating: status 423
-
-  // Success: status 201
-
-  // Get metadata from package (from APIS?)
-  let metadata: PackageMetadata = {
-    Name: "test",
-    Version: "1.0.0",
-    ID: "1234",
-  };
-
-  // Store this package in database
-  // for now, just store it in memory
-  packages.push(packageData);
-
-  logger.info("POST /package: Package created successfully");
-  res.status(201).send({
-    metadata: metadata,
-    data: {
-      Content: packageData.Content,
-      JSProgram: packageData.JSProgram,
-    },
-  });
-});
+// Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
+packageRouter.post("/", /*authorizeUser, */ Validate(PackageDataUploadValidation), postPackage);
 
 // Create a package when GET /package/byName/{name} is called
 packageRouter.get(
   "/byName/:name",
   authorizeUser,
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     logger.info("GET /package/byName/{name}");
 
-    let name: string;
-    let packageHistoryEntry: PackageHistoryEntry;
+    const packageName = req.params.name;
+    // let packageHistoryEntry: PackageHistoryEntry;
+
     try {
-      name = req.params.name;
-      logger.info("package name :" + name);
+      logger.info("package name :" + packageName);
 
       // TODO: Hit database to get package version information
-      packageHistoryEntry = {
-        User: {
-          name: name,
-          isAdmin: true,
-        },
-        Date: "2021-04-01",
-        PackageMetadata: {
-          Name: "test package metadata",
-          Version: "1.0.0",
-          ID: "1234",
-        },
-        Action: PackageHistoryEntry.ActionEnum.Create,
-      };
+      // packageHistoryEntry = {
+      //   User: {
+      //     name: name,
+      //     isAdmin: true,
+      //   },
+      //   Date: "2021-04-01",
+      //   PackageMetadata: {
+      //     Name: "test package metadata",
+      //     Version: "1.0.0",
+      //     ID: "1234",
+      //   },
+      //   Action: "CREATE",
+      // };
 
-      res.status(200).send([packageHistoryEntry, packageHistoryEntry]);
+      const packageHistory = await PackageHistoryEntryModel.find({
+        "PackageMetadata.Name": packageName,
+      }).exec();
+
+      if (!packageHistory || packageHistory.length === 0) {
+        return res.status(404).json({ message: "No such package." });
+      }
+
+      res.status(200).send([packageHistory]);
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for GET /package/byName/{name}");
+      res.status(500).json({ message: "Unexpected error." });
     }
-
-    // Validate with joi (trivial example)
   }
 );
 
 // Return a package when DELETE /package/byName/{name} is called
-packageRouter.delete('/byName/:name', authorizeUser, (req: Request, res: Response) =>  {
+packageRouter.delete(
+  "/byName/:name",
+  authorizeUser,
+  (req: Request, res: Response) => {
     logger.info("DELETE /package/byName/{name}");
 
     let name: string;
     let auth: string;
     try {
-        name = req.params.name;
-        auth = req.header('X-Authorization') || "";
-        // Require auth
+      name = req.params.name;
+      auth = req.header("X-Authorization") || "";
+      // Require auth
 
-        logger.info("Auth data: " + auth);
+      logger.info("Auth data: " + auth);
 
-        // TODO: Get the package from the database using the name
-        // TODO: Delete package
+      // TODO: Get the package from the database using the name
+      // TODO: Delete package
 
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send("Package is deleted.");
+      // If status is 200, ok. Send 404 if package doesn't exist.
+      res.status(200).send("Package is deleted.");
 
-        res.status(404).send("Package does not exist.");
+      res.status(404).send("Package does not exist.");
     } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for DELETE /package/:id");
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for DELETE /package/:id");
     }
-});
+  }
+);
 
 // Rate a package when GET /package/:id/rate is called
-packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  {
+packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
   logger.info("GET /package/:id/rate");
 
   let id: number;
@@ -156,9 +120,11 @@ packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  
     terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
 
     cp.execSync(terminal_command);
-    const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
+    const test_file = readFileSync(
+      path.join(__dirname, "../", "rate/score.json"),
+      "utf8"
+    );
     packageRate = JSON.parse(test_file);
-    console.log(packageRate.GoodEngineeringPractice);
     if (
       packageRate.NetScore == Number(-1) ||
       packageRate.BusFactor == Number(-1) ||
@@ -184,160 +150,208 @@ packageRouter.get('/:id/rate', authorizeUser, (req: Request, res: Response) =>  
   // Validate with joi (trivial example)
 });
 
-// Get a package when GET /package/:id is called
-packageRouter.get('/:id', authorizeUser, (req: Request, res: Response) =>  {
+// Fetch a package when GET /package/:id is called
+packageRouter.get(
+  "/:id",
+  authorizeUser,
+  async (req: Request, res: Response) => {
     logger.info("GET /package/:id");
 
-    let id: number;
-    let auth: string;
-    let packageInfo: Package;
-    try {
-        id = parseInt(req.params.id);
-        auth = req.header('X-Authorization') || "";
-        // Require auth
+    let id: number = parseInt(req?.params?.id);
 
-        logger.info("Auth data: " + auth);
-
-        // TODO: Get the package from the database using the id
-
-        // Fill in PackageRating 
-        // TODO: Hit database to get this info
-        packageInfo = {
-            metadata: {
-                Name: "test",
-                Version: "1.0.0",
-                ID: "1234",
-            },
-            data: {
-                Content: "test content",
-                URL: "test url",
-                JSProgram: "test js program",
-            }
-        }
-
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send(packageInfo);
-
-        res.status(404).send("Package does not exist.");
-    
-        // "There is missing field(s) in the PackageID/AuthenticationToken
-        // or it is formed improperly, or the AuthenticationToken is invalid."
-        res.status(400).send("unexpected error");
-    } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for GET /package/:id");
+    // No ID provided or bad auth, return 400
+    if (!id) {
+      res
+        .status(400)
+        .send(
+          "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
+        );
+      return;
     }
-});
+
+    const query = PackageModel.where({ _id: id });
+    const package_received = await query.findOne();
+
+    if (!package_received) {
+      res.status(404).send("Package does not exist.");
+      return;
+    }
+
+    logger.info("Found package: " + package_received?.toJSON());
+
+    // Package doesn't exist, return 404
+    if (!package_received?.data.Content) {
+      res.status(400).send("No Content supplied");
+      return;
+    }
+
+    // Return package
+    res.status(200).send(package_received.toJSON());
+
+    return;
+
+    // default error?
+    res.status(500).send({ code: 0, message: "Random error" });
+  }
+);
 
 // Update a package when PUT /package/:id is called
-packageRouter.put('/:id', authorizeUser, (req: Request, res: Response) =>  {
+packageRouter.put(
+  "/:id",
+  /*authorizeUser, */
+  async (req: Request, res: Response) => {
     logger.info("PUT /package/:id");
 
     let id: number;
     let auth: string;
     let packageInfo: Package;
     try {
-        id = parseInt(req.params.id);
-        auth = req.header('X-Authorization') || "";
-        // Require auth
+      id = parseInt(req.params.id);
+      auth = req.header("X-Authorization") || "";
+      // Require auth
 
-        logger.info("Auth data: " + auth);
+      logger.info("Auth data: " + auth);
 
-        packageInfo = req.body; // Get user-inputted package details
-        // Validate with joi
+      packageInfo = req.body; // Get user-inputted package details
+      // Validate with joi
 
-        // TODO: Get the package from the database using the id
-        // TODO: Update contents with new contents
+      const query = PackageModel.where({ _id: id });
+      const package_received = await query.findOne();
 
-        packageInfo.data.Content = "new content yaya";
+      // Package doesn't exist, return 404
+      if (!package_received) {
+        res.status(404).send("Package does not exist");
+        return;
+      }
 
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send(packageInfo);
+      // Update contents with new contents
+      if (packageInfo.data.Content) {
+        package_received.data.Content = packageInfo.data.Content;
+      }
+      if (packageInfo.data.URL) {
+        package_received.data.URL = packageInfo.data.URL;
+      }
+      if (packageInfo.data.JSProgram) {
+        package_received.data.JSProgram = packageInfo.data.JSProgram;
+      }
 
-        res.status(404).send("Package does not exist.");
+      await package_received.save();
+
+      // If status is 200, ok. Send 404 if package doesn't exist.
+      res.status(200).send(package_received.toJSON());
     } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for PUT /package/:id");
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for PUT /package/:id");
+      res.status(400).send("Invalid JSON");
     }
-});
+  }
+);
 
 // Delete a package when DELETE /package/:id is called
-packageRouter.delete('/:id', authorizeUser, (req: Request, res: Response) =>  {
+packageRouter.delete(
+  "/:id",
+  /*authorizeUser, */
+  async (req: Request, res: Response) => {
     logger.info("DELETE /package/:id");
 
-    let id: number;
-    let auth: string;
+    let package_received;
+    let id: string = req?.params?.id;
+
     try {
-        id = parseInt(req.params.id);
-        auth = req.header('X-Authorization') || "";
-        // Require auth
-
-        logger.info("Auth data: " + auth);
-
-        // TODO: Get the package from the database using the id
-        // TODO: Delete package
-
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send("Package is deleted.");
-
-        res.status(404).send("Package does not exist.");
+      const query = PackageModel.where({ _id: new mongoose.Types.ObjectId(id) });
+      package_received = await query.deleteOne();
     } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for PUT /package/:id");
+      return res.status(400).send("Invalid ID");
     }
-});
+
+    // Package doesn't exist, return 404
+    if (!package_received.deletedCount) {
+      return res.status(404).send("Package does not exist.");
+    }
+
+    return res.status(200).send("Package is deleted.");
+  }
+);
 
 // Search packages via a Regex when POST /package/byRegEx is called
-packageRouter.post('/byRegEx', authorizeUser, (req: Request, res: Response) =>  {
-    logger.info("POST /package/byRegEx/{regex}");
+packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //authorizeUser,
+  logger.info("POST /package/byRegEx/{regex}");
 
-    // let regex: string;
-    let regex_body: string;
-    let auth: string;
-    let packageMetadata: PackageMetadata;
-    let return_data: Object;
-    try {
-        // regex = req.params.regex;
-        // logger.info("Got regex: " + regex);
+  // let regex: string;
+  let regex_body: string;
+  let auth: string;
+  let packageMetadata: PackageMetadata;
+  let return_data: Object;
+  try {
+    // regex will be in the body of the request; Example request:
+    // {
+    //   "Regex": "string"
+    // }
+    // logger.info("Got regex: " + regex);
 
-        auth = req.header('X-Authorization') || "";
-        // Require auth
+    auth = req.header("X-Authorization") || "";
+    // Require auth
 
-        logger.info("Auth data: " + auth);
+    logger.info("Auth data: " + auth);
 
-        regex_body = req.body.PackageRegEx;
+    regex_body = req.body.PackageRegEx;
 
-        logger.info("Got regex body: " + regex_body);
+    logger.info("Got regex body: " + regex_body);
 
-        // TODO: Get the package from the database using the regex
-        // TODO: Return package
+    // TODO: Get the package from the database using the regex
+    // TODO: Return a list of packages
+    const regex = new RegExp(regex_body, 'i');
+    const packages = await PackageModel.find({ "metadata.Name": regex }).exec();
 
-        // TODO: Hit database for this metadata
-        packageMetadata = {
-            Name: "test",
-            Version: "1.0.0",
-            ID: "1234",
-        };
+    // EXAMPLE RESPONSE:
+    // [
+    //   {
+    //     "Version": "1.2.3",
+    //     "Name": "Underscore"
+    //   },
+    //   {
+    //     "Version": "1.2.3-2.1.0",
+    //     "Name": "Lodash"
+    //   },
+    //   {
+    //     "Version": "^1.2.3",
+    //     "Name": "Re
+    //   }
+    // ]
 
-        logger.info("Preparing return_data");
+    // TODO: Hit database for this metadata
+    // packageMetadata = {
+    //   Name: "test",
+    //   Version: "1.0.0",
+    //   ID: "1234",
+    // };
 
-        // According to YML spec, return only name and version
-        return_data = {
-            Name: packageMetadata.Name,
-            Version: packageMetadata.Version,
-        };
+    logger.info("Preparing return_data");
+    // logger.info()
 
-        logger.info("Sending status");
+    // According to YML spec, return only name and version
+    return_data = packages.map(pkg => {
+      return {
+        Name: pkg.metadata.Name,
+        Version: pkg.metadata.Version
+      };
+    });
 
-        // If status is 200, ok. Send 404 if package doesn't exist. 
-        res.status(200).send([return_data, return_data]);
+    logger.info("Sending status");
 
-        //res.status(404).send("No package found under this regex.");
-    } catch {
-        // Request body is not valid JSON
-        logger.info("Invalid JSON for POST /RegEx/{regex}");
+    // If status is 200, ok. Send 404 if package doesn't exist.
+    if (packages.length > 0) {
+      res.status(200).send(return_data);
+    } else {
+      res.status(404).send("No package found under this regex.");
     }
+    res.status(404).send("No package found under this regex.");
+  } catch {
+    // Request body is not valid JSON
+    logger.info("Invalid JSON for POST /RegEx/{regex}");
+    // is this the right error to throw?
+    res.status(400).send("Invalid JSON");
+  }
 });
-
 
 // module.exports = packageRouter;
