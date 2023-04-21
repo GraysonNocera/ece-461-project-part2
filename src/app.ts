@@ -9,7 +9,7 @@ import { packagesRouter } from "./route/packages.route";
 import { resetRouter } from "./route/reset.route";
 import { userRouter } from "./route/user.route";
 import { connectToMongo, disconnectFromMongo } from "./config/config";
-
+var cors = require("cors");
 // define app
 const app = express();
 
@@ -18,6 +18,7 @@ function defineServer() {
   logger.info("Starting up the API server...");
 
   app.use(express.json());
+  app.use(cors());
   app.use(express.urlencoded({ extended: false }));
 
   // Define placeholder endpoint for root route

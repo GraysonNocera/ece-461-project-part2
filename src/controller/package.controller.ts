@@ -207,6 +207,13 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
   //   name: "test",
   //   isAdmin: true,
   // }
+  // historyEntry.User = {
+  //   name: "test",
+  //   isAdmin: true,
+  //   isUpload: true,
+  //   isSearch: true,
+  //   isDownload: true,
+  // };
 
   return historyEntry;
 }
