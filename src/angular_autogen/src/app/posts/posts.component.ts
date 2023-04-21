@@ -94,7 +94,6 @@ export class PostsComponent {
   login() {
     const username = (<HTMLInputElement>document.getElementById('username')).value;
     const password = (<HTMLInputElement>document.getElementById('password')).value;
-    alert ("Logging In: Username - " + username + " Password - " + password );
     this.authenticate(username, password);
   }
 
