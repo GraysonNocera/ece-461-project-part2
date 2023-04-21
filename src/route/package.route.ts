@@ -7,8 +7,9 @@ import { Request, Response } from "express";
 // import Joi, { number } from "joi";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
+import { ratePackage, didChokeOnRating, verifyRating } from "../controller/package.controller";
 
-import { PackageRating } from "../model/packageRating";
+import { PackageRating, PackageRatingModel } from "../model/packageRating";
 import * as cp from "child_process";
 // import { PackageRating } from "./api/model/packageRating";
 import { readFileSync } from "fs";
@@ -102,52 +103,51 @@ packageRouter.delete(
 );
 
 // Rate a package when GET /package/:id/rate is called
-packageRouter.get("/:id/rate", authorizeUser, (req: Request, res: Response) => {
+packageRouter.get("/:id/rate", authorizeUser, async (req: Request, res: Response) => {
   logger.info("GET /package/:id/rate");
 
-  let id: number;
-  let packageRate: PackageRating;
-  let terminal_command: string;
+  let id: string;
+  let rating: PackageRating;
+  let ratingToSave: any;
+  let existingRating: any;
+  let packageToRate: any;
   try {
-    id = parseInt(req.params.id);
+    id = req?.params?.id;
 
-    // TODO: Get the package from the database using the id
-    let url: string = "https://www.npmjs.com/package/express";
-    // Fill in PackageRating
-    // TODO: Hit rate module to get this info
-    // const test_file = readFileSync(path.join(__dirname, "../", "rate/score.json"), "utf8");
-    logger.info("Read file");
-    terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
-
-    cp.execSync(terminal_command);
-    const test_file = readFileSync(
-      path.join(__dirname, "../", "rate/score.json"),
-      "utf8"
-    );
-    packageRate = JSON.parse(test_file);
-    if (
-      packageRate.NetScore == Number(-1) ||
-      packageRate.BusFactor == Number(-1) ||
-      packageRate.Correctness == Number(-1) ||
-      packageRate.GoodEngineeringPractice == Number(-1) ||
-      packageRate.GoodPinningPractice == Number(-1) ||
-      packageRate.LicenseScore == Number(-1) ||
-      packageRate.RampUp == Number(-1) ||
-      packageRate.ResponsiveMaintainer == Number(-1)
-    ) {
-      res.status(500).send();
+    if (id != (new mongoose.Types.ObjectId(id)).toString()) {
+      res.status(400).send("Invalid package ID");
     }
-    // TODO: Update the database to have this rating for the given package
 
-    // If status is 200, ok. Send 404 if package doesn't exist.
-    // Send 500 if rating module failed
-    res.status(200).send(packageRate);
+    existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
+    if (existingRating) {
+      return res.status(200).send(existingRating.toObject());
+    }
+
+    packageToRate = await PackageModel.findOne({ _id: id }).exec();
+    if (!packageToRate) {
+      return res.status(404).send("Package does not exist.");
+    }
+
+    rating = ratePackage(packageToRate.data.URL);
+
+    if (!didChokeOnRating(rating)) {
+      logger.info("POST /package: Package not uploaded, disqualified rating");
+      return res
+        .status(500)
+        .send("	The package rating system choked on at least one of the metrics.");
+    }
+
+    // Save rating so we have a rating for this package
+    ratingToSave = new PackageRatingModel(rating);
+    ratingToSave._id = packageToRate._id;
+    await ratingToSave.save();
+
+    return res.status(200).send(rating);
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for GET /package/:id/rate");
+    return res.status(400).send("Invalid JSON");
   }
-
-  // Validate with joi (trivial example)
 });
 
 // Fetch a package when GET /package/:id is called
