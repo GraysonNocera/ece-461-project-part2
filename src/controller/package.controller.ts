@@ -9,6 +9,7 @@ const isGitHubUrl = require("is-github-url");
 
 import {
   PackageRating,
+  PackageRatingChokedValidation,
   PackageRatingModel,
   PackageRatingUploadValidation,
 } from "../model/packageRating";
@@ -65,6 +66,10 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     return res.status(400).send("Invalid Content or URL");
   }
 
+  if (await isNameInDb(packageToUpload.metadata.Name)) {
+    return res.status(409).send("Package exists already.");
+  }
+
   // Package not updated due to disqualified rating: status 423
   rating = ratePackage(packageToUpload.data.URL);
 
@@ -90,7 +95,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
 
   // Save rating
   let rateEntry = new PackageRatingModel(rating);
-  rateEntry._id = historyEntry._id;
+  rateEntry._id = packageToUpload._id;
   await rateEntry.save();
 
   logger.info("POST /package: Package created successfully");
@@ -315,6 +320,23 @@ export async function npm_2_git(npmUrl: string): Promise<string> {
 
   logger.debug(`Error: Maximum retries exceeded for package: ${packageName}`);
   return Promise.resolve("");
+}
+
+async function isNameInDb(name: string): Promise<Number | null> {
+  // Search database for the name, return 1 if it is in the db, 0 otherwise
+  // :param name: string name of package
+  // :return: Number
+
+  return await PackageModel.findOne({ 'metadata.Name': name }) ? 1 : 0;
+}
+
+function didChokeOnRating(rating: PackageRating): Number {
+  // Check if package choked on rating
+  // :param rating: PackageRating
+  // :return: Number
+
+  const {error, value} = PackageRatingChokedValidation.validate(rating);
+  return error ? 1 : 0;
 }
 
 // Export all non-exported functions just for testing
