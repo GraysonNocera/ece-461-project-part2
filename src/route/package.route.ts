@@ -142,13 +142,12 @@ packageRouter.get("/:id/rate", authorizeUser, async (req: Request, res: Response
     ratingToSave._id = packageToRate._id;
     await ratingToSave.save();
 
-    res.status(200).send(rating);
+    return res.status(200).send(rating);
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for GET /package/:id/rate");
+    return res.status(400).send("Invalid JSON");
   }
-
-  // Validate with joi (trivial example)
 });
 
 // Fetch a package when GET /package/:id is called
