@@ -60,6 +60,17 @@ export const PackageRatingSchema: mongoose.Schema<PackageRating> = new mongoose.
 
 export const PackageRatingModel = mongoose.model<PackageRating>("PackageRating", PackageRatingSchema);
 
+export const PackageRatingChokedValidation = Joi.object({
+  NetScore: Joi.number().min(0).required(),
+  BusFactor: Joi.number().min(0).required(),
+  Correctness: Joi.number().min(0).required(),
+  RampUp: Joi.number().min(0).required(),
+  ResponsiveMaintainer: Joi.number().min(0).required(),
+  LicenseScore: Joi.number().min(0).required(),
+  GoodPinningPractice: Joi.number().min(0).required(),
+  GoodEngineeringPractice: Joi.number().min(0).required(),
+});
+
 export const PackageRatingUploadValidation = Joi.object({
   NetScore: Joi.number().min(0.5).required(),
   BusFactor: Joi.number().min(0.5).required(),
