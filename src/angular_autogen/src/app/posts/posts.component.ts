@@ -87,10 +87,6 @@ export class PostsComponent {
         if (error.message === 'Request failed.') {
           alert ("Authentication Token Expired. Please enter username and password");
           console.log('Auth token expired. Prompting user to enter username and password.');
-          // const usernameInput = prompt('Please enter your username:');
-          // const passwordInput = prompt('Please enter your password:');
-          // this.authenticate(usernameInput, passwordInput);
-
         }
       });
   }
