@@ -114,19 +114,19 @@ Content-Type: application/json
 ###
 
 POST http://localhost:3000/user
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwMzY1LCJleHAiOjE2ODE2NTYzNjV9.svQ_rAvHSkSMGnRr1X96jrVtmk4U0y4D3BmaytUUPNY
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfbmFtZSIsImlzQWRtaW4iOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoiYV9zaW1wbGVfcGFzc3dvcmQifX0sImlhdCI6MTY4MjA0Njk1MCwiZXhwIjoxNjgyMDgyOTUwfQ.oHFrDKoi2Ivq83FJJRb605srsCBmEDPxdKihlgs4UV0
 Content-Type: application/json
 
 {
         "User": {
-        "name": "ece461defaultadminuser",
+        "name": "billybob",
         "isAdmin": true,
         "isUpload": true,
         "isDownload": true, 
         "isSearch": true
     },
     "Secret": {
-        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+        "password": "urmom"
     }
 }
 
