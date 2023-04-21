@@ -1,0 +1,97 @@
+{
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/package",
+      "middlewares": [
+        "Validate(PackageDataUploadValidation)",
+        "authorizeUser"
+      ],
+      "handler": "postPackage"
+    },
+    {
+      "method": "GET",
+      "path": "/package/byName/:name",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const packageName = req.params.name;
+        // Get package history from database
+        res.status(200).send(packageHistory);
+      }"
+    },
+    {
+      "method": "DELETE",
+      "path": "/package/byName/:name",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const packageName = req.params.name;
+        // Delete package from database
+        res.status(200).send('Package deleted');
+      }"
+    },
+    {
+      "method": "GET",
+      "path": "/package/:id/rate",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const packageId = req.params.id;
+        // Get package rating from module
+        res.status(200).send(packageRating);
+      }"
+    },
+    {
+      "method": "GET",
+      "path": "/package/:id",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const packageId = req.params.id;
+        // Get package from database
+        res.status(200).send(package);
+      }"
+    },
+    {
+      "method": "PUT",
+      "path": "/package/:id",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const packageId = req.params.id;
+        // Update package in database
+        res.status(200).send(updatedPackage);
+      }"
+    },
+    {
+      "method": "DELETE",
+      "path": "/package/:id",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const packageId = req.params.id;
+        // Delete package from database
+        res.status(200).send('Package deleted');
+      }"
+    },
+    {
+      "method": "POST",
+      "path": "/package/byRegEx",
+      "middlewares": [
+        "authorizeUser"
+      ],
+      "handler": "(req: Request, res: Response) => {
+        const regex = req.body.PackageRegEx;
+        // Search database for packages matching regex
+        res.status(200).send(packages);
+      }"
+    }
+  ]
+}
