@@ -29,12 +29,14 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let rating: PackageRating;
   let package_json: Object = {};
   let historyEntry;
+  let original_url: string;
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
     data: req?.body,
   });
 
+  original_url = packageToUpload.data.URL;
   packageToUpload.data.URL = packageToUpload.data.URL.startsWith("https://www.npmjs.com/package/") ? await npm_2_git(packageToUpload.data.URL) : packageToUpload.data.URL;
 
   // Package already exists: status 409
@@ -71,7 +73,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   }
 
   // Package not updated due to disqualified rating: status 423
-  rating = ratePackage(packageToUpload.data.URL);
+  rating = ratePackage(original_url);
 
   // For now, nothing passes this, so I'm commenting it out
   // if (!verifyRating(rating)) {
