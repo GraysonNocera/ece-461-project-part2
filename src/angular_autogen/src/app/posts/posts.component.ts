@@ -40,9 +40,6 @@ export class PostsComponent {
         }
       })
     };
-    const requestHeaders = new Headers({
-      'Content-Type': 'application/json'
-    });
 
     fetch(authUrl, authRequestOptions)
       .then(response => {

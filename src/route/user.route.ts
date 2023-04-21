@@ -31,7 +31,7 @@ export const userRouter: Router = express.Router();
 // });
 // const info = mongoose.model("user", userdata);
 
-userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
+userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /user");
   try {
     if (res.locals.isAdmin) {
@@ -70,7 +70,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
   }
 });
 
-userRouter.post("/", authorizeUser, async (req: Request, res: Request) => {
+userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("POST /user");
   try {
     //add in stuff for checking admin and creating new user
