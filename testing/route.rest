@@ -1,7 +1,9 @@
+// An invalid endpoint
 GET http://localhost:3000/package
 
 ###
 
+// Root endpoint, maybe redirect them to the login page unless they have a token
 GET http://localhost:3000/
 
 ###
@@ -10,7 +12,7 @@ POST http://localhost:3000/package
 Content-Type: application/json
 
 {
-    "URL": "https://github.com/expressjs/express",
+    "URL": "https://www.npmjs.com/package/react",
     "JSProgram": "console.log('Hello World')"
 }
 
@@ -46,13 +48,13 @@ POST http://localhost:3000/packages
 Content-Type: application/json
 
 {
-    "Name": "name of package",
-    "Version": "version of package"
+    "Name": "express",
+    "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
 }
 
 ###
 
-GET http://localhost:3000/package/4/rate
+GET http://localhost:3000/package/64422070fee64a16e1e96956/rate
 
 ###
 
@@ -89,11 +91,11 @@ X-Authorization: ur brotha
 ###
 
 POST http://localhost:3000/package/byRegEx
-X-Authorization: ur sistah
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MTk0MDA3MywiZXhwIjoxNjgxOTc2MDczfQ.N_C0orTu8KKDSFJp_r8C8qaGxEJ4QrCuoOYnyaYtOQg
 Content-Type: application/json
 
 {
-    "PackageRegEx": ".*test.*?rate"
+    "PackageRegEx": "exp?res*"
 }
 
 ###
@@ -103,8 +105,11 @@ Content-Type: application/json
 
 {
   "User": {
-    "name": "ece30861defaultadminuser",
-    "isAdmin": true
+    "name": "ece461defaultadminuser",
+    "isAdmin": true,
+    "isUpload": true,
+    "isDownload": true,
+    "isSearch": true
   },
   "Secret": {
     "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
@@ -114,19 +119,19 @@ Content-Type: application/json
 ###
 
 POST http://localhost:3000/user
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwMzY1LCJleHAiOjE2ODE2NTYzNjV9.svQ_rAvHSkSMGnRr1X96jrVtmk4U0y4D3BmaytUUPNY
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MTk0MDA3MywiZXhwIjoxNjgxOTc2MDczfQ.N_C0orTu8KKDSFJp_r8C8qaGxEJ4QrCuoOYnyaYtOQg
 Content-Type: application/json
 
 {
         "User": {
-        "name": "ece461defaultadminuser",
-        "isAdmin": true,
-        "isUpload": true,
-        "isDownload": true, 
-        "isSearch": true
+        "name": "test_name",
+        "isAdmin": false,
+        "isUpload": false,
+        "isDownload": false, 
+        "isSearch": false
     },
     "Secret": {
-        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+        "password": "a_simple_password"
     }
 }
 
