@@ -12,7 +12,7 @@ POST http://localhost:3000/package
 Content-Type: application/json
 
 {
-    "URL": "https://github.com/facebook/react",
+    "URL": "https://www.npmjs.com/package/react",
     "JSProgram": "console.log('Hello World')"
 }
 
@@ -54,7 +54,7 @@ Content-Type: application/json
 
 ###
 
-GET http://localhost:3000/package/4/rate
+GET http://localhost:3000/package/64422070fee64a16e1e96956/rate
 
 ###
 

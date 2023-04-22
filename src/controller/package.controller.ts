@@ -29,16 +29,14 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let rating: PackageRating;
   let package_json: Object = {};
   let historyEntry;
-  let original_url: string;
+  let github_url: string;
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
     data: req?.body,
   });
 
-  original_url = packageToUpload.data.URL;
-  packageToUpload.data.URL = packageToUpload.data.URL.startsWith("https://www.npmjs.com/package/") ? await npm_2_git(packageToUpload.data.URL) : packageToUpload.data.URL;
-
+  github_url = packageToUpload.data.URL.startsWith("https://www.npmjs.com/package/") ? await npm_2_git(packageToUpload.data.URL) : packageToUpload.data.URL;
   // Package already exists: status 409
   const query = PackageModel.find();
   query.or([
@@ -62,7 +60,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     }
   }
 
-  packageToUpload.metadata = await getMetadata(packageToUpload.data.URL, package_json);
+  packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
     logger.info("POST /package: Package not uploaded, invalid metadata");
     return res.status(400).send("Invalid Content or URL");
@@ -73,7 +71,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   }
 
   // Package not updated due to disqualified rating: status 423
-  rating = ratePackage(original_url);
+  rating = ratePackage(packageToUpload.data.URL);
 
   // For now, nothing passes this, so I'm commenting it out
   // if (!verifyRating(rating)) {
@@ -83,6 +81,11 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   //     .send("Package is not uploaded due to the disqualified rating.");
   //   return;
   // }
+
+  if (packageToUpload.data.Name == "*") {
+    logger.info("POST /package: Package not uploaded, invalid name");
+    return res.status(400).send("Invalid Content or URL");
+  }
 
   // Save package
   logger.info("POST /package: Saving package: " + packageToUpload);
@@ -105,7 +108,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   return res.status(201).send(packageToUpload.toObject());
 }
 
-function ratePackage(url: string): PackageRating {
+export function ratePackage(url: string): PackageRating {
   logger.info("ratePackage: Running rate script on url " + url + "...");
 
   let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
@@ -123,7 +126,7 @@ function ratePackage(url: string): PackageRating {
   return packageRate;
 }
 
-function verifyRating(packageRate: PackageRating) {
+export function verifyRating(packageRate: PackageRating) {
   // There's gotta be a way to do this is one line with joi
 
   const { error, value } = PackageRatingUploadValidation.validate(packageRate);
@@ -332,7 +335,7 @@ async function isNameInDb(name: string): Promise<Number | null> {
   return await PackageModel.findOne({ 'metadata.Name': name }) ? 1 : 0;
 }
 
-function didChokeOnRating(rating: PackageRating): Number {
+export function didChokeOnRating(rating: PackageRating): Number {
   // Check if package choked on rating
   // :param rating: PackageRating
   // :return: Number
