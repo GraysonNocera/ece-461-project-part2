@@ -6,6 +6,8 @@ import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 const isGitHubUrl = require("is-github-url");
+import { getContentFromUrl } from "../service/zip";
+import { getGitRepoDetails } from "../service/misc";
 
 import {
   PackageRating,
@@ -81,6 +83,15 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   //     .send("Package is not uploaded due to the disqualified rating.");
   //   return;
   // }
+
+  if (!packageToUpload.data.Content) {
+    // Use URL to get the Content
+    packageToUpload.data.Content = await getContentFromUrl(packageToUpload.data.URL);
+    if (!packageToUpload.data.Content) {
+      logger.info("POST /package: Package not uploaded, invalid content");
+      return res.status(400).send("Invalid Content or URL");
+    }
+  }
 
   if (packageToUpload.data.Name == "*") {
     logger.info("POST /package: Package not uploaded, invalid name");
@@ -168,32 +179,6 @@ async function getPackageJSON(content: string): Promise<Object> {
 
   logger.debug("getPackageJSON: No package.json found");
   return {};
-}
-
-async function getGitRepoDetails(url: string): Promise<{ username: string; repoName: string } | null> {
-  // Function description
-  // :param url: string url to parse
-  // :return: Promise of a username and reponame extracted from
-  // url or null
-
-  let match: RegExpMatchArray | null;
-
-  if (url.startsWith("git:")) {
-    // Parse ssh gitHub link
-    match = url.match(/git:\/\/github\.com\/([^\/]+)\/([^\/]+)\.git/);
-  } else {
-    // Parse https github link
-    match = url.match(/(?:https:\/\/github\.com\/)([^\/]+)\/([^\/]+)(?:\/|$)/);
-  }
-
-  // Assign username and repoName from URL regex
-  if (match) {
-    let repoName = match[2];
-    let username = match[1];
-    return { username, repoName };
-  }
-
-  return null;
 }
 
 async function getVersionFromURL(url: string, name: string): Promise<string> {
@@ -349,7 +334,6 @@ export const exportedForTesting = {
   ratePackage,
   verifyRating,
   getPackageJSON,
-  getGitRepoDetails,
   getVersionFromURL,
   buildHistoryEntry,
   getMetadata,
