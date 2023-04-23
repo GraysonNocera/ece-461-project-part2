@@ -14,7 +14,6 @@ var cors = require("cors");
 const app = express();
 
 function defineServer() {
-
   logger.info("Starting up the API server...");
 
   app.use(express.json());
@@ -31,7 +30,6 @@ function defineServer() {
   app.use("/packages", packagesRouter);
   app.use("/reset", resetRouter);
   app.use("/user", userRouter);
-
 }
 
 function startServer() {
@@ -48,7 +46,6 @@ function startServer() {
 }
 
 function main() {
-
   // Define and start the server
   defineServer();
   startServer();

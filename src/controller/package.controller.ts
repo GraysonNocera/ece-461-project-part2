@@ -5,10 +5,7 @@ import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 import { getContentFromUrl } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
-import {
-  PackageRating,
-  PackageRatingModel,
-} from "../model/packageRating";
+import { PackageRating, PackageRatingModel } from "../model/packageRating";
 import { PackageModel } from "../model/package";
 import { getPackageJSON } from "../service/zip";
 import { ratePackage } from "../service/rate";
@@ -16,7 +13,11 @@ import { uploadFileToMongo } from "../config/config";
 import path from "path";
 import fs from "fs";
 
-export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
+export const postPackage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   logger.info("postPackage: POST /package endpoint hit");
 
   let packageToUpload;
@@ -31,16 +32,23 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     data: req?.body,
   });
 
-  github_url = packageToUpload.data.URL.startsWith("https://www.npmjs.com/package/") ? await npm_2_git(packageToUpload.data.URL) : packageToUpload.data.URL;
+  github_url = packageToUpload.data.URL.startsWith(
+    "https://www.npmjs.com/package/"
+  )
+    ? await npm_2_git(packageToUpload.data.URL)
+    : packageToUpload.data.URL;
   // Package already exists: status 409
   const query = PackageModel.find();
   query.or([
-    { "data.Content": { $exists: true,  $eq: packageToUpload.data.Content} },
-    { "data.URL": { $exists: true,  $eq: packageToUpload.data.URL } },
+    { "data.Content": { $exists: true, $eq: packageToUpload.data.Content } },
+    { "data.URL": { $exists: true, $eq: packageToUpload.data.URL } },
   ]);
   const package_query_results = await query.findOne();
   if (package_query_results) {
-    logger.info("POST /package: Package already exists, got package: " + package_query_results);
+    logger.info(
+      "POST /package: Package already exists, got package: " +
+        package_query_results
+    );
     return res.status(409).send("Package exists already.");
   }
 
@@ -50,7 +58,9 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     try {
       packageToUpload.data.URL = package_json["homepage"];
     } catch (error) {
-      logger.debug("POST /package: Package not uploaded, no homepage field or no package.json");
+      logger.debug(
+        "POST /package: Package not uploaded, no homepage field or no package.json"
+      );
       return res.status(400).send("Invalid Content");
     }
   }
@@ -85,7 +95,15 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
       return res.status(400).send("Invalid Content or URL");
     }
   } else {
-    fs.writeFileSync(path.join(__dirname, '..', 'artifacts', `${packageToUpload.metadata.Name}.txt`), packageToUpload.data.Content);
+    fs.writeFileSync(
+      path.join(
+        __dirname,
+        "..",
+        "artifacts",
+        `${packageToUpload.metadata.Name}.txt`
+      ),
+      packageToUpload.data.Content
+    );
   }
 
   if (packageToUpload.data.Name == "*") {
@@ -98,14 +116,21 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   packageToUpload.metadata.ID = packageToUpload._id.toString();
 
   let filename: string = `${packageToUpload.metadata.Name}.txt`;
-  uploadFileToMongo(path.join(__dirname, '..', 'artifacts', filename), filename, packageToUpload._id);
+  uploadFileToMongo(
+    path.join(__dirname, "..", "artifacts", filename),
+    filename,
+    packageToUpload._id
+  );
 
   // Utter stupidity so that I don't have to research how to not upload the current Content
   temp = packageToUpload.data.Content;
   packageToUpload.data.Content = filename;
 
   await packageToUpload.save();
-  logger.info("POST /package: Package metadata added successfully " + packageToUpload.metadata);
+  logger.info(
+    "POST /package: Package metadata added successfully " +
+      packageToUpload.metadata
+  );
 
   packageToUpload.data.Content = temp;
 
@@ -122,22 +147,22 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   logger.info("POST /package: Package created successfully");
 
   return res.status(201).send(packageToUpload.toObject());
-}
+};
 
 async function getVersionFromURL(url: string, name: string): Promise<string> {
   // API call to get the version of a package from its url and name
   // :param url: string url
   // :param name: string name of package
 
-
-
-
   // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
 
   return "1.0.0";
-};
+}
 
-function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE"): PackageHistoryEntry {
+function buildHistoryEntry(
+  metadata: PackageMetadata,
+  action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE"
+): PackageHistoryEntry {
   // Function description
   // :param metadata: PackageMetadata
   // :param action: string
@@ -155,13 +180,16 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
     isAdmin: true,
     isUpload: true,
     isSearch: true,
-    isDownload: true
-  }
+    isDownload: true,
+  };
 
   return historyEntry;
 }
 
-async function getMetadata(url: string, package_json: Object): Promise<PackageMetadata | undefined> {
+async function getMetadata(
+  url: string,
+  package_json: Object
+): Promise<PackageMetadata | undefined> {
   // Function description
   // :param packageData: PackageData
   // :return: PackageMetadata
@@ -191,7 +219,7 @@ async function isNameInDb(name: string): Promise<Number | null> {
   // :param name: string name of package
   // :return: Number
 
-  return await PackageModel.findOne({ 'metadata.Name': name }) ? 1 : 0;
+  return (await PackageModel.findOne({ "metadata.Name": name })) ? 1 : 0;
 }
 
 // Export all non-exported functions just for testing
@@ -199,4 +227,4 @@ export const exportedForTesting = {
   getVersionFromURL,
   buildHistoryEntry,
   getMetadata,
-}
+};

@@ -1,36 +1,37 @@
-import { readFile } from 'fs/promises';
-import JSZip from 'jszip';
+import { readFile } from "fs/promises";
+import JSZip from "jszip";
 import { Octokit as OctokitType } from "octokit";
-import * as fs from 'fs/promises';
-import * as path from 'path';
+import * as fs from "fs/promises";
+import * as path from "path";
 const Octokit = OctokitType as any;
-import { getGitRepoDetails } from './misc';
-import { logger } from '../logging';
+import { getGitRepoDetails } from "./misc";
+import { logger } from "../logging";
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
-})
+});
 
 // Convert the zip file pulled from github to base64 string
 async function zipToBase64(filePath: string): Promise<string> {
   const zipFile = await readFile(filePath);
   const zip = await JSZip.loadAsync(zipFile);
-  const zipContent = await zip.generateAsync({ type: 'base64' });
+  const zipContent = await zip.generateAsync({ type: "base64" });
   return zipContent;
 }
 
 async function getPackageZip(owner: string, repo: string) {
-
   let result = await octokit.request(`GET /repos/${owner}/${repo}/zipball`, {
     owner: owner,
     repo: repo,
     headers: {
-      'Accept': 'application/vnd.github+json'
-    }
+      Accept: "application/vnd.github+json",
+    },
   });
 
-  await fs.writeFile(path.join(__dirname, '..', 'artifacts', `${repo}.zip`), new Array(result.data))
-  
+  await fs.writeFile(
+    path.join(__dirname, "..", "artifacts", `${repo}.zip`),
+    new Array(result.data)
+  );
 }
 
 export async function getContentFromUrl(url: string): Promise<string | null> {
@@ -48,8 +49,18 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
 
   await getPackageZip(details.username, details.repoName);
 
-  let zipFilePath: string = path.join(__dirname, '..', 'artifacts', `${details.repoName}.zip`);
-  let txtFilePath: string = path.join(__dirname, '..', 'artifacts', `${details.repoName}.txt`);
+  let zipFilePath: string = path.join(
+    __dirname,
+    "..",
+    "artifacts",
+    `${details.repoName}.zip`
+  );
+  let txtFilePath: string = path.join(
+    __dirname,
+    "..",
+    "artifacts",
+    `${details.repoName}.txt`
+  );
 
   let content = await zipToBase64(zipFilePath);
   fs.writeFile(txtFilePath, content);

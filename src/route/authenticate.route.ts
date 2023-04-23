@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import { authorizeUser } from '../middleware/authorizeUser';
-import { logger } from '../logging';
-import { Request, Response } from 'express';
-import { AuthenticationRequest } from '../model/authenticationRequest';
+import { Router } from "express";
+import { authorizeUser } from "../middleware/authorizeUser";
+import { logger } from "../logging";
+import { Request, Response } from "express";
+import { AuthenticationRequest } from "../model/authenticationRequest";
 import { AuthenticationToken } from "../model/authenticationToken";
 const express = require("express");
 const jwt = require("jsonwebtoken");

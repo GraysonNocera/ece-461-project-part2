@@ -1,9 +1,11 @@
-import {logger} from "../logging";
+import { logger } from "../logging";
 const isGitHubUrl = require("is-github-url");
 import { AxiosResponse } from "axios";
 import axios from "axios";
 
-export async function getGitRepoDetails(url: string): Promise<{ username: string; repoName: string } | null> {
+export async function getGitRepoDetails(
+  url: string
+): Promise<{ username: string; repoName: string } | null> {
   // Function description
   // :param url: string url to parse
   // :return: Promise of a username and reponame extracted from

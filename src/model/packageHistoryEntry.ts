@@ -9,32 +9,35 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { User, user } from './user';
-import { PackageMetadata, PackageMetadataSchema } from './packageMetadata';
-import mongoose from 'mongoose';
+import { User, user } from "./user";
+import { PackageMetadata, PackageMetadataSchema } from "./packageMetadata";
+import mongoose from "mongoose";
 
 /**
  * One entry of the history of this package.
  */
-export interface PackageHistoryEntry { 
-    User: User;
-    /**
-     * Date of activity using ISO-8601 Datetime standard in UTC format.
-     */
-    Date: string;
-    PackageMetadata: PackageMetadata;
-    /**
-     * 
-     */
-    Action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE";
+export interface PackageHistoryEntry {
+  User: User;
+  /**
+   * Date of activity using ISO-8601 Datetime standard in UTC format.
+   */
+  Date: string;
+  PackageMetadata: PackageMetadata;
+  /**
+   *
+   */
+  Action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE";
 }
 
-export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> = new mongoose.Schema<PackageHistoryEntry>({
+export const PackageHistoryEntrySchema: mongoose.Schema<PackageHistoryEntry> =
+  new mongoose.Schema<PackageHistoryEntry>({
     User: { type: user, required: true },
     Date: { type: String, required: true },
     PackageMetadata: { type: PackageMetadataSchema, required: true },
     Action: { type: String, required: true },
   });
 
-export const PackageHistoryEntryModel = mongoose.model("PackageHistoryEntry", PackageHistoryEntrySchema);
-
+export const PackageHistoryEntryModel = mongoose.model(
+  "PackageHistoryEntry",
+  PackageHistoryEntrySchema
+);

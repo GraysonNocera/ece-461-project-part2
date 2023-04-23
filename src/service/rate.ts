@@ -3,7 +3,10 @@ import { logger } from "../logging";
 import * as cp from "child_process";
 import { readFileSync } from "fs";
 import * as path from "path";
-import {PackageRatingUploadValidation, PackageRatingChokedValidation} from "../model/packageRating";
+import {
+  PackageRatingUploadValidation,
+  PackageRatingChokedValidation,
+} from "../model/packageRating";
 
 export function ratePackage(url: string): PackageRating {
   logger.info("ratePackage: Running rate script on url " + url + "...");
@@ -43,6 +46,6 @@ export function didChokeOnRating(rating: PackageRating): Number {
   // :param rating: PackageRating
   // :return: Number
 
-  const {error, value} = PackageRatingChokedValidation.validate(rating);
+  const { error, value } = PackageRatingChokedValidation.validate(rating);
   return error ? 1 : 0;
 }

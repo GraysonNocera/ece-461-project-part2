@@ -23,13 +23,20 @@ export const packageRouter: Router = express.Router();
 
 // Create a package when POST /package is called
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
-packageRouter.post("/", authorizeUser, Validate(PackageDataUploadValidation), postPackage);
+packageRouter.post(
+  "/",
+  authorizeUser,
+  Validate(PackageDataUploadValidation),
+  postPackage
+);
 
 packageRouter.get(
   "/byName/:name",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.");
+    logger.info(
+      "GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement."
+    );
     return res.status(400).send("Not implementing this requirement.");
   }
 );
@@ -38,58 +45,66 @@ packageRouter.delete(
   "/byName/:name",
   authorizeUser,
   (req: Request, res: Response) => {
-    logger.info("DELETE /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.");
+    logger.info(
+      "DELETE /package/byName/{name}: This will not be implemented because we are not doing this additional requirement."
+    );
     return res.status(400).send("Not implementing this requirement.");
   }
 );
 
 // Rate a package when GET /package/:id/rate is called
-packageRouter.get("/:id/rate", authorizeUser, async (req: Request, res: Response) => {
-  logger.info("GET /package/:id/rate");
+packageRouter.get(
+  "/:id/rate",
+  authorizeUser,
+  async (req: Request, res: Response) => {
+    logger.info("GET /package/:id/rate");
 
-  let id: string;
-  let rating: PackageRating;
-  let ratingToSave: any;
-  let existingRating: any;
-  let packageToRate: any;
-  try {
-    id = req?.params?.id;
+    let id: string;
+    let rating: PackageRating;
+    let ratingToSave: any;
+    let existingRating: any;
+    let packageToRate: any;
+    try {
+      id = req?.params?.id;
 
-    if (id != (new mongoose.Types.ObjectId(id)).toString()) {
-      res.status(400).send("Invalid package ID");
+      if (id != new mongoose.Types.ObjectId(id).toString()) {
+        res.status(400).send("Invalid package ID");
+      }
+
+      existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
+      if (existingRating) {
+        return res.status(200).send(existingRating.toObject());
+      }
+
+      packageToRate = await PackageModel.findOne({ _id: id }).exec();
+      if (!packageToRate) {
+        return res.status(404).send("Package does not exist.");
+      }
+
+      rating = ratePackage(packageToRate.data.URL);
+
+      if (!didChokeOnRating(rating)) {
+        logger.info("POST /package: Package not uploaded, disqualified rating");
+        return res
+          .status(500)
+          .send(
+            "	The package rating system choked on at least one of the metrics."
+          );
+      }
+
+      // Save rating so we have a rating for this package
+      ratingToSave = new PackageRatingModel(rating);
+      ratingToSave._id = packageToRate._id;
+      await ratingToSave.save();
+
+      return res.status(200).send(rating);
+    } catch {
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for GET /package/:id/rate");
+      return res.status(400).send("Invalid JSON");
     }
-
-    existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
-    if (existingRating) {
-      return res.status(200).send(existingRating.toObject());
-    }
-
-    packageToRate = await PackageModel.findOne({ _id: id }).exec();
-    if (!packageToRate) {
-      return res.status(404).send("Package does not exist.");
-    }
-
-    rating = ratePackage(packageToRate.data.URL);
-
-    if (!didChokeOnRating(rating)) {
-      logger.info("POST /package: Package not uploaded, disqualified rating");
-      return res
-        .status(500)
-        .send("	The package rating system choked on at least one of the metrics.");
-    }
-
-    // Save rating so we have a rating for this package
-    ratingToSave = new PackageRatingModel(rating);
-    ratingToSave._id = packageToRate._id;
-    await ratingToSave.save();
-
-    return res.status(200).send(rating);
-  } catch {
-    // Request body is not valid JSON
-    logger.info("Invalid JSON for GET /package/:id/rate");
-    return res.status(400).send("Invalid JSON");
   }
-});
+);
 
 // Fetch a package when GET /package/:id is called
 packageRouter.get(
@@ -102,7 +117,9 @@ packageRouter.get(
     let package_received: any;
 
     try {
-      const query = PackageModel.where({ _id: new mongoose.Types.ObjectId(id) });
+      const query = PackageModel.where({
+        _id: new mongoose.Types.ObjectId(id),
+      });
       package_received = await query.findOne();
     } catch {
       return res.status(400).send("Invalid ID");
@@ -117,7 +134,6 @@ packageRouter.get(
 
     // Load the content from mongo
     downloadFileFromMongo(package_received._id, (content, error) => {
-
       if (error) {
         logger.debug("Error downloading file from mongo: " + error);
         return res.status(404).send("Invalid content");
@@ -142,8 +158,8 @@ packageRouter.put(
     let auth: string;
     let packageInfo: Package;
     try {
-      id = (req.params.id);
-      logger.info("Penis")
+      id = req.params.id;
+      logger.info("Penis");
       auth = req.header("X-Authorization") || "";
       // Require auth
 
@@ -153,9 +169,8 @@ packageRouter.put(
       // Validate with joi
 
       const query = PackageModel.where({ _id: id });
-      
-      try {
 
+      try {
         const package_received = await query.findOne();
         // Package doesn't exist, return 404
         if (!package_received) {
@@ -163,11 +178,16 @@ packageRouter.put(
           return;
         }
 
-        if (package_received.metadata.Name != packageInfo.metadata.Name
-          || package_received.metadata.Version != packageInfo.metadata.Version
-          || package_received.metadata.ID != packageInfo.metadata.ID ) {
-
-          res.status(400).send("There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.")
+        if (
+          package_received.metadata.Name != packageInfo.metadata.Name ||
+          package_received.metadata.Version != packageInfo.metadata.Version ||
+          package_received.metadata.ID != packageInfo.metadata.ID
+        ) {
+          res
+            .status(400)
+            .send(
+              "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
+            );
           return;
         }
 
@@ -189,9 +209,6 @@ packageRouter.put(
       } catch (error) {
         logger.info(error);
       }
-
-
-      
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for PUT /package/:id");
@@ -211,7 +228,9 @@ packageRouter.delete(
     let id: string = req?.params?.id;
 
     try {
-      const query = PackageModel.where({ _id: new mongoose.Types.ObjectId(id) });
+      const query = PackageModel.where({
+        _id: new mongoose.Types.ObjectId(id),
+      });
       package_received = await query.deleteOne();
     } catch {
       return res.status(400).send("Invalid ID");
@@ -227,7 +246,8 @@ packageRouter.delete(
 );
 
 // Search packages via a Regex when POST /package/byRegEx is called
-packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //authorizeUser,
+packageRouter.post("/byRegEx", async (req: Request, res: Response) => {
+  //authorizeUser,
   logger.info("POST /package/byRegEx/{regex}");
 
   // let regex: string;
@@ -253,7 +273,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
 
     // TODO: Get the package from the database using the regex
     // TODO: Return a list of packages
-    const regex = new RegExp(regex_body, 'i');
+    const regex = new RegExp(regex_body, "i");
     const packages = await PackageModel.find({ "metadata.Name": regex }).exec();
 
     // EXAMPLE RESPONSE:
@@ -283,10 +303,10 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
     // logger.info()
 
     // According to YML spec, return only name and version
-    return_data = packages.map(pkg => {
+    return_data = packages.map((pkg) => {
       return {
         Name: pkg.metadata.Name,
-        Version: pkg.metadata.Version
+        Version: pkg.metadata.Version,
       };
     });
 
