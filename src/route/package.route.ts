@@ -15,6 +15,7 @@ import * as path from "path";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
 import mongoose from "mongoose";
+import { downloadFileFromMongo } from "../config/config";
 
 const express = require("express");
 
@@ -97,41 +98,36 @@ packageRouter.get(
   async (req: Request, res: Response) => {
     logger.info("GET /package/:id");
 
-    let id: number = parseInt(req?.params?.id);
+    let id: string = req?.params?.id;
+    let package_received: any;
 
-    // No ID provided or bad auth, return 400
-    if (!id) {
-      res
-        .status(400)
-        .send(
-          "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
-        );
-      return;
+    try {
+      const query = PackageModel.where({ _id: new mongoose.Types.ObjectId(id) });
+      package_received = await query.findOne();
+    } catch {
+      return res.status(400).send("Invalid ID");
     }
 
-    const query = PackageModel.where({ _id: id });
-    const package_received = await query.findOne();
-
+    // Package doesn't exist, return 404
     if (!package_received) {
-      res.status(404).send("Package does not exist.");
-      return;
+      return res.status(404).send("Package does not exist.");
     }
 
     logger.info("Found package: " + package_received?.toJSON());
 
-    // Package doesn't exist, return 404
-    if (!package_received?.data.Content) {
-      res.status(400).send("No Content supplied");
-      return;
-    }
+    // Load the content from mongo
+    downloadFileFromMongo(package_received._id, (content, error) => {
 
-    // Return package
-    res.status(200).send(package_received.toJSON());
+      if (error) {
+        logger.debug("Error downloading file from mongo: " + error);
+        return res.status(404).send("Invalid content");
+      }
 
-    return;
+      logger.info("Downloaded content");
 
-    // default error?
-    res.status(500).send({ code: 0, message: "Random error" });
+      package_received.data.Content = content;
+      return res.status(200).send(package_received.toObject());
+    });
   }
 );
 
