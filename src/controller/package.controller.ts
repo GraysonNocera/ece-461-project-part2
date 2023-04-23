@@ -75,7 +75,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
 
   if (!packageToUpload.data.Content) {
     // Use URL to get the Content
-    packageToUpload.data.Content = await getContentFromUrl(packageToUpload.data.URL);
+    packageToUpload.data.Content = await getContentFromUrl(github_url);
     if (!packageToUpload.data.Content) {
       logger.info("POST /package: Package not uploaded, invalid content");
       return res.status(400).send("Invalid Content or URL");
