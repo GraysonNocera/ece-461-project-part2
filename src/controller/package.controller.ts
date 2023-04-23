@@ -12,6 +12,9 @@ import {
 import { PackageModel } from "../model/package";
 import { getPackageJSON } from "../service/zip";
 import { ratePackage } from "../service/rate";
+import { uploadFileToMongo } from "../config/config";
+import path from "path";
+import fs from "fs";
 
 export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
   logger.info("postPackage: POST /package endpoint hit");
@@ -21,6 +24,7 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let package_json: Object = {};
   let historyEntry;
   let github_url: string;
+  let temp: string;
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
@@ -80,6 +84,8 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
       logger.info("POST /package: Package not uploaded, invalid content");
       return res.status(400).send("Invalid Content or URL");
     }
+  } else {
+    fs.writeFileSync(path.join(__dirname, '..', 'artifacts', `${packageToUpload.metadata.Name}.txt`), packageToUpload.data.Content);
   }
 
   if (packageToUpload.data.Name == "*") {
@@ -90,8 +96,18 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   // Save package
   logger.info("POST /package: Saving package: " + packageToUpload);
   packageToUpload.metadata.ID = packageToUpload._id.toString();
+
+  let filename: string = `${packageToUpload.metadata.Name}.txt`;
+  uploadFileToMongo(path.join(__dirname, '..', 'artifacts', filename), filename, packageToUpload._id);
+
+  // Utter stupidity so that I don't have to research how to not upload the current Content
+  temp = packageToUpload.data.Content;
+  packageToUpload.data.Content = filename;
+
   await packageToUpload.save();
   logger.info("POST /package: Package metadata added successfully " + packageToUpload.metadata);
+
+  packageToUpload.data.Content = temp;
 
   // Save history entry
   historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
