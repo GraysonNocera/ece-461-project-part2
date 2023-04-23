@@ -5,7 +5,7 @@ import { PackageDataUploadValidation } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { ratePackage, didChokeOnRating, verifyRating } from "../controller/package.controller";
+import { ratePackage, didChokeOnRating } from "../service/rate";
 
 import { PackageRating, PackageRatingModel } from "../model/packageRating";
 import * as cp from "child_process";
