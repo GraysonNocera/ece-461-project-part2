@@ -119,19 +119,19 @@ Content-Type: application/json
 ###
 
 POST http://localhost:3000/user
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MTk0MDA3MywiZXhwIjoxNjgxOTc2MDczfQ.N_C0orTu8KKDSFJp_r8C8qaGxEJ4QrCuoOYnyaYtOQg
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfbmFtZSIsImlzQWRtaW4iOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoiYV9zaW1wbGVfcGFzc3dvcmQifX0sImlhdCI6MTY4MjA0Njk1MCwiZXhwIjoxNjgyMDgyOTUwfQ.oHFrDKoi2Ivq83FJJRb605srsCBmEDPxdKihlgs4UV0
 Content-Type: application/json
 
 {
         "User": {
-        "name": "test_name",
-        "isAdmin": false,
-        "isUpload": false,
-        "isDownload": false, 
-        "isSearch": false
+        "name": "billybob",
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true, 
+        "isSearch": true
     },
     "Secret": {
-        "password": "a_simple_password"
+        "password": "urmom"
     }
 }
 

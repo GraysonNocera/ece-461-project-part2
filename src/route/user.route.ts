@@ -2,20 +2,12 @@ import { Router } from "express";
 import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
 import { Request, Response } from "express";
-import { Package } from "../model/package";
-import { User } from "../model/user";
-import mongoose from "mongoose";
-import { userdata } from "../model/user";
-import { PackageMetadata } from "../model/packageMetadata";
-import { PackageData } from "../model/packageData";
 import { ProfileModel } from "../model/user";
-import { connectToMongo, disconnectFromMongo } from "../config/config";
-import { UserAuthenticationInfo } from "../model/userAuthenticationInfo";
 const express = require("express");
 
 export const userRouter: Router = express.Router();
 
-userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
+userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /user");
   try {
     if (res.locals.isAdmin) {
@@ -54,7 +46,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
   }
 });
 
-userRouter.post("/", authorizeUser, async (req: Request, res: Request) => {
+userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("POST /user");
   try {
     //add in stuff for checking admin and creating new user
