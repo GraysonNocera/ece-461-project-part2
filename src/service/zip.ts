@@ -29,7 +29,7 @@ async function getPackageZip(owner: string, repo: string) {
     }
   });
 
-  await fs.writeFile(path.join(__dirname, 'file.zip'), new Array(result.data))
+  await fs.writeFile(path.join(__dirname, '..', 'artifacts', `${repo}.zip`), new Array(result.data))
   
 }
 
@@ -47,9 +47,13 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
   }
 
   await getPackageZip(details.username, details.repoName);
-  let content = await zipToBase64(path.join(__dirname, 'file.zip'))
 
-  fs.rm(path.join(__dirname, 'file.zip'));
+  let zipFilePath: string = path.join(__dirname, '..', 'artifacts', `${details.repoName}.zip`);
+  let txtFilePath: string = path.join(__dirname, '..', 'artifacts', `${details.repoName}.txt`);
+
+  let content = await zipToBase64(zipFilePath);
+  fs.writeFile(txtFilePath, content);
+  fs.rm(zipFilePath);
 
   return content;
 }
