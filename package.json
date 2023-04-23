@@ -30,6 +30,7 @@
     "ng": "^0.0.0",
     "node-jq": "^2.3.5",
     "octokit": "^2.0.14",
+    "prettier": "^2.8.8",
     "request-promise": "^4.2.6",
     "simple-git": "^3.17.0",
     "threads": "^1.7.0",
