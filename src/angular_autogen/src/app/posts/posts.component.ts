@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PostService } from './posts.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-posts',
@@ -7,7 +8,7 @@ import { PostService } from './posts.service';
   styleUrls: ['./posts.component.scss'],
 })
 export class PostsComponent {
-  constructor(public PostService: PostService) { }
+  constructor(public PostService: PostService, private router: Router) { }
 
   newPost = '';
   isLoggedIn = false;
@@ -101,5 +102,9 @@ export class PostsComponent {
     alert ("Logging Out");
     localStorage.removeItem('jwtToken_461_API');
     this.isLoggedIn = false;  
+  }
+
+  onHelpClick() {
+    this.router.navigate(['/help']);
   }
 }
