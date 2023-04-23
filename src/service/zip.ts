@@ -2,6 +2,8 @@ import { readFile } from "fs/promises";
 import JSZip from "jszip";
 import { Octokit as OctokitType } from "octokit";
 import * as fs from "fs/promises";
+const AdmZip = require('adm-zip');
+import { Buffer } from 'buffer';
 import * as path from "path";
 const Octokit = OctokitType as any;
 import { getGitRepoDetails } from "./misc";
@@ -69,26 +71,44 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
   return content;
 }
 
+async function unzipContent(content: string) {
+
+  const buffer = Buffer.from(content, 'base64');
+  const zip = new AdmZip(buffer);
+  let basePath = path.join(__dirname, "..", "artifacts", "unzipped");
+  // let zipEntries = zip.getEntries();
+  
+  // This folder contains all of the things
+  // let folder = zipEntries[0].entryName;
+  
+  // zipEntries.forEach((zipEntry) => {
+  //   console.log(zipEntry.entryName);
+  // });
+  
+  // let certain_file = zip.readAsText(zipEntries[1].entryName);
+  // console.log(certain_file)
+  
+  await zip.extractAllTo(basePath, true);
+
+  return basePath;
+}
+
 export async function getPackageJSON(content: string): Promise<Object> {
-  logger.info("getPackageURL: Getting url from content base64 string");
+  logger.info("getPackageJSON: Getting url from content base64 string");
 
-  let zip: JSZip = new JSZip();
-  zip = await zip.loadAsync(content, { base64: true, createFolders: true });
+  let basePath = await unzipContent(content);
 
-  // console.log(await zip.file("exceptions/CommcourierException.java")?.async("string"));
-  let package_json_path: string = zip.file(/package.json/)[0]?.name;
-  // console.log(package_json_path);
+  logger.info("getPackageJSON: Read base64 string into zip file");
 
-  let package_json_contents: string | undefined = await zip
-    .file(package_json_path)
-    ?.async("string");
-  // console.log(package_json_contents);
+  let package_json_path: string = path.join(basePath, "package.json");
+  let package_json_contents: string = await fs.readFile(package_json_path, "utf8");
 
   let package_json_object: Object;
   if (package_json_contents) {
     package_json_object = JSON.parse(package_json_contents);
     if (package_json_object) {
       logger.info("getPackageJSON: Found package.json");
+      fs.rm(basePath, { recursive: true });
       return package_json_object;
     }
     logger.debug("getPackageJSON: Unable to parse package.json");
@@ -97,3 +117,9 @@ export async function getPackageJSON(content: string): Promise<Object> {
   logger.debug("getPackageJSON: No package.json found");
   return {};
 }
+
+// async function main() {
+//   getPackageJSON(await fs.readFile(path.join(__dirname, "..", "..", "lodash_base64"), "utf8"));
+// }
+
+// main();
