@@ -1,7 +1,9 @@
 const { MongoClient, ServerApiVersion } = require('mongodb');
 import mongoose from 'mongoose';
 import { logger } from '../logging';
+import * as fs from 'fs';
 
+let bucket: mongoose.mongo.GridFSBucket;
 export async function connectToMongo() {
     /*
     * This function connects to the MongoDB database
@@ -23,6 +25,12 @@ export async function connectToMongo() {
     
     await mongoose.connect(uri);
 
+    //creating bucket
+    var db = mongoose.connections[0].db;
+    bucket = new mongoose.mongo.GridFSBucket(db, {
+        bucketName: "Content"
+    });
+
     logger.info("connectToMongo(): Connected to MongoDB");
 }
 
@@ -36,4 +44,43 @@ export async function disconnectFromMongo() {
     mongoose.connection.close();
 
     logger.info("disconnectFromMongo(): Disconnected from MongoDB");
+}
+
+export async function uploadFileToMongo(filePath: string, fileName: string, id: mongoose.Types.ObjectId) {
+
+    logger.info("uploadFileToMongo(): Uploading file to MongoDB: " + fileName);
+
+    let stream = bucket.openUploadStream(fileName);
+    stream.id = id;
+    
+    fs.createReadStream(filePath).pipe(stream).
+    on('error', function(error) {
+        logger.debug("Error in inserting file: " + error);
+    }).
+    on('finish', function() {
+        logger.info("File Inserted");
+    });
+}
+
+export async function downloadFileFromMongo(id: mongoose.Types.ObjectId, filePath: string, callback: Function) {
+
+    let content: string;
+
+    bucket.openDownloadStream(id).
+        pipe(fs.createWriteStream(filePath)).
+        on('error', function(error) {
+            logger.debug("Error in downloading file: " + error);
+        }).
+        on('finish', function() {
+            logger.info("File Downloaded");
+            content = fs.readFileSync(filePath, 'utf8');
+            callback(content);
+        });
+}
+
+export async function deleteFileFromMongo(id: mongoose.Types.ObjectId) {
+
+    logger.info("deleteFileFromMongo(): Deleting file from MongoDB: " + id);
+
+    bucket.delete(id);
 }
