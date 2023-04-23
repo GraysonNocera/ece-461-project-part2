@@ -2,6 +2,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 import mongoose from 'mongoose';
 import { logger } from '../logging';
 import * as fs from 'fs';
+import path from "path";
 
 let bucket: mongoose.mongo.GridFSBucket;
 export async function connectToMongo() {
@@ -67,19 +68,30 @@ export async function uploadFileToMongo(filePath: string, fileName: string, id: 
     });
 }
 
-export async function downloadFileFromMongo(id: mongoose.Types.ObjectId, filePath: string, callback: Function) {
+export async function downloadFileFromMongo(id: mongoose.Types.ObjectId, callback: Function) {
 
     let content: string;
+    let filePath: string;
+
+    filePath = path.join(__dirname, '..', 'artifacts', id.toString());
 
     bucket.openDownloadStream(id).
         pipe(fs.createWriteStream(filePath)).
         on('error', function(error) {
             logger.debug("Error in downloading file: " + error);
+            callback(null, error);
         }).
         on('finish', function() {
             logger.info("File Downloaded");
-            content = fs.readFileSync(filePath, 'utf8');
-            callback(content);
+            content = fs.readFileSync(filePath, 'base64');
+            fs.rm(filePath, function(err) {
+                if (err) {
+                    logger.debug("Error in deleting file: " + err);
+                    callback(null, err);
+                }
+            });
+
+            callback(content, null);
         });
 }
 
