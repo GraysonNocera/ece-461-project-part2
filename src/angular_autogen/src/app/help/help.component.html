@@ -1,102 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=0.8">
-  <title>Help - Access Registry API</title>
-  <style>
-    main {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    h1 {
-      font-size: 2em;
-      margin-bottom: 0.5em;
-    }
-
-    button {
-      display: block;
-      margin-bottom: 1em;
-    }
-
-    .input-container {
-      margin-bottom: 1em;
-    }
-
-    .input-group {
-      margin-bottom: 0.5em;
-    }
-
-    label {
-      display: inline-block;
-      width: 100px;
-    }
-
-    input[type="text"],
-    input[type="password"],
-    textarea {
-      display: inline-block;
-      width: 250px;
-    }
-
-    .button-container {
-      margin-top: 1em;
-    }
-
-    button[aria-label="Login button"],
-    button[aria-label="Logout button"],
-    button[aria-label="Send request button"] {
-      display: inline-block;
-      margin-right: 1em;
-    }
-
-    h2 {
-      font-size: 1.5em;
-      margin-bottom: 0.5em;
-    }
-
-    pre {
-      background-color: #eee;
-      padding: 1em;
-      margin-bottom: 1em;
-    }
-  </style>
-</head>
-
-<body>
-  <main>
-    <h1>Help - Access Registry API</h1>
-    <button><a href="/">Back to Posts</a></button>
-    <div class="input-container">
-      <div class="input-group">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" aria-label="Username input field">
-      </div>
-      <div class="input-group">
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" aria-label="Password input field">
-      </div>
-      <div class="button-container">
-        <!-- <button (click)="login()" aria-label="Login button" *ngIf="!isLoggedIn">Login</button>
-        <button (click)="logout()" aria-label="Logout button" *ngIf="isLoggedIn">Logout</button> -->
-      </div>
-    </div>
-
-    <label for="API Request URL">API Request URL: The Base URL is already defined and you just need to type in the
-      rest of the path</label>
-    <textarea style="border: solid 2px black;" rows="1" #postInput aria-label="API request input field"></textarea>
-    <br><br>
-    <button (click)="addPost(postInput)" aria-label="Send request button">Send Request</button>
-    <br><br>
-    <div *ngIf="newPost" aria-live="polite">
-      <h2>Request:</h2>
-      <pre>localhost:3000/{{postInput.value}}</pre>
-      <h2>Server Response:</h2>
-      <pre>{{newPost}}</pre>
-    </div>
-  </main>
-</body>
-
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Help Page</title>
+    <style>
+      /* Add your styles here */
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      h1 {
+        font-size: 32px;
+        margin-bottom: 20px;
+      }
+      p {
+        font-size: 18px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Help Page</h1>
+    <p>
+      Welcome to the help page. Here are some common questions and answers to
+      help you get started.
+    </p>
+    <ul>
+      <li>
+        <strong>How do I create an account?</strong>
+        <p>
+          To create an account, click on the "Sign Up" button and fill out the
+          registration form with your details.
+        </p>
+      </li>
+      <li>
+        <strong>How do I sign in?</strong>
+        <p>
+          To sign in, click on the "Sign In" button and enter your email address
+          and password.
+        </p>
+      </li>
+      <li>
+        <strong>How do I reset my password?</strong>
+        <p>
+          To reset your password, click on the "Forgot Password" link on the
+          login page and follow the instructions.
+        </p>
+      </li>
+    </ul>
+  </body>
 </html>
