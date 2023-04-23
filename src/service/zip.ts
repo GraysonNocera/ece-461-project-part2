@@ -1,5 +1,5 @@
 import { readFile } from 'fs/promises';
-import * as JSZip from 'jszip';
+import JSZip from 'jszip';
 import { Octokit as OctokitType } from "octokit";
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -52,4 +52,33 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
   fs.rm(path.join(__dirname, 'file.zip'));
 
   return content;
+}
+
+export async function getPackageJSON(content: string): Promise<Object> {
+  logger.info("getPackageURL: Getting url from content base64 string");
+
+  let zip: JSZip = new JSZip();
+  zip = await zip.loadAsync(content, { base64: true, createFolders: true });
+
+  // console.log(await zip.file("exceptions/CommcourierException.java")?.async("string"));
+  let package_json_path: string = zip.file(/package.json/)[0]?.name;
+  // console.log(package_json_path);
+
+  let package_json_contents: string | undefined = await zip
+    .file(package_json_path)
+    ?.async("string");
+  // console.log(package_json_contents);
+
+  let package_json_object: Object;
+  if (package_json_contents) {
+    package_json_object = JSON.parse(package_json_contents);
+    if (package_json_object) {
+      logger.info("getPackageJSON: Found package.json");
+      return package_json_object;
+    }
+    logger.debug("getPackageJSON: Unable to parse package.json");
+  }
+
+  logger.debug("getPackageJSON: No package.json found");
+  return {};
 }

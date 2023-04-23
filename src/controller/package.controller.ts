@@ -1,28 +1,17 @@
-import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
-import { PackageData } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-const isGitHubUrl = require("is-github-url");
 import { getContentFromUrl } from "../service/zip";
-import { getGitRepoDetails } from "../service/misc";
-
+import { getGitRepoDetails, npm_2_git } from "../service/misc";
 import {
   PackageRating,
-  PackageRatingChokedValidation,
   PackageRatingModel,
-  PackageRatingUploadValidation,
 } from "../model/packageRating";
-import * as cp from "child_process";
-// import { PackageRating } from "./api/model/packageRating";
-import { readFileSync } from "fs";
-import { Package, PackageModel } from "../model/package";
-import path from "path";
-import JSZip from "jszip";
-import { AxiosResponse } from "axios";
-import axios from "axios";
+import { PackageModel } from "../model/package";
+import { getPackageJSON } from "../service/zip";
+import { ratePackage } from "../service/rate";
 
 export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
   logger.info("postPackage: POST /package endpoint hit");
@@ -119,68 +108,6 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   return res.status(201).send(packageToUpload.toObject());
 }
 
-export function ratePackage(url: string): PackageRating {
-  logger.info("ratePackage: Running rate script on url " + url + "...");
-
-  let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
-
-  cp.execSync(terminal_command);
-  const test_file = readFileSync(
-    path.join(__dirname, "../", "rate/score.json"),
-    "utf8"
-  );
-  const packageRate: PackageRating = JSON.parse(test_file);
-
-  logger.info("ratePackage: Package received rating " + packageRate.NetScore);
-  logger.info("ratePackage: Package rated successfully");
-
-  return packageRate;
-}
-
-export function verifyRating(packageRate: PackageRating) {
-  // There's gotta be a way to do this is one line with joi
-
-  const { error, value } = PackageRatingUploadValidation.validate(packageRate);
-  if (error) {
-    logger.debug(
-      "verifyRating: Package does not meet qualifications for upload."
-    );
-    return false;
-  }
-
-  logger.info("verifyRating: Package meets qualifications for upload.");
-  return true;
-}
-
-async function getPackageJSON(content: string): Promise<Object> {
-  logger.info("getPackageURL: Getting url from content base64 string");
-
-  let zip: JSZip = new JSZip();
-  zip = await zip.loadAsync(content, { base64: true, createFolders: true });
-
-  // console.log(await zip.file("exceptions/CommcourierException.java")?.async("string"));
-  let package_json_path: string = zip.file(/package.json/)[0]?.name;
-  // console.log(package_json_path);
-
-  let package_json_contents: string | undefined = await zip
-    .file(package_json_path)
-    ?.async("string");
-  // console.log(package_json_contents);
-
-  let package_json_object: Object;
-  if (package_json_contents) {
-    package_json_object = JSON.parse(package_json_contents);
-    if (package_json_object) {
-      logger.info("getPackageJSON: Found package.json");
-      return package_json_object;
-    }
-    logger.debug("getPackageJSON: Unable to parse package.json");
-  }
-
-  logger.debug("getPackageJSON: No package.json found");
-  return {};
-}
-
 async function getVersionFromURL(url: string, name: string): Promise<string> {
   // API call to get the version of a package from its url and name
   // :param url: string url
@@ -240,78 +167,6 @@ async function getMetadata(url: string, package_json: Object): Promise<PackageMe
   return metadata;
 }
 
-export async function npm_2_git(npmUrl: string): Promise<string> {
-  // Takes a NPM package URL and returns the GitHub URL
-  // :param npmUrl: npm URL provided by text file
-  // :return: Promise of corresponding GitHub url string
-
-  // extract the package name from the npm URL
-  const packageName = npmUrl.split("/").pop();
-  let retries = 0;
-
-  while (retries < 1) {
-    try {
-      logger.info("Converting npm link (" + npmUrl + ") to GitHub link...");
-
-      // use the npm registry API to get the package information
-      const response: AxiosResponse = await axios.get(
-        `https://registry.npmjs.org/${packageName}`
-      );
-      const packageInfo = response.data;
-
-      // check if package has repository
-      if (!packageInfo.repository) {
-        logger.debug(`No repository found for package: ${packageName}`);
-        return Promise.resolve("");
-      }
-      let new_url = packageInfo.repository.url;
-
-      // Convert ssh to https url
-      if (new_url.startsWith("git+ssh://git@github.com")) {
-        new_url = new_url.replace(
-          "git+ssh://git@github.com",
-          "git://github.com"
-        );
-
-        logger.info("Converted npm link to " + new_url);
-
-        return new_url;
-      }
-      // check if repository is on github
-      if (isGitHubUrl(packageInfo.repository.url)) {
-        return packageInfo.repository.url.replace("git+https", "git");
-      } else {
-        logger.debug(`Repository of package: ${packageName} is not on GitHub`);
-        return Promise.resolve("");
-      }
-    } catch (error: any) {
-      // Error in getting GitHub url
-      logger.debug("Received error: " + error);
-      if (error.response && error.response.status === 404) {
-        logger.debug(`Package not found: ${packageName}`);
-        return Promise.resolve("");
-      } else if (error.response && error.response.status === 429) {
-        logger.debug(
-          `Rate limit exceeded: ${error.response.headers["Retry-After"]} seconds`
-        );
-        return Promise.resolve("");
-      } else if (error.code === "ECONNREFUSED") {
-        logger.debug(`Error: ${error.code}. Retrying...`);
-        retries++;
-        continue;
-      } else {
-        logger.debug(
-          "Respository of package: " + packageName + " is not on GitHub"
-        );
-        return Promise.resolve("");
-      }
-    }
-  }
-
-  logger.debug(`Error: Maximum retries exceeded for package: ${packageName}`);
-  return Promise.resolve("");
-}
-
 async function isNameInDb(name: string): Promise<Number | null> {
   // Search database for the name, return 1 if it is in the db, 0 otherwise
   // :param name: string name of package
@@ -320,20 +175,8 @@ async function isNameInDb(name: string): Promise<Number | null> {
   return await PackageModel.findOne({ 'metadata.Name': name }) ? 1 : 0;
 }
 
-export function didChokeOnRating(rating: PackageRating): Number {
-  // Check if package choked on rating
-  // :param rating: PackageRating
-  // :return: Number
-
-  const {error, value} = PackageRatingChokedValidation.validate(rating);
-  return error ? 1 : 0;
-}
-
 // Export all non-exported functions just for testing
 export const exportedForTesting = {
-  ratePackage,
-  verifyRating,
-  getPackageJSON,
   getVersionFromURL,
   buildHistoryEntry,
   getMetadata,
