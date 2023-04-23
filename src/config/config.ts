@@ -58,7 +58,12 @@ export async function uploadFileToMongo(filePath: string, fileName: string, id: 
         logger.debug("Error in inserting file: " + error);
     }).
     on('finish', function() {
-        logger.info("File Inserted");
+        logger.info("File Inserted into mongo, deleting it locally");
+        fs.rm(filePath, function(err) {
+            if (err) {
+                logger.debug("Error in deleting file: " + err);
+            }
+        });
     });
 }
 
