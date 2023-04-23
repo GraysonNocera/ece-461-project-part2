@@ -21,7 +21,12 @@ packagesRouter.post(
     let packages: any[] = [];
     let verionsToSearch: string[];
     try {
-      offset = parseInt(req.query.offset) || 1;
+      if (typeof req.query?.offset != "string") {
+        logger.info("Invalid offset for GET /packages");
+        return res.status(400).send("Invalid offset");
+      }
+
+      offset = parseInt(req.query?.offset) || 1;
       logger.info("package offset: " + offset);
       packageQuery = req.body;
 
