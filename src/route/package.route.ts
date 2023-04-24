@@ -202,11 +202,12 @@ packageRouter.put(
   async (req: Request, res: Response) => {
     logger.info("PUT /package/:id");
 
-    let id: number;
+    let id: string;
     let auth: string;
     let packageInfo: Package;
     try {
-      id = parseInt(req.params.id);
+      id = (req.params.id);
+      logger.info("Penis")
       auth = req.header("X-Authorization") || "";
       // Require auth
 
@@ -216,29 +217,45 @@ packageRouter.put(
       // Validate with joi
 
       const query = PackageModel.where({ _id: id });
-      const package_received = await query.findOne();
+      
+      try {
 
-      // Package doesn't exist, return 404
-      if (!package_received) {
-        res.status(404).send("Package does not exist");
-        return;
+        const package_received = await query.findOne();
+        // Package doesn't exist, return 404
+        if (!package_received) {
+          res.status(404).send("Package does not exist");
+          return;
+        }
+
+        if (package_received.metadata.Name != packageInfo.metadata.Name
+          || package_received.metadata.Version != packageInfo.metadata.Version
+          || package_received.metadata.ID != packageInfo.metadata.ID ) {
+
+          res.status(400).send("There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.")
+          return;
+        }
+
+        // Update contents with new contents
+        if (packageInfo.data.Content) {
+          package_received.data.Content = packageInfo.data.Content;
+        }
+        if (packageInfo.data.URL) {
+          package_received.data.URL = packageInfo.data.URL;
+        }
+        if (packageInfo.data.JSProgram) {
+          package_received.data.JSProgram = packageInfo.data.JSProgram;
+        }
+
+        await package_received.save();
+
+        // If status is 200, ok. Send 404 if package doesn't exist.
+        res.status(200).send(package_received.toJSON());
+      } catch (error) {
+        logger.info(error);
       }
 
-      // Update contents with new contents
-      if (packageInfo.data.Content) {
-        package_received.data.Content = packageInfo.data.Content;
-      }
-      if (packageInfo.data.URL) {
-        package_received.data.URL = packageInfo.data.URL;
-      }
-      if (packageInfo.data.JSProgram) {
-        package_received.data.JSProgram = packageInfo.data.JSProgram;
-      }
 
-      await package_received.save();
-
-      // If status is 200, ok. Send 404 if package doesn't exist.
-      res.status(200).send(package_received.toJSON());
+      
     } catch {
       // Request body is not valid JSON
       logger.info("Invalid JSON for PUT /package/:id");
@@ -267,9 +284,9 @@ packageRouter.delete(
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
       return res.status(404).send("Package does not exist.");
+    } else {
+      return res.status(200).send("Package is deleted.");
     }
-
-    return res.status(200).send("Package is deleted.");
   }
 );
 
@@ -300,7 +317,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
 
     // TODO: Get the package from the database using the regex
     // TODO: Return a list of packages
-    const regex = new RegExp(regex_body, 'i');
+    const regex = new RegExp(regex_body, "i");
     const packages = await PackageModel.find({ "metadata.Name": regex }).exec();
 
     // EXAMPLE RESPONSE:
@@ -330,10 +347,10 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
     // logger.info()
 
     // According to YML spec, return only name and version
-    return_data = packages.map(pkg => {
+    return_data = packages.map((pkg) => {
       return {
         Name: pkg.metadata.Name,
-        Version: pkg.metadata.Version
+        Version: pkg.metadata.Version,
       };
     });
 
@@ -345,7 +362,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
     } else {
       res.status(404).send("No package found under this regex.");
     }
-    res.status(404).send("No package found under this regex.");
+    //res.status(404).send("No package found under this regex.");
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /RegEx/{regex}");

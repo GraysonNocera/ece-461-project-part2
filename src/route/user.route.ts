@@ -2,36 +2,13 @@ import { Router } from "express";
 import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
 import { Request, Response } from "express";
-import { Package } from "../model/package";
-import { User } from "../model/user";
-import mongoose from "mongoose";
-import { userdata } from "../model/user";
-import { PackageMetadata } from "../model/packageMetadata";
-import { PackageData } from "../model/packageData";
 import { ProfileModel } from "../model/user";
-import { connectToMongo, disconnectFromMongo } from "../config/config";
-import { UserAuthenticationInfo } from "../model/userAuthenticationInfo";
+import { hashPassword } from "./hashfunc";
 const express = require("express");
 
 export const userRouter: Router = express.Router();
 
-// This was moved to the model/ files
-// const user = new mongoose.Schema<User>({
-//   name: { type: String, required: true },
-//   isAdmin: { type: Boolean, required: true },
-// });
-
-// const authorize = new mongoose.Schema<UserAuthenticationInfo>({
-//   password: { type: String, required: true },
-// });
-
-// const userdata = new mongoose.Schema({
-//   User: { type: user, required: true },
-//   Secret: { type: authorize, required: true },
-// });
-// const info = mongoose.model("user", userdata);
-
-userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
+userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("DELETE /user");
   try {
     if (res.locals.isAdmin) {
@@ -70,11 +47,11 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Request) => {
   }
 });
 
-userRouter.post("/", authorizeUser, async (req: Request, res: Request) => {
+userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("POST /user");
   try {
-    //add in stuff for checking admin and creating new user
     if (res.locals.isAdmin) {
+      const hashedPassword = hashPassword(req.body.Secret.password);
       let account = new ProfileModel({
         User: {
           name: req.body.User.name,
@@ -83,7 +60,7 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Request) => {
           isDownload: req.body.User.isDownload,
           isSearch: req.body.User.isSearch,
         },
-        Secret: { password: req.body.Secret.password },
+        Secret: { password: hashedPassword },
       });
       await account.save();
       return res.status(200).send("Account successfully created");

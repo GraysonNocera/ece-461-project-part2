@@ -6,6 +6,7 @@ import { User } from "../model/user";
 import mongoose from "mongoose";
 const jwt = require("jsonwebtoken");
 import { ProfileModel } from "../model/user";
+import { verifyPassword } from "../route/hashfunc";
 
 export const authorizeUser = async (
   req: Request,
@@ -35,7 +36,7 @@ export const authorizeUser = async (
   try {
     if (auth != "") {
       try {
-        let test: any = jwt.verify(auth, "B0!l3r-Up!");
+        let test: any = await jwt.verify(auth, "B0!l3r-Up!");
         const query = ProfileModel.find();
         query.or([
           {
@@ -45,7 +46,7 @@ export const authorizeUser = async (
         ]);
         const data = await query.findOne();
         if (data != null) {
-          if (test.data.Secret.password == data.Secret.password) {
+          if (verifyPassword(test.data.Secret.password, data.Secret.password)) {
             if (data.User.name == test.data.User.name) {
               if (data.User.isAdmin) {
                 res.locals.isAdmin = true;
@@ -97,8 +98,9 @@ export const authorizeUser = async (
       if (data != null) {
         if (
           req.body.User.name == data.User.name &&
-          req.body.Secret.password == data.Secret.password
+          verifyPassword(req.body.Secret.password, data.Secret.password)
         ) {
+          match = 1;
           if (data.User.isAdmin) {
             res.locals.isAdmin = true;
             match = 1;
@@ -124,6 +126,7 @@ export const authorizeUser = async (
             res.locals.download = false;
           }
           res.locals.auth = true;
+          match = 1;
           res.locals.username = req.body.User.name;
           next();
         }
@@ -139,7 +142,6 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-
     logger.debug(error);
   }
 
