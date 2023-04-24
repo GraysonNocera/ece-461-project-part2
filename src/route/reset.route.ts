@@ -41,8 +41,9 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       await defaultuser.save();
       res.status(200).send("Registry is reset");
       return;
+    } else {
+      res.status(401).send("You do not have permission to reset the registry.");
     }
-    res.status(401).send("You do not have permission to reset the registry.");
   } catch (error) {
     // Request body is not valid JSON
     logger.info("Invalid JSON for DELETE /reset");

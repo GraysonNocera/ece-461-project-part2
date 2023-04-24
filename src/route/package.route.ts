@@ -317,7 +317,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
 
     // TODO: Get the package from the database using the regex
     // TODO: Return a list of packages
-    const regex = new RegExp(regex_body, 'i');
+    const regex = new RegExp(regex_body, "i");
     const packages = await PackageModel.find({ "metadata.Name": regex }).exec();
 
     // EXAMPLE RESPONSE:
@@ -347,10 +347,10 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
     // logger.info()
 
     // According to YML spec, return only name and version
-    return_data = packages.map(pkg => {
+    return_data = packages.map((pkg) => {
       return {
         Name: pkg.metadata.Name,
-        Version: pkg.metadata.Version
+        Version: pkg.metadata.Version,
       };
     });
 
@@ -362,7 +362,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => { //author
     } else {
       res.status(404).send("No package found under this regex.");
     }
-    res.status(404).send("No package found under this regex.");
+    //res.status(404).send("No package found under this regex.");
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /RegEx/{regex}");
