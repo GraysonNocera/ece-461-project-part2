@@ -32,11 +32,6 @@ export const postPackage = async (
     data: req?.body,
   });
 
-  github_url = packageToUpload.data.URL.startsWith(
-    "https://www.npmjs.com/package/"
-  )
-    ? await npm_2_git(packageToUpload.data.URL)
-    : packageToUpload.data.URL;
   // Package already exists: status 409
   const query = PackageModel.find();
   query.or([
@@ -57,6 +52,9 @@ export const postPackage = async (
     package_json = await getPackageJSON(packageToUpload.data.Content);
     try {
       packageToUpload.data.URL = package_json["homepage"];
+      if (!packageToUpload.data.URL) {
+        return res.status(400).send("Invalid Content (could not find url)");
+      }
     } catch (error) {
       logger.debug(
         "POST /package: Package not uploaded, no homepage field or no package.json"
@@ -64,6 +62,12 @@ export const postPackage = async (
       return res.status(400).send("Invalid Content");
     }
   }
+
+  github_url = packageToUpload.data.URL.startsWith(
+    "https://www.npmjs.com/package/"
+  )
+    ? await npm_2_git(packageToUpload.data.URL)
+    : packageToUpload.data.URL;
 
   packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
