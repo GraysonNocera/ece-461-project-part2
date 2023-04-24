@@ -14,6 +14,7 @@ var cors = require("cors");
 
 function defineServer() {
   const app = express();
+  console.log("here");
 
   logger.info("Starting up the API server...");
 
@@ -36,8 +37,6 @@ function defineServer() {
 }
 
 function startServer(app) {
-  // Connect to database
-  connectToMongo();
 
   const port: Number = Number(process.env.PORT || 3000);
 
@@ -45,16 +44,21 @@ function startServer(app) {
     logger.info("API server listening on port 3000");
   });
 
-  // disconnectFromMongo();
 }
 
 function main() {
+  // Connect to database
+  connectToMongo();
+
   // Define and start the server
   let app = defineServer();
   startServer(app);
 }
 
-main();
+// Run main conditionally if it is not a module import
+if (require.main === module) {
+  main();
+}
 
 export const exportedForTestingApp = {
   defineServer,
