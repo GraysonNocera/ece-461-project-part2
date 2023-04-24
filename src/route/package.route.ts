@@ -284,9 +284,9 @@ packageRouter.delete(
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
       return res.status(404).send("Package does not exist.");
+    } else {
+      return res.status(200).send("Package is deleted.");
     }
-
-    return res.status(200).send("Package is deleted.");
   }
 );
 
