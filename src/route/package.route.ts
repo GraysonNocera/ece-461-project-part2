@@ -25,7 +25,7 @@ export const packageRouter: Router = express.Router();
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
 packageRouter.post(
   "/",
-  authorizeUser,
+  /*authorizeUser,*/
   Validate(PackageDataUploadValidation),
   postPackage
 );
