@@ -227,7 +227,7 @@ async function isNameInDb(name: string): Promise<Number | null> {
 }
 
 // Export all non-exported functions just for testing
-export const exportedForTesting = {
+export const exportedForTestingPackageController = {
   getVersionFromURL,
   buildHistoryEntry,
   getMetadata,
