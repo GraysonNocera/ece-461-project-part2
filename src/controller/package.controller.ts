@@ -53,6 +53,7 @@ export const postPackage = async (
     try {
       packageToUpload.data.URL = package_json["homepage"];
       if (!packageToUpload.data.URL) {
+        logger.debug("POST /package: Package not uploaded, no homepage field");
         return res.status(400).send("Invalid Content (could not find url)");
       }
     } catch (error) {
