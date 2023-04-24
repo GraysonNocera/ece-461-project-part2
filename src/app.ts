@@ -11,9 +11,10 @@ import { userRouter } from "./route/user.route";
 import { connectToMongo, disconnectFromMongo } from "./config/config";
 var cors = require("cors");
 // define app
-const app = express();
 
 function defineServer() {
+  const app = express();
+
   logger.info("Starting up the API server...");
 
   app.use(express.json({limit: '50mb'}));
@@ -30,9 +31,11 @@ function defineServer() {
   app.use("/packages", packagesRouter);
   app.use("/reset", resetRouter);
   app.use("/user", userRouter);
+
+  return app;
 }
 
-function startServer() {
+function startServer(app) {
   // Connect to database
   connectToMongo();
 
@@ -47,8 +50,13 @@ function startServer() {
 
 function main() {
   // Define and start the server
-  defineServer();
-  startServer();
+  let app = defineServer();
+  startServer(app);
 }
 
 main();
+
+export const exportedForTestingApp = {
+  defineServer,
+  startServer,
+};
