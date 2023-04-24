@@ -57,7 +57,7 @@ GET http://localhost:3000/package/4/rate
 ###
 
 DELETE http://localhost:3000/reset
-X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwNjMwLCJleHAiOjE2ODE2NTY2MzB9.Md7lT4KK-cpxczJmYkyXMyD7g2mNPMrpFq7nXne66_0
+X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihB4oCZ4oCdYDtEUk9QIFRBQkxFcGFja2FnZXM7In19LCJpYXQiOjE2ODIzMTIxNDIsImV4cCI6MTY4MjM0ODE0Mn0.H3ojLoM5NT9K2rqdyHKYK6Cvt1qItwapcYxa13nZq04
 
 GET http://localhost:3000/package/5
 X-Authorization: ur dad
@@ -102,32 +102,35 @@ PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
 {
-  "User": {
-    "name": "ece30861defaultadminuser",
-    "isAdmin": true
-  },
-  "Secret": {
-    "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
-  }
+      "User": {
+        "name": "ece30861defaultadminuser",
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true,
+        "isSearch": true
+      },
+      "Secret": {
+        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLEpackages;"
+      }
 }
 
 ###
 
 POST http://localhost:3000/user
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfbmFtZSIsImlzQWRtaW4iOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoiYV9zaW1wbGVfcGFzc3dvcmQifX0sImlhdCI6MTY4MjA0Njk1MCwiZXhwIjoxNjgyMDgyOTUwfQ.oHFrDKoi2Ivq83FJJRb605srsCBmEDPxdKihlgs4UV0
+X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihB4oCZ4oCdYDtEUk9QIFRBQkxFcGFja2FnZXM7In19LCJpYXQiOjE2ODIzMTIxNDIsImV4cCI6MTY4MjM0ODE0Mn0.H3ojLoM5NT9K2rqdyHKYK6Cvt1qItwapcYxa13nZq04
 Content-Type: application/json
 
 {
-        "User": {
-        "name": "billybob",
+      "User": {
+        "name": "test_user",
         "isAdmin": true,
         "isUpload": true,
-        "isDownload": true, 
+        "isDownload": true,
         "isSearch": true
-    },
-    "Secret": {
+      },
+      "Secret": {
         "password": "urmom"
-    }
+      }
 }
 
 ###
