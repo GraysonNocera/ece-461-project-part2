@@ -2,6 +2,7 @@
 
 import mongoose from "mongoose";
 import { connectToMongo, disconnectFromMongo } from "./config";
+import { PackageModel } from "../model/package";
 
 // The way mongodb works is that databases are made up of collections, and collections are made up of documents
 // Documents are just JSON objects, and collections are just arrays of JSON objects
@@ -17,65 +18,72 @@ import { connectToMongo, disconnectFromMongo } from "./config";
 // Plugging this again because it's a good read: https://www.mongodb.com/languages/mean-stack-tutorial
 
 async function main() {
+  await connectToMongo();
 
-    await connectToMongo();
+  // This defines a schema in mongoose, which is equivalent to what
+  // we have in the models/ folder right now
+  const schema = new mongoose.Schema({
+    name: String,
+    summary: String,
+    space: String,
+  });
 
-    // This defines a schema in mongoose, which is equivalent to what 
-    // we have in the models/ folder right now
-    const schema = new mongoose.Schema({ 
-        name: String,
-        summary: String,
-        space: String,
-    });
+  // Model is now a class that we can use to create new instances of the model
+  const Model = mongoose.model("Model", schema);
 
-    // Model is now a class that we can use to create new instances of the model
-    const Model = mongoose.model("Model", schema)
+  const data1 = new Model({ name: "test", summary: "test", space: "test" });
+  const data2 = new Model({ name: "data", summary: "data", space: "data" });
 
-    const data1 = new Model({ name: "test", summary: "test", space: "test"});
-    const data2 = new Model({ name: "data", summary: "data", space: "data"});
+  // We can save this as a document in the database, and it will automatically be saved
+  // into the models collection
+  console.log(data1._id);
+  await data1.save(); // this should be an async function
+  await data2.save();
 
-    // We can save this as a document in the database, and it will automatically be saved
-    // into the models collection
-    console.log(data1._id);
-    await data1.save(); // this should be an async function
-    await data2.save();
+  // Create operation
+  // Shown above
 
-    // Create operation
-    // Shown above
+  // Read operation
+  // The query will get all instances of Model in the database where the name is test
+  const query = Model.where({ name: "test" });
+  const person = await query.findOne(); // this should be an async function
+  console.log(person);
+  // See https://mongoosejs.com/docs/api/query.html for more info
 
-    // Read operation
-    // The query will get all instances of Model in the database where the name is test
-    const query = Model.where({ name: 'test' });
-    const person = await query.findOne(); // this should be an async function
-    console.log(person);
-    // See https://mongoosejs.com/docs/api/query.html for more info
+  // Update operation
+  // This will update the name of the person to "test2"
+  const result = await Model.updateOne(
+    { name: "test" },
+    {
+      name: "test2",
+    }
+  );
+  console.log(result.modifiedCount);
 
-    // Update operation
-    // This will update the name of the person to "test2"
-    const result = await Model.updateOne({ name: 'test' }, {
-        name: 'test2'
-    });
-    console.log(result.modifiedCount);
+  // Delete operation
+  const delete_result = await Model.deleteOne({ name: "data" });
+  console.log(delete_result);
 
-    // Delete operation
-    const delete_result = await Model.deleteOne({ name: 'data' });
-    console.log(delete_result);
+  // This is how you can assign the ID of something to the _id from mongodb
+  // There's probably a better way to do this, but this is what I came up with
+  // So I am basically mirroring the value from _id that mongodb gives us into
+  // a new field called something like ID (to be in compliance with the PackageMetadata schema)
+  const new_schema = new mongoose.Schema({
+    parentId: String,
+    name: String,
+  });
+  const new_model = mongoose.model("TestingID", new_schema);
+  const new_data = new new_model({ name: "test" });
+  await new_data.save();
+  let res = new_model.updateOne(
+    { name: new_data.name, _id: new_data._id },
+    { parentId: new_data._id.toString() }
+  );
+  console.log((await res).modifiedCount);
 
-    // This is how you can assign the ID of something to the _id from mongodb
-    // There's probably a better way to do this, but this is what I came up with
-    // So I am basically mirroring the value from _id that mongodb gives us into 
-    // a new field called something like ID (to be in compliance with the PackageMetadata schema)
-    const new_schema = new mongoose.Schema({
-        parentId: String,
-        name: String,
-    });
-    const new_model = mongoose.model("TestingID", new_schema);
-    const new_data = new new_model({ name: "test" });
-    await new_data.save();
-    let res = new_model.updateOne({ name: new_data.name, _id: new_data._id }, { parentId: new_data._id.toString() });
-    console.log((await res).modifiedCount)
+  console.log(await PackageModel.find({'metadata.Version': "1.0.0"}).exec());
 
-    disconnectFromMongo();
+  disconnectFromMongo();
 }
 
 main();
@@ -84,7 +92,7 @@ main();
 // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
 // client.connect(err => {
-//   if (err) 
+//   if (err)
 //     console.log(err)
 
 //   const collection = client.db("Cluster0").collection("sample_airbnb");
@@ -95,7 +103,6 @@ main();
 //   client.close();
 // });
 
-
 // var MongoClient = require('mongodb').MongoClient;
 
 // MongoClient.connect(uri, function(err, client) {
@@ -105,7 +112,6 @@ main();
 // });
 
 // console.log("hi\n");
-
 
 // /* global use, db */
 // // MongoDB Playground
@@ -150,4 +156,3 @@ main();
 //   // Group the total sales for each product.
 //   { $group: { _id: '$item', totalSaleAmount: { $sum: { $multiply: [ '$price', '$quantity' ] } } } }
 // ]);
-

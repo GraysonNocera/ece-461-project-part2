@@ -11,6 +11,7 @@
  */
 
 import mongoose from "mongoose";
+import Joi from "joi";
 
 
 /**
@@ -33,3 +34,8 @@ export const PackageQuerySchema = new mongoose.Schema<PackageQuery>({
 });
 
 export const PackageQueryModel = mongoose.model<PackageQuery>("PackageQuery", PackageQuerySchema);
+
+export const PackageQueryValidation = Joi.object({
+    Version: Joi.string(),
+    Name: Joi.string().required(),
+});
