@@ -12,48 +12,62 @@ export const packagesRouter: Router = express.Router();
 // Create a package when POST /packages is called
 packagesRouter.post(
   "/",
-  /* authorizeUser, */ Validate(PackageQueryValidation),
+  /* authorizeUser, */
   async (req: Request, res: Response) => {
     logger.info("POST /packages");
 
     let offset: number;
-    let packageQuery: PackageQuery;
+    // let packageQuery: PackageQuery;
     let packages: any[] = [];
     let verionsToSearch: string[];
+    let arr: PackageQuery[] = [];
     try {
       if (typeof req.query?.offset != "string") {
-        logger.info("Invalid offset for GET /packages");
-        return res.status(400).send("Invalid offset");
+        offset = 1;
+      } else {
+        offset = parseInt(req.query?.offset) || 1;
+        logger.info("package offset: " + offset);
       }
 
-      offset = parseInt(req.query?.offset) || 1;
-      logger.info("package offset: " + offset);
-      packageQuery = req.body;
+      arr = req.body;
 
-      verionsToSearch = getVersions(packageQuery.Version || "");
+      // Manually validate each package query
+      arr.forEach((packageQuery) => {
+        let { error, value } = PackageQueryValidation.validate(packageQuery);
+        if (error) {
+          throw new Error("Invalid package query");
+        }
+      });
 
-      logger.info("Versions to search: " + verionsToSearch);
-      logger.info("Name: " + packageQuery.Name);
+      await Promise.all(arr.map(async (packageQuery) => {
 
-      if (packageQuery.Name == "*") {
-        packages = await getAllPackages(packages, offset);
+        verionsToSearch = getVersions(packageQuery.Version || "");
 
-        return res.status(200).send(packages);
-      }
+        logger.info("Versions to search: " + verionsToSearch);
+        logger.info("Name: " + packageQuery.Name);
 
-      // For each version to search, search the database for a package
-      // with that version number and name
-      await Promise.all(
-        verionsToSearch.map(async (version) => {
-          packages = await getPackagesByVersionName(
-            version,
-            packageQuery.Name,
-            packages,
-            offset
-          );
-        })
-      );
+        if (packageQuery.Name == "*") {
+          packages = await getAllPackages(packages, offset);
 
+          return res.status(200).send(packages);
+        }
+
+        // For each version to search, search the database for a package
+        // with that version number and name
+        await Promise.all(
+          verionsToSearch.map(async (version) => {
+            packages = await getPackagesByVersionName(
+              version,
+              packageQuery.Name,
+              packages,
+              offset
+            );
+          })
+        );
+      }));
+
+      logger.info("Packages: " + packages);
+      
       return res.status(200).send(packages);
     } catch {
       // Request body is not valid JSON
@@ -109,6 +123,11 @@ async function getPackagesByVersionName(
 }
 
 function addResultToPackages(results: any[], packages: any[]): any[] {
+
+  if (results.length == 0) {
+    return packages;
+  }
+
   logger.info("Adding result to packages: " + results);
 
   results.forEach((result) => {
