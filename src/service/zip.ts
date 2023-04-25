@@ -90,15 +90,14 @@ async function unzipContent(content: string) {
   const buffer = Buffer.from(content, 'base64');
   const zip = new AdmZip(buffer);
   let basePath = path.join(__dirname, "..", "artifacts", "unzipped");
+
+  // Keeping this just as an example
   // let zipEntries = zip.getEntries();
-  
   // This folder contains all of the things
   // let folder = zipEntries[0].entryName;
-  
   // zipEntries.forEach((zipEntry) => {
   //   console.log(zipEntry.entryName);
   // });
-  
   // let certain_file = zip.readAsText(zipEntries[1].entryName);
   // console.log(certain_file)
   

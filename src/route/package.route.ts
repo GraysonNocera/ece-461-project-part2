@@ -4,20 +4,15 @@ import { logger } from "../logging";
 import { PackageDataUploadValidation } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response } from "express";
-import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { ratePackage, didChokeOnRating } from "../service/rate";
-
+import { ratePackage, verify } from "../service/rate";
+import { PackageRatingChokedValidation } from "../model/packageRating";
 import { PackageRating, PackageRatingModel } from "../model/packageRating";
-import * as cp from "child_process";
-import { readFileSync } from "fs";
 import { Package, PackageModel } from "../model/package";
-import * as path from "path";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
 import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
-
-const express = require("express");
+import express from "express";
 
 export const packageRouter: Router = express.Router();
 
@@ -86,7 +81,7 @@ packageRouter.get(
 
       rating = ratePackage(packageToRate.data.URL);
 
-      if (!didChokeOnRating(rating)) {
+      if (!verify(PackageRatingChokedValidation, rating)) {
         logger.info("POST /package: Package not uploaded, disqualified rating");
         return res
           .status(500)

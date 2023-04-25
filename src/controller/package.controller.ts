@@ -5,7 +5,7 @@ import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 import { getContentFromUrl } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
-import { PackageRating, PackageRatingModel } from "../model/packageRating";
+import { PackageRating, PackageRatingModel, PackageRatingUploadValidation } from "../model/packageRating";
 import { PackageModel } from "../model/package";
 import { getPackageJSON } from "../service/zip";
 import { ratePackage } from "../service/rate";
@@ -90,7 +90,7 @@ export const postPackage = async (
   rating = ratePackage(packageToUpload.data.URL);
 
   // For now, nothing passes this, so I'm commenting it out
-  // if (!verifyRating(rating)) {
+  // if (!verify(PackageRatingUploadValidation, rating)) {
   //   logger.info("POST /package: Package not uploaded, disqualified rating");
   //   res
   //     .status(424)
