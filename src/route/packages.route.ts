@@ -17,7 +17,6 @@ packagesRouter.post(
     logger.info("POST /packages");
 
     let offset: number;
-    // let packageQuery: PackageQuery;
     let packages: any[] = [];
     let verionsToSearch: string[];
     let arr: PackageQuery[] = [];
@@ -26,8 +25,9 @@ packagesRouter.post(
         offset = 1;
       } else {
         offset = parseInt(req.query?.offset) || 1;
-        logger.info("package offset: " + offset);
       }
+
+      logger.info("package offset: " + offset);
 
       arr = req.body;
 
@@ -39,6 +39,8 @@ packagesRouter.post(
         }
       });
 
+      logger.info("POST /packages: Received " + arr)
+
       await Promise.all(arr.map(async (packageQuery) => {
 
         verionsToSearch = getVersions(packageQuery.Version || "");
@@ -47,8 +49,8 @@ packagesRouter.post(
         logger.info("Name: " + packageQuery.Name);
 
         if (packageQuery.Name == "*") {
+          logger.info("Searching for all packages")
           packages = await getAllPackages(packages, offset);
-
           return res.status(200).send(packages);
         }
 
@@ -82,6 +84,9 @@ packagesRouter.post(
 // Return a list of whatever is in the parentheses
 // The output of this would be ["1.2.3", "1.2.3-2.1.0", "^1.2.3", "~1.2.0"] (include the ^, ~, etc)
 function getVersions(versionString: string): string[] {
+
+  logger.info("Version string: " + versionString)
+
   const regex = /\((.*?)\)/g;
   const matches = versionString.match(regex);
   if (matches === null) {
@@ -91,6 +96,9 @@ function getVersions(versionString: string): string[] {
 }
 
 async function getAllPackages(packages: any[], offset: number): Promise<any[]> {
+
+  logger.info("Getting all packages")
+
   // Search the database for all packages
   let results: any[] = await PackageModel.find({})
     .select({ metadata: { Name: 1, Version: 1 } })
@@ -108,6 +116,7 @@ async function getPackagesByVersionName(
   packages: any[],
   offset: number
 ): Promise<any[]> {
+  
   // Search the database for all packages
   let results: any[] = await PackageModel.find({
     "metadata.Name": name,

@@ -46,6 +46,7 @@ export function didChokeOnRating(rating: PackageRating): Number {
   // :param rating: PackageRating
   // :return: Number
 
+  logger.info("didChokeOnRating: Checking if package choked on rating...")
   const { error, value } = PackageRatingChokedValidation.validate(rating);
   return error ? 1 : 0;
 }

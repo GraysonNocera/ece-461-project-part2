@@ -68,16 +68,19 @@ packageRouter.get(
       id = req?.params?.id;
 
       if (id != new mongoose.Types.ObjectId(id).toString()) {
+        logger.debug("GET /package/:id/rate: Invalid package ID + " + id)
         res.status(400).send("Invalid package ID");
       }
 
       existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
       if (existingRating) {
+        logger.info("GET /package/:id/rate: Package already rated, returning existing rating");
         return res.status(200).send(existingRating.toObject());
       }
 
       packageToRate = await PackageModel.findOne({ _id: id }).exec();
       if (!packageToRate) {
+        logger.debug("GET /package/:id/rate: Package does not exist");
         return res.status(404).send("Package does not exist.");
       }
 
@@ -95,6 +98,8 @@ packageRouter.get(
       // Save rating so we have a rating for this package
       ratingToSave = new PackageRatingModel(rating);
       ratingToSave._id = packageToRate._id;
+
+      logger.info("GET /package/:id/rate: Saving rating")
       await ratingToSave.save();
 
       return res.status(200).send(rating);
@@ -122,11 +127,13 @@ packageRouter.get(
       });
       package_received = await query.findOne();
     } catch {
+      logger.debug("GET /package/:id: Invalid ID + " + id);
       return res.status(400).send("Invalid ID");
     }
 
     // Package doesn't exist, return 404
     if (!package_received) {
+      logger.debug("GET /package/:id: Package does not exist");
       return res.status(404).send("Package does not exist.");
     }
 
@@ -159,14 +166,11 @@ packageRouter.put(
     let packageInfo: Package;
     try {
       id = req.params.id;
-      logger.info("Penis");
-      auth = req.header("X-Authorization") || "";
-      // Require auth
-
-      logger.info("Auth data: " + auth);
 
       packageInfo = req.body; // Get user-inputted package details
       // Validate with joi
+
+      logger.info("PUT /package/:id: received package " + packageInfo)
 
       const query = PackageModel.where({ _id: id });
 
@@ -174,6 +178,7 @@ packageRouter.put(
         const package_received = await query.findOne();
         // Package doesn't exist, return 404
         if (!package_received) {
+          logger.debug("PUT /package/:id: Packaged don't exist")
           res.status(404).send("Package does not exist");
           return;
         }
@@ -183,6 +188,9 @@ packageRouter.put(
           package_received.metadata.Version != packageInfo.metadata.Version ||
           package_received.metadata.ID != packageInfo.metadata.ID
         ) {
+
+          logger.debug("PUT /package/:id: Package metadata does not match")
+
           res
             .status(400)
             .send(
@@ -202,17 +210,20 @@ packageRouter.put(
           package_received.data.JSProgram = packageInfo.data.JSProgram;
         }
 
+        logger.info("PUT /package/:id: Saving package")
+
         await package_received.save();
 
         // If status is 200, ok. Send 404 if package doesn't exist.
-        res.status(200).send(package_received.toJSON());
+        return res.status(200).send(package_received.toJSON());
       } catch (error) {
-        logger.info(error);
+        logger.debug("PUT /package/:id: " + error);
+        return res.status(404).send("Invalid JSON");
       }
     } catch {
       // Request body is not valid JSON
-      logger.info("Invalid JSON for PUT /package/:id");
-      res.status(400).send("Invalid JSON");
+      logger.debug("Invalid JSON for PUT /package/:id");
+      return res.status(400).send("Invalid JSON");
     }
   }
 );
@@ -227,20 +238,25 @@ packageRouter.delete(
     let package_received;
     let id: string = req?.params?.id;
 
+    logger.info("DELETE /package/:id: Deleting package " + id);
+
     try {
       const query = PackageModel.where({
         _id: new mongoose.Types.ObjectId(id),
       });
       package_received = await query.deleteOne();
     } catch {
+      logger.debug("DELETE /package/:id: Invalid ID + " + id);
       return res.status(400).send("Invalid ID");
     }
 
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
+      logger.debug("DELETE /package/:id: Package does not exist");
       return res.status(404).send("Package does not exist.");
     }
 
+    logger.info("DELETE /package/:id: Package is deleted");
     return res.status(200).send("Package is deleted.");
   }
 );
@@ -262,10 +278,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => {
     // }
     // logger.info("Got regex: " + regex);
 
-    auth = req.header("X-Authorization") || "";
     // Require auth
-
-    logger.info("Auth data: " + auth);
 
     regex_body = req.body.PackageRegEx;
 
@@ -299,6 +312,7 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => {
     //   ID: "1234",
     // };
 
+    logger.info("Got packages: " + packages);
     logger.info("Preparing return_data");
     // logger.info()
 
@@ -314,16 +328,19 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => {
 
     // If status is 200, ok. Send 404 if package doesn't exist.
     if (packages.length > 0) {
-      res.status(200).send(return_data);
+      logger.info("Sending return_data");
+      return res.status(200).send(return_data);
     } else {
-      res.status(404).send("No package found under this regex.");
+      logger.info("Sending 404, no packaged found");
+      return res.status(404).send("No package found under this regex.");
     }
-    res.status(404).send("No package found under this regex.");
+    
+    logger.info("Done sending status, 404, no package");
+    return res.status(404).send("No package found under this regex.");
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /RegEx/{regex}");
-    // is this the right error to throw?
-    res.status(400).send("Invalid JSON");
+    return res.status(400).send("Invalid JSON");
   }
 });
 

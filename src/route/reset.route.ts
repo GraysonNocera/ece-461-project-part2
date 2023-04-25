@@ -34,21 +34,23 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
           "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;",
       },
     });
+
     //await defaultuser.save();
     if (res.locals.isAdmin) {
+      logger.info("Resetting registry")
       await PackageModel.deleteMany({});
       await ProfileModel.deleteMany({});
       await defaultuser.save();
-      res.status(200).send("Registry is reset");
-      return;
+      return res.status(200).send("Registry is reset");
     }
-    res.status(401).send("You do not have permission to reset the registry.");
+
+    logger.info("User is not admin")
+    return res.status(401).send("You do not have permission to reset the registry.");
   } catch (error) {
     // Request body is not valid JSON
     logger.info("Invalid JSON for DELETE /reset");
+    return res.status(400).send("Invalid JSON");
   }
-
-  // Validate with joi (trivial example)
 });
 
 // module.exports = resetRouter;

@@ -1,4 +1,3 @@
-import { readFile } from "fs/promises";
 import JSZip from "jszip";
 import { Octokit as OctokitType } from "octokit";
 import * as fs from "fs/promises";
@@ -15,13 +14,19 @@ const octokit = new Octokit({
 
 // Convert the zip file pulled from github to base64 string
 async function zipToBase64(filePath: string): Promise<string> {
-  const zipFile = await readFile(filePath);
+
+  logger.info("zipToBase64: Converting zip file to base64 string");
+  const zipFile = await fs.readFile(filePath);
   const zip = await JSZip.loadAsync(zipFile);
   const zipContent = await zip.generateAsync({ type: "base64" });
+
   return zipContent;
 }
 
 async function getPackageZip(owner: string, repo: string) {
+
+  logger.info("Downloading package zip from github with owner: " + owner + " and repo: " + repo);
+
   let result = await octokit.request(`GET /repos/${owner}/${repo}/zipball`, {
     owner: owner,
     repo: repo,
@@ -34,6 +39,8 @@ async function getPackageZip(owner: string, repo: string) {
     path.join(__dirname, "..", "artifacts", `${repo}.zip`),
     new Array(result.data)
   );
+
+  logger.info("Package zip downloaded successfully, wrote to: " + path.join(__dirname, "..", "artifacts", `${repo}.zip`));
 }
 
 export async function getContentFromUrl(url: string): Promise<string | null> {
@@ -49,6 +56,7 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
     return null;
   }
 
+  logger.info("getContentFromUrl: Getting package zip from github")
   await getPackageZip(details.username, details.repoName);
 
   let zipFilePath: string = path.join(
@@ -57,6 +65,7 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
     "artifacts",
     `${details.repoName}.zip`
   );
+
   let txtFilePath: string = path.join(
     __dirname,
     "..",
@@ -64,7 +73,10 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
     `${details.repoName}.txt`
   );
 
+  logger.info("getContentFromUrl: Converting zip file to base64 string")
   let content = await zipToBase64(zipFilePath);
+
+  logger.info("getContentFromUrl: Writing base64 string to file " + txtFilePath)
   fs.writeFile(txtFilePath, content);
   fs.rm(zipFilePath);
 
@@ -72,6 +84,8 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
 }
 
 async function unzipContent(content: string) {
+
+  logger.info("unzipContent: Unzipping content");
 
   const buffer = Buffer.from(content, 'base64');
   const zip = new AdmZip(buffer);
@@ -117,9 +131,3 @@ export async function getPackageJSON(content: string): Promise<Object> {
   logger.debug("getPackageJSON: No package.json found");
   return {};
 }
-
-// async function main() {
-//   getPackageJSON(await fs.readFile(path.join(__dirname, "..", "..", "lodash_base64"), "utf8"));
-// }
-
-// main();
