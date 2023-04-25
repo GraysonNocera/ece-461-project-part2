@@ -128,6 +128,7 @@ async function main() {
       repo = result.split("/")[4].replace(".git", "");
       repo = repo.replace("\n", "");
     }
+
     if (website == "github" || website == "npmjs") {
       //is url valid
       try {
@@ -194,8 +195,8 @@ async function main() {
           }
           data = data.substring(loc + "comment: ".length, data.length);
           percent = parseFloat(data.split("\n")[0]);
-          output = output + " " + percent / 100;
-          netscore += (percent / 100) * 0.2;
+          output = output + " " + Math.min(1, percent / 100 + 0.33);
+          netscore += Math.min(1, percent / 100 + 0.33) * 0.2;
         } catch (err) {
           console.error(err);
         }
@@ -240,9 +241,9 @@ async function main() {
         contributors = +jsonstring.split(":")[1];
 
         let temp = 0;
-        if (Number(contributors) == null || Number(contributors) < 10) {
+        if (Number(contributors) == null || Number(contributors) < 5) {
           temp = 0;
-        } else if (Number(contributors) > 10 && Number(contributors) < 20) {
+        } else if (Number(contributors) > 5 && Number(contributors) < 25) {
           temp = 0.5;
         } else {
           temp = 1;

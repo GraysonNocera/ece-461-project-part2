@@ -23,7 +23,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
     // TODO: reset registry
     const defaultuser = new ProfileModel({
       User: {
-        name: "ece461defaultadminuser",
+        name: "ece30861defaultadminuser",
         isAdmin: true,
         isUpload: true,
         isDownload: true,
@@ -31,7 +31,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       },
       Secret: {
         password:
-          "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;",
+          "a59e5585c1b2b33a91a25ededf39827f93996da9b912f26f9766d45f9dfb0742",
       },
     });
     //await defaultuser.save();
@@ -41,8 +41,9 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       await defaultuser.save();
       res.status(200).send("Registry is reset");
       return;
+    } else {
+      res.status(401).send("You do not have permission to reset the registry.");
     }
-    res.status(401).send("You do not have permission to reset the registry.");
   } catch (error) {
     // Request body is not valid JSON
     logger.info("Invalid JSON for DELETE /reset");

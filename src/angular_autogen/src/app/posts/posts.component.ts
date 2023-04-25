@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PostService } from './posts.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-posts',

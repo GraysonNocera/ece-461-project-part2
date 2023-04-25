@@ -180,13 +180,17 @@ function buildHistoryEntry(
 
   // Assign user that performed action
   // TODO: Koltan :) how do we know the user that uploaded this?
-  historyEntry.User = {
-    name: "test",
-    isAdmin: true,
-    isUpload: true,
-    isSearch: true,
-    isDownload: true,
-  };
+  // historyEntry.User = {
+  //   name: "test",
+  //   isAdmin: true,
+  // }
+  // historyEntry.User = {
+  //   name: "test",
+  //   isAdmin: true,
+  //   isUpload: true,
+  //   isSearch: true,
+  //   isDownload: true,
+  // };
 
   return historyEntry;
 }
