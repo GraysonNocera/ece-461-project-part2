@@ -12,7 +12,7 @@ POST http://localhost:3000/package
 Content-Type: application/json
 
 {
-    "URL": "https://www.npmjs.com/package/react",
+    "URL": "https://www.npmjs.com/package/express",
     "JSProgram": "console.log('Hello World')"
 }
 
@@ -47,10 +47,20 @@ DELETE http://localhost:3000/package/byName/testName
 POST http://localhost:3000/packages
 Content-Type: application/json
 
-{
-    "Name": "express",
-    "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
-}
+[
+    {
+        "Name": "express",
+        "Version": "Exact (4.4.4)"
+    },
+    {
+        "Name": "express",
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+    },
+    {
+        "Name": "react",
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+    }
+]
 
 ###
 
