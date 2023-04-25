@@ -20,7 +20,7 @@ export const packageRouter: Router = express.Router();
 // Uncomment authorizeUser when we have auth settled, rn it gives infinite loop
 packageRouter.post(
   "/",
-  /*authorizeUser,*/
+  authorizeUser,
   Validate(PackageDataUploadValidation),
   postPackage
 );
@@ -63,20 +63,20 @@ packageRouter.get(
       id = req?.params?.id;
 
       if (id != new mongoose.Types.ObjectId(id).toString()) {
-        logger.debug("GET /package/:id/rate: Invalid package ID + " + id)
-        res.status(400).send("Invalid package ID");
-      }
-
-      existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
-      if (existingRating) {
-        logger.info("GET /package/:id/rate: Package already rated, returning existing rating");
-        return res.status(200).send(existingRating.toObject());
+        logger.debug("GET /package/:id/rate: Invalid package ID + " + id);
+        return res.status(400).send("Invalid package ID");
       }
 
       packageToRate = await PackageModel.findOne({ _id: id }).exec();
       if (!packageToRate) {
         logger.debug("GET /package/:id/rate: Package does not exist");
         return res.status(404).send("Package does not exist.");
+      }
+
+      existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
+      if (existingRating) {
+        logger.info("GET /package/:id/rate: Package already rated, returning existing rating");
+        return res.status(200).send(existingRating.toObject());
       }
 
       rating = ratePackage(packageToRate.data.URL);
@@ -116,15 +116,17 @@ packageRouter.get(
     let id: string = req?.params?.id;
     let package_received: any;
 
-    try {
-      const query = PackageModel.where({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      package_received = await query.findOne();
-    } catch {
-      logger.debug("GET /package/:id: Invalid ID + " + id);
-      return res.status(400).send("Invalid ID");
+    // Ensure valid ID
+    if (id != new mongoose.Types.ObjectId(id).toString()) {
+      logger.debug("GET /package/:id: Invalid package ID + " + id);
+      return res.status(400).send("Invalid package ID");
     }
+
+    // Search the database for this package
+    const query = PackageModel.where({
+      _id: new mongoose.Types.ObjectId(id),
+    });
+    package_received = await query.findOne()
 
     // Package doesn't exist, return 404
     if (!package_received) {
@@ -132,7 +134,7 @@ packageRouter.get(
       return res.status(404).send("Package does not exist.");
     }
 
-    logger.info("Found package: " + package_received?.toJSON());
+    logger.info("Found package: " + package_received?.toObject());
 
     // Load the content from mongo
     downloadFileFromMongo(package_received._id, (content, error) => {
@@ -152,7 +154,7 @@ packageRouter.get(
 // Update a package when PUT /package/:id is called
 packageRouter.put(
   "/:id",
-  /*authorizeUser, */
+  authorizeUser,
   async (req: Request, res: Response) => {
     logger.info("PUT /package/:id");
 
