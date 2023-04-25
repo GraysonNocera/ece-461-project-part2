@@ -27,7 +27,7 @@ export async function connectToMongo() {
   await mongoose.connect(uri);
 
   //creating bucket
-  var db = mongoose.connections[0].db;
+  let db = mongoose.connections[0].db;
   bucket = new mongoose.mongo.GridFSBucket(db, {
     bucketName: "Content",
   });
@@ -78,6 +78,8 @@ export async function downloadFileFromMongo(
 ) {
   let content: string;
   let filePath: string;
+
+  logger.info("downloadFileFromMongo(): Downloading file from MongoDB: " + id);
 
   filePath = path.join(__dirname, "..", "artifacts", id.toString());
 

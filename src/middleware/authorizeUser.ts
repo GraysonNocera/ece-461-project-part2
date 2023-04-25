@@ -29,8 +29,6 @@ export const authorizeUser = async (
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
   logger.info("authorizeUser: Auth received " + auth);
-
-  logger.info(auth);
   res.locals.auth = false;
   try {
     if (auth != "") {
@@ -73,8 +71,8 @@ export const authorizeUser = async (
               }
               res.locals.auth = true;
               res.locals.username = test.data.User.name;
-              next();
               logger.info("auth success");
+              next();
             }
           }
         }
@@ -83,7 +81,7 @@ export const authorizeUser = async (
           return res.status(400).send("Invalid Token");
         }
       } catch (error) {
-        logger.debug(error);
+        logger.debug("authorizeUser: error: " + error);
         return res.status(400).send("Invalid Token");
       }
     } else if (req.body.User.name && req.body.Secret.password) {
@@ -128,20 +126,23 @@ export const authorizeUser = async (
           res.locals.auth = true;
           match = 1;
           res.locals.username = req.body.User.name;
+          logger.info("authorizeUser: auth success")
           next();
         }
       }
       if (match != 1) {
-        logger.debug("Invalid user name or passwords");
+        logger.debug("authorizeUser: Invalid user name or passwords");
         if (req.body.User.name != data?.User.name) {
-          logger.debug(`Invalid user name, ${req.body.User.name} != ${data?.User.name}`);
+          logger.debug(`authorizeUser: Invalid user name, ${req.body.User.name} != ${data?.User.name}`);
         }
         if (req.body.Secret.password != data?.Secret.password) {
-          logger.debug(`Invalid password, ${req.body.Secret.password} != ${data?.Secret.password}`);
+          logger.debug(`authorizeUser: Invalid password, ${req.body.Secret.password} != ${data?.Secret.password}`);
         }
         return res.status(401).send("Invalid user name or passwords");
       }
     } else {
+
+      logger.debug("authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly");
       return res
         .status(400)
         .send(
@@ -149,7 +150,7 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-    logger.debug(error);
+    logger.debug("authorizeUser: error: " + error);
     return res.status(400).send("Invalid Token");
   }
 

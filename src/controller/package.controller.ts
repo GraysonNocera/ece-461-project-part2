@@ -77,6 +77,11 @@ export const postPackage = async (
     return res.status(400).send("Invalid Content or URL");
   }
 
+  if (packageToUpload.metadata.Name == "*") {
+    logger.info("POST /package: Package not uploaded, invalid name");
+    return res.status(400).send("Invalid Content or URL");
+  }
+
   if (await isNameInDb(packageToUpload.metadata.Name)) {
     return res.status(409).send("Package exists already.");
   }
@@ -93,6 +98,14 @@ export const postPackage = async (
   //   return;
   // }
 
+  let filePath: string = path.join(
+    __dirname,
+    "..",
+    "artifacts",
+    `${packageToUpload.metadata.Name}.txt`
+  );
+  let fileName: string = `${packageToUpload.metadata.Name}.txt`;
+
   if (!packageToUpload.data.Content) {
     // Use URL to get the Content
     packageToUpload.data.Content = await getContentFromUrl(github_url);
@@ -101,36 +114,18 @@ export const postPackage = async (
       return res.status(400).send("Invalid Content or URL");
     }
   } else {
-    fs.writeFileSync(
-      path.join(
-        __dirname,
-        "..",
-        "artifacts",
-        `${packageToUpload.metadata.Name}.txt`
-      ),
-      packageToUpload.data.Content
-    );
-  }
-
-  if (packageToUpload.data.Name == "*") {
-    logger.info("POST /package: Package not uploaded, invalid name");
-    return res.status(400).send("Invalid Content or URL");
+    fs.writeFileSync(filePath, packageToUpload.data.Content);
   }
 
   // Save package
   logger.info("POST /package: Saving package: " + packageToUpload);
   packageToUpload.metadata.ID = packageToUpload._id.toString();
 
-  let filename: string = `${packageToUpload.metadata.Name}.txt`;
-  uploadFileToMongo(
-    path.join(__dirname, "..", "artifacts", filename),
-    filename,
-    packageToUpload._id
-  );
+  uploadFileToMongo(filePath, fileName, packageToUpload._id);
 
   // Utter stupidity so that I don't have to research how to not upload the current Content
   temp = packageToUpload.data.Content;
-  packageToUpload.data.Content = filename;
+  packageToUpload.data.Content = fileName;
 
   await packageToUpload.save();
   logger.info(
@@ -161,7 +156,7 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param name: string name of package
 
   // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
-  let apiUrl = ""
+  let apiUrl = "";
   // chekcing if url is gh or npm
   if (url.startsWith("https://www.npmjs.com/package/")) {
     const packageName = url.split("/").pop();
@@ -170,15 +165,19 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
         `https://registry.npmjs.org/${packageName}`
       );
       const repositoryUrl = npmResponse.data.repository.url;
-      
+
       // maybe check here that the url is *actually* a gh url?
-      apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${repositoryUrl.split("/")[4]}/releases`;
+      apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
+        repositoryUrl.split("/")[4]
+      }/releases`;
     } catch (error) {
-      console.error("Error fetching GitHub URL from npm URL:", error);
+      logger.debug("Error fetching GitHub URL from npm URL:", error);
       return "1.0.0"; // default
     }
   } else if (url.startsWith("https://github.com/")) {
-    apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${url.split("/")[4]}/releases`;
+    apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
+      url.split("/")[4]
+    }/releases`;
   } else {
     logger.info("Invalid URL provided");
     return "1.0.0"; // default
@@ -249,15 +248,11 @@ async function getMetadata(
 
   if (!metadata.Name || !metadata.Version) {
     // We choked on the package trying to get its name and version
+    logger.info("Unable to get metadata from package");
     return undefined;
   }
-  
-  // is this what we're asking for?
-    
-//   if (metadata.Name === "*") {
-//     return undefined;
-//   }
 
+  logger.info("Successfully got metadata from package: " + metadata);
   return metadata;
 }
 
@@ -265,6 +260,8 @@ async function isNameInDb(name: string): Promise<Number | null> {
   // Search database for the name, return 1 if it is in the db, 0 otherwise
   // :param name: string name of package
   // :return: Number
+
+  logger.info("Checking if package name is in database");
 
   return (await PackageModel.findOne({ "metadata.Name": name })) ? 1 : 0;
 }
