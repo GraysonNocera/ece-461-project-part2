@@ -1,4 +1,3 @@
-
 // Transform so that we can be in compliance with the spec
 
 export function transform(doc, ret, options) {

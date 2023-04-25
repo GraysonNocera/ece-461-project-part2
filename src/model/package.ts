@@ -9,21 +9,21 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PackageMetadata, PackageMetadataSchema } from './packageMetadata';
-import { PackageData, PackageDataSchema } from './packageData';
-import mongoose from 'mongoose';
-import { transform } from './transform';
+import { PackageMetadata, PackageMetadataSchema } from "./packageMetadata";
+import { PackageData, PackageDataSchema } from "./packageData";
+import mongoose from "mongoose";
+import { transform } from "./transform";
 
-
-export interface Package { 
-    metadata: PackageMetadata;
-    data: PackageData;
+export interface Package {
+  metadata: PackageMetadata;
+  data: PackageData;
 }
 
-export const PackageSchema: mongoose.Schema<Package> = new mongoose.Schema<Package>({
+export const PackageSchema: mongoose.Schema<Package> =
+  new mongoose.Schema<Package>({
     metadata: { type: PackageMetadataSchema, required: true },
     data: { type: PackageDataSchema, required: true },
-});
+  });
 
 PackageSchema.set("toObject", { transform });
 
