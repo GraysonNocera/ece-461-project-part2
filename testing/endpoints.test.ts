@@ -3,7 +3,20 @@ import path from "path";
 import { connectToMongo, disconnectFromMongo } from "../src/config/config";
 import { exportedForTestingApp } from "../src/app";
 const { defineServer, startServer } = exportedForTestingApp;
-import {logger} from "../src/logging";
+
+
+jest.mock("../src/middleware/authorizeUser", () => {
+  const originalModule = jest.requireActual('../src/middleware/authorizeUser');
+
+  //Mock the default export and named export 'foo'
+  return {
+    __esModule: true,
+    ...originalModule,
+    authorizeUser: jest.fn().mockImplementation((req, res, next) => {
+      next();
+    }),
+  };
+});
 
 // const data = {
 //   Content: fs.readFileSync(path.join(__dirname, "lodash_base64"), "base64"),
@@ -160,11 +173,12 @@ describe("Testing endpoints (integration tests)", () => {
     expect(metadata.ID).toBeDefined();
   });
 
-  test.only("POST /packages", async () => {
+  test("POST /packages", async () => {
     let response = await fetch(path.join(baseURL, "packages"), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-Authorization": token,
       },
       body: JSON.stringify([
         {
@@ -192,7 +206,33 @@ describe("Testing endpoints (integration tests)", () => {
     });
   });
 
-  
+  test.only("GET /package/:id", async () => {
+    let response = await fetch(path.join(baseURL, "package/6444b32de2ad5457d16b647e"), {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Authorization": token,
+      }
+    });
+
+    expect(response.status).toBe(200);
+
+    let object = await response.json();
+
+    expect(object).toHaveProperty("data");
+    expect(object).toHaveProperty("metadata");
+
+    let data = object.data;
+    let metadata = object.metadata;
+
+    expect(data.Content).toBeDefined();
+    expect(data.URL).toBeDefined();
+    expect(data.JSProgram).toBeDefined();
+
+    expect(metadata.Name).toEqual("react");
+    expect(metadata.Version).toBeDefined();
+    expect(metadata.ID).toBeDefined();
+  });
 });
 
 async function authenticate(): Promise<string> {
