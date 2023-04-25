@@ -62,6 +62,7 @@ def get_clone(user_id: str, repo: str) -> str:
     # Clone the repository
     try:
         git.Repo.clone_from(repo_url, repo)
+        return; 
     except:
         return "0"
 

@@ -23,7 +23,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
     // TODO: reset registry
     const defaultuser = new ProfileModel({
       User: {
-        name: "ece461defaultadminuser",
+        name: "ece30861defaultadminuser",
         isAdmin: true,
         isUpload: true,
         isDownload: true,
@@ -31,7 +31,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       },
       Secret: {
         password:
-          "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;",
+          "a59e5585c1b2b33a91a25ededf39827f93996da9b912f26f9766d45f9dfb0742",
       },
     });
 

@@ -3,6 +3,7 @@ import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
 import { Request, Response } from "express";
 import { ProfileModel } from "../model/user";
+import { hashPassword } from "../middleware/hashfunc";
 const express = require("express");
 
 export const userRouter: Router = express.Router();
@@ -53,8 +54,8 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   logger.info("POST /user");
   try {
-    //add in stuff for checking admin and creating new user
     if (res.locals.isAdmin) {
+      const hashedPassword = hashPassword(req.body.Secret.password);
       let account = new ProfileModel({
         User: {
           name: req.body.User.name,
@@ -63,7 +64,7 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
           isDownload: req.body.User.isDownload,
           isSearch: req.body.User.isSearch,
         },
-        Secret: { password: req.body.Secret.password },
+        Secret: { password: hashedPassword },
       });
       await account.save();
 
