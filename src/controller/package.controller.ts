@@ -12,6 +12,7 @@ import { ratePackage } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
 import fs from "fs";
+import axios from "axios";
 
 export const postPackage = async (
   req: Request,
@@ -160,8 +161,43 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param name: string name of package
 
   // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
+  let apiUrl = ""
+  // chekcing if url is gh or npm
+  if (url.startsWith("https://www.npmjs.com/package/")) {
+    const packageName = url.split("/").pop();
+    try {
+      const npmResponse = await axios.get(
+        `https://registry.npmjs.org/${packageName}`
+      );
+      const repositoryUrl = npmResponse.data.repository.url;
+      
+      // maybe check here that the url is *actually* a gh url?
+      apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${repositoryUrl.split("/")[4]}/releases`;
+    } catch (error) {
+      console.error("Error fetching GitHub URL from npm URL:", error);
+      return "1.0.0"; // default
+    }
+  } else if (url.startsWith("https://github.com/")) {
+    apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${url.split("/")[4]}/releases`;
+  } else {
+    logger.info("Invalid URL provided");
+    return "1.0.0"; // default
+  }
 
-  return "1.0.0";
+  try {
+    const response = await axios.get(apiUrl);
+    const releases = response.data;
+
+    if (releases.length > 0) {
+      const latestRelease = releases[0];
+      return latestRelease.tag_name;
+    } else {
+      return "1.0.0"; // default
+    }
+  } catch (error) {
+    logger.info("Unable to get version from URL: ", error);
+    return "1.0.0"; // default
+  }
 }
 
 function buildHistoryEntry(
@@ -215,6 +251,12 @@ async function getMetadata(
     // We choked on the package trying to get its name and version
     return undefined;
   }
+  
+  // is this what we're asking for?
+    
+//   if (metadata.Name === "*") {
+//     return undefined;
+//   }
 
   return metadata;
 }
