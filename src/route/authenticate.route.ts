@@ -27,13 +27,13 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     if (res.locals.auth) {
       res.status(200).send(authToken);
     } else {
-      res.status(403).send("Authentication Failed");
+      res.status(403).send();
     }
   } catch (error) {
     // Request body is not valid JSON
     logger.info(error);
     logger.info("Invalid JSON for PUT /authenticate");
-    res.status(500).send("Internal Server Error");
+    res.status(500).send();
   }
 
   // Validate with joi (trivial example)

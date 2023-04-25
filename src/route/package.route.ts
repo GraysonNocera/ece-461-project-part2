@@ -174,7 +174,7 @@ packageRouter.put(
         const package_received = await query.findOne();
         // Package doesn't exist, return 404
         if (!package_received) {
-          res.status(404).send("Package does not exist");
+          res.status(404).send("Package does not exist.");
           return;
         }
 
@@ -239,9 +239,11 @@ packageRouter.delete(
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
       return res.status(404).send("Package does not exist.");
+    } else {
+      return res.status(200).send("Package is deleted.");
+
     }
 
-    return res.status(200).send("Package is deleted.");
   }
 );
 
@@ -318,7 +320,6 @@ packageRouter.post("/byRegEx", async (req: Request, res: Response) => {
     } else {
       res.status(404).send("No package found under this regex.");
     }
-    res.status(404).send("No package found under this regex.");
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /RegEx/{regex}");

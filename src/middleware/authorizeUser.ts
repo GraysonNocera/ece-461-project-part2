@@ -78,11 +78,11 @@ export const authorizeUser = async (
           }
         }
         if (match != 1) {
-          return res.status(400).send("Invalid Token");
+          return res.status(400).send();
         }
       } catch (error) {
         logger.debug(error);
-        return res.status(400).send("Invalid Token");
+        return res.status(400).send();
       }
     } else if (req.body.User && req.body.Secret) {
       const query = ProfileModel.find();
@@ -140,8 +140,8 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-    logger.info(error);
-    return;
+    next()
+    logger.debug(error);
   }
 
   //next();
