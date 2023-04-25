@@ -14,7 +14,6 @@ var cors = require("cors");
 
 function defineServer() {
   const app = express();
-  console.log("here");
 
   logger.info("Starting up the API server...");
 
