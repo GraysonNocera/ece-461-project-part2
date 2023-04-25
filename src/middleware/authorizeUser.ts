@@ -79,6 +79,7 @@ export const authorizeUser = async (
           }
         }
         if (match != 1) {
+          logger.debug("auth failed");
           return res.status(400).send("Invalid Token");
         }
       } catch (error) {
@@ -131,6 +132,7 @@ export const authorizeUser = async (
         }
       }
       if (match != 1) {
+        logger.debug("Invalid user name or passwords");
         return res.status(401).send("Invalid user name or passwords");
       }
     } else {
