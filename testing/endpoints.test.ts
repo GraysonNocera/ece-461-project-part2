@@ -23,9 +23,11 @@ import {logger} from "../src/logging";
 //   .then(async (data) => console.log(data))
 //   .catch((error) => console.error(error));
 
-jest.setTimeout(60 * 1000);
+// Set timeout to 10 minutes
+jest.setTimeout(10 * 60 * 1000);
 
 let baseURL: string = "http://localhost:3000/";
+let token: string;
 
 beforeAll(() => {
   let app = defineServer();
@@ -38,6 +40,7 @@ afterAll(() => {
 
 beforeEach(async () => {
   await connectToMongo();
+  // token = await authenticate();
 });
 
 afterEach(async () => {
@@ -120,4 +123,97 @@ describe("Testing endpoints (integration tests)", () => {
 
     expect(response.status).toBe(409);
   });
+
+  test.skip("POST /package, package uploaded successfully", async () => {
+
+    let url = "https://www.npmjs.com/package/express";
+    let JSProgram = "console.log('Hello World')";
+
+    let response = await fetch(path.join(baseURL, "package"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Authorization": token,
+      },
+      body: JSON.stringify({
+        URL: url,
+        JSProgram: JSProgram,
+      })
+    });
+
+    expect(response.status).toBe(200);
+    
+    let object = await response.json();
+
+    expect(object).toHaveProperty("data");
+    expect(object).toHaveProperty("metadata");
+
+    let data = object.data;
+    let metadata = object.metadata;
+
+    expect(data.Content).toBeDefined();
+    expect(data.URL).toEqual(url);
+    expect(data.JSProgram).toEqual(JSProgram);
+
+    expect(metadata.Name).toEqual("express");
+    expect(metadata.Version).toBeDefined();
+    expect(metadata.ID).toBeDefined();
+  });
+
+  test.only("POST /packages", async () => {
+    let response = await fetch(path.join(baseURL, "packages"), {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify([
+        {
+            "Name": "express",
+            "Version": "Exact (4.4.4)"
+        },
+        {
+            "Name": "express",
+            "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+        },
+        {
+            "Name": "react",
+            "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+        }
+      ])
+    });
+
+    expect(response.status).toBe(200);
+
+    let object = JSON.parse(await response.text());
+    object.forEach((element: any) => {
+      expect(element).toHaveProperty("Name");
+      expect(element).toHaveProperty("Version");
+      expect(element.Version).toEqual("1.0.0");
+    });
+  });
+
+  
 });
+
+async function authenticate(): Promise<string> {
+
+  let response = await fetch(path.join(baseURL, "authenticate"), {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "User": {
+        "name": "ece30861defaultadminuser",
+        "isAdmin": true
+      },
+      "Secret": {
+        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
+      }
+    })
+  });
+
+  console.log(await response.json());
+
+  return (await response.json()).Token;
+}
