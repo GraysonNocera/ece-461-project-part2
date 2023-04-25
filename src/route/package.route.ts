@@ -158,8 +158,8 @@ packageRouter.put(
     let auth: string;
     let packageInfo: Package;
     try {
-      id = req.params.id;
-      logger.info("Penis");
+      id = (req.params.id);
+      logger.info("Penis")
       auth = req.header("X-Authorization") || "";
       // Require auth
 
@@ -169,7 +169,7 @@ packageRouter.put(
       // Validate with joi
 
       const query = PackageModel.where({ _id: id });
-
+      
       try {
         const package_received = await query.findOne();
         // Package doesn't exist, return 404
@@ -178,16 +178,11 @@ packageRouter.put(
           return;
         }
 
-        if (
-          package_received.metadata.Name != packageInfo.metadata.Name ||
-          package_received.metadata.Version != packageInfo.metadata.Version ||
-          package_received.metadata.ID != packageInfo.metadata.ID
-        ) {
-          res
-            .status(400)
-            .send(
-              "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
-            );
+        if (package_received.metadata.Name != packageInfo.metadata.Name
+          || package_received.metadata.Version != packageInfo.metadata.Version
+          || package_received.metadata.ID != packageInfo.metadata.ID ) {
+
+          res.status(400).send("There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.")
           return;
         }
 

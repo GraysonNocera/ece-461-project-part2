@@ -159,6 +159,9 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param url: string url
   // :param name: string name of package
 
+
+
+
   // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
 
   return "1.0.0";
@@ -180,13 +183,17 @@ function buildHistoryEntry(
 
   // Assign user that performed action
   // TODO: Koltan :) how do we know the user that uploaded this?
-  historyEntry.User = {
-    name: "test",
-    isAdmin: true,
-    isUpload: true,
-    isSearch: true,
-    isDownload: true,
-  };
+  // historyEntry.User = {
+  //   name: "test",
+  //   isAdmin: true,
+  // }
+  // historyEntry.User = {
+  //   name: "test",
+  //   isAdmin: true,
+  //   isUpload: true,
+  //   isSearch: true,
+  //   isDownload: true,
+  // };
 
   return historyEntry;
 }

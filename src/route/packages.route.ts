@@ -1,25 +1,24 @@
-import { Router } from "express";
-import { authorizeUser } from "../middleware/authorizeUser";
-import { logger } from "../logging";
-import { Request, Response } from "express";
-import { PackageQuery, PackageQueryValidation } from "../model/packageQuery";
-import { Validate } from "../middleware/validate";
-import { PackageModel } from "../model/package";
+import { Router } from 'express';
+import { authorizeUser } from '../middleware/authorizeUser';
+import { logger } from '../logging';
+import { PackageData } from '../model/packageData';
+import { PackageMetadata } from '../model/packageMetadata';
+import { Request, Response } from 'express';
+import Joi from 'joi';
+import { PackageHistoryEntry } from '../model/packageHistoryEntry';
+import { PackageQuery } from '../model/packageQuery';
 
-const express = require("express");
+const express = require('express');
 export const packagesRouter: Router = express.Router();
 
 // Create a package when POST /packages is called
-packagesRouter.post(
-  "/",
-  /* authorizeUser, */ Validate(PackageQueryValidation),
-  async (req: Request, res: Response) => {
+packagesRouter.post('/', authorizeUser, (req: Request, res: Response) =>  {
     logger.info("POST /packages");
 
-    let offset: number;
+    let offset: Number;
     let packageQuery: PackageQuery;
-    let packages: any[] = [];
-    let verionsToSearch: string[];
+    let packageMetadata: PackageMetadata;
+    let returnObject;
     try {
       if (typeof req.query?.offset != "string") {
         logger.info("Invalid offset for GET /packages");
@@ -56,9 +55,9 @@ packagesRouter.post(
 
       return res.status(200).send(packages);
     } catch {
-      // Request body is not valid JSON
-      logger.info("Invalid JSON for POST /packages");
-      return res.status(400).send("Invalid JSON");
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for POST /packages");
+        return res.status(400).send("Invalid JSON");
     }
   }
 );
@@ -117,9 +116,8 @@ function addResultToPackages(results: any[], packages: any[]): any[] {
       Version: result.metadata.Version,
     });
   });
-
-  return packages;
-}
+    // Validate with joi (trivial example)
+});
 
 // Export all non-exported functions just for testing
 export const exportedForTesting = {

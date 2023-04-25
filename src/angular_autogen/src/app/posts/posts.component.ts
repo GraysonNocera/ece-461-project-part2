@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { PostService } from './posts.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-posts',
@@ -7,7 +8,7 @@ import { PostService } from './posts.service';
   styleUrls: ['./posts.component.scss'],
 })
 export class PostsComponent {
-  constructor(public PostService: PostService) {}
+  constructor(public PostService: PostService, private router: Router) { }
 
   newPost = '';
   isLoggedIn = false;
@@ -90,21 +91,15 @@ export class PostsComponent {
       .catch((error) => {
         console.error('Error:', error);
         if (error.message === 'Request failed.') {
-          alert(
-            'Authentication Token Expired. Please enter username and password'
-          );
-          console.log(
-            'Auth token expired. Prompting user to enter username and password.'
-          );
+          alert ("Authentication Token Expired. Please enter username and password");
+          console.log('Auth token expired. Prompting user to enter username and password.');
         }
       });
   }
 
   login() {
-    const username = (<HTMLInputElement>document.getElementById('username'))
-      .value;
-    const password = (<HTMLInputElement>document.getElementById('password'))
-      .value;
+    const username = (<HTMLInputElement>document.getElementById('username')).value;
+    const password = (<HTMLInputElement>document.getElementById('password')).value;
     this.authenticate(username, password);
   }
 
@@ -112,5 +107,9 @@ export class PostsComponent {
     alert('Logging Out');
     localStorage.removeItem('jwtToken_461_API');
     this.isLoggedIn = false;
+  }
+
+  onHelpClick() {
+    this.router.navigate(['/help']);
   }
 }
