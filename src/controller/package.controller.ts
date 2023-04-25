@@ -1,28 +1,23 @@
-import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
-import { PackageData } from "../model/packageData";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-const isGitHubUrl = require("is-github-url");
-
-import {
-  PackageRating,
-  PackageRatingChokedValidation,
-  PackageRatingModel,
-  PackageRatingUploadValidation,
-} from "../model/packageRating";
-import * as cp from "child_process";
-// import { PackageRating } from "./api/model/packageRating";
-import { readFileSync } from "fs";
-import { Package, PackageModel } from "../model/package";
+import { getContentFromUrl } from "../service/zip";
+import { getGitRepoDetails, npm_2_git } from "../service/misc";
+import { PackageRating, PackageRatingModel } from "../model/packageRating";
+import { PackageModel } from "../model/package";
+import { getPackageJSON } from "../service/zip";
+import { ratePackage } from "../service/rate";
+import { uploadFileToMongo } from "../config/config";
 import path from "path";
-import JSZip from "jszip";
-import { AxiosResponse } from "axios";
-import axios from "axios";
+import fs from "fs";
 
-export const postPackage = async (req: Request, res: Response, next: NextFunction) => {
+export const postPackage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   logger.info("postPackage: POST /package endpoint hit");
 
   let packageToUpload;
@@ -30,22 +25,25 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   let package_json: Object = {};
   let historyEntry;
   let github_url: string;
+  let temp: string;
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
     data: req?.body,
   });
 
-  github_url = packageToUpload.data.URL.startsWith("https://www.npmjs.com/package/") ? await npm_2_git(packageToUpload.data.URL) : packageToUpload.data.URL;
   // Package already exists: status 409
   const query = PackageModel.find();
   query.or([
-    { "data.Content": { $exists: true,  $eq: packageToUpload.data.Content} },
-    { "data.URL": { $exists: true,  $eq: packageToUpload.data.URL } },
+    { "data.Content": { $exists: true, $eq: packageToUpload.data.Content } },
+    { "data.URL": { $exists: true, $eq: packageToUpload.data.URL } },
   ]);
   const package_query_results = await query.findOne();
   if (package_query_results) {
-    logger.info("POST /package: Package already exists, got package: " + package_query_results);
+    logger.info(
+      "POST /package: Package already exists, got package: " +
+        package_query_results
+    );
     return res.status(409).send("Package exists already.");
   }
 
@@ -54,11 +52,23 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
     package_json = await getPackageJSON(packageToUpload.data.Content);
     try {
       packageToUpload.data.URL = package_json["homepage"];
+      if (!packageToUpload.data.URL) {
+        logger.debug("POST /package: Package not uploaded, no homepage field");
+        return res.status(400).send("Invalid Content (could not find url)");
+      }
     } catch (error) {
-      logger.debug("POST /package: Package not uploaded, no homepage field or no package.json");
+      logger.debug(
+        "POST /package: Package not uploaded, no homepage field or no package.json"
+      );
       return res.status(400).send("Invalid Content");
     }
   }
+
+  github_url = packageToUpload.data.URL.startsWith(
+    "https://www.npmjs.com/package/"
+  )
+    ? await npm_2_git(packageToUpload.data.URL)
+    : packageToUpload.data.URL;
 
   packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
@@ -82,6 +92,25 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   //   return;
   // }
 
+  if (!packageToUpload.data.Content) {
+    // Use URL to get the Content
+    packageToUpload.data.Content = await getContentFromUrl(github_url);
+    if (!packageToUpload.data.Content) {
+      logger.info("POST /package: Package not uploaded, invalid content");
+      return res.status(400).send("Invalid Content or URL");
+    }
+  } else {
+    fs.writeFileSync(
+      path.join(
+        __dirname,
+        "..",
+        "artifacts",
+        `${packageToUpload.metadata.Name}.txt`
+      ),
+      packageToUpload.data.Content
+    );
+  }
+
   if (packageToUpload.data.Name == "*") {
     logger.info("POST /package: Package not uploaded, invalid name");
     return res.status(400).send("Invalid Content or URL");
@@ -90,8 +119,25 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   // Save package
   logger.info("POST /package: Saving package: " + packageToUpload);
   packageToUpload.metadata.ID = packageToUpload._id.toString();
+
+  let filename: string = `${packageToUpload.metadata.Name}.txt`;
+  uploadFileToMongo(
+    path.join(__dirname, "..", "artifacts", filename),
+    filename,
+    packageToUpload._id
+  );
+
+  // Utter stupidity so that I don't have to research how to not upload the current Content
+  temp = packageToUpload.data.Content;
+  packageToUpload.data.Content = filename;
+
   await packageToUpload.save();
-  logger.info("POST /package: Package metadata added successfully " + packageToUpload.metadata);
+  logger.info(
+    "POST /package: Package metadata added successfully " +
+      packageToUpload.metadata
+  );
+
+  packageToUpload.data.Content = temp;
 
   // Save history entry
   historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
@@ -106,110 +152,22 @@ export const postPackage = async (req: Request, res: Response, next: NextFunctio
   logger.info("POST /package: Package created successfully");
 
   return res.status(201).send(packageToUpload.toObject());
-}
-
-export function ratePackage(url: string): PackageRating {
-  logger.info("ratePackage: Running rate script on url " + url + "...");
-
-  let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
-
-  cp.execSync(terminal_command);
-  const test_file = readFileSync(
-    path.join(__dirname, "../", "rate/score.json"),
-    "utf8"
-  );
-  const packageRate: PackageRating = JSON.parse(test_file);
-
-  logger.info("ratePackage: Package received rating " + packageRate.NetScore);
-  logger.info("ratePackage: Package rated successfully");
-
-  return packageRate;
-}
-
-export function verifyRating(packageRate: PackageRating) {
-  // There's gotta be a way to do this is one line with joi
-
-  const { error, value } = PackageRatingUploadValidation.validate(packageRate);
-  if (error) {
-    logger.debug(
-      "verifyRating: Package does not meet qualifications for upload."
-    );
-    return false;
-  }
-
-  logger.info("verifyRating: Package meets qualifications for upload.");
-  return true;
-}
-
-async function getPackageJSON(content: string): Promise<Object> {
-  logger.info("getPackageURL: Getting url from content base64 string");
-
-  let zip: JSZip = new JSZip();
-  zip = await zip.loadAsync(content, { base64: true, createFolders: true });
-
-  // console.log(await zip.file("exceptions/CommcourierException.java")?.async("string"));
-  let package_json_path: string = zip.file(/package.json/)[0]?.name;
-  // console.log(package_json_path);
-
-  let package_json_contents: string | undefined = await zip
-    .file(package_json_path)
-    ?.async("string");
-  // console.log(package_json_contents);
-
-  let package_json_object: Object;
-  if (package_json_contents) {
-    package_json_object = JSON.parse(package_json_contents);
-    if (package_json_object) {
-      logger.info("getPackageJSON: Found package.json");
-      return package_json_object;
-    }
-    logger.debug("getPackageJSON: Unable to parse package.json");
-  }
-
-  logger.debug("getPackageJSON: No package.json found");
-  return {};
-}
-
-async function getGitRepoDetails(url: string): Promise<{ username: string; repoName: string } | null> {
-  // Function description
-  // :param url: string url to parse
-  // :return: Promise of a username and reponame extracted from
-  // url or null
-
-  let match: RegExpMatchArray | null;
-
-  if (url.startsWith("git:")) {
-    // Parse ssh gitHub link
-    match = url.match(/git:\/\/github\.com\/([^\/]+)\/([^\/]+)\.git/);
-  } else {
-    // Parse https github link
-    match = url.match(/(?:https:\/\/github\.com\/)([^\/]+)\/([^\/]+)(?:\/|$)/);
-  }
-
-  // Assign username and repoName from URL regex
-  if (match) {
-    let repoName = match[2];
-    let username = match[1];
-    return { username, repoName };
-  }
-
-  return null;
-}
+};
 
 async function getVersionFromURL(url: string, name: string): Promise<string> {
   // API call to get the version of a package from its url and name
   // :param url: string url
   // :param name: string name of package
 
-
-
-
   // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
 
   return "1.0.0";
-};
+}
 
-function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE"): PackageHistoryEntry {
+function buildHistoryEntry(
+  metadata: PackageMetadata,
+  action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE"
+): PackageHistoryEntry {
   // Function description
   // :param metadata: PackageMetadata
   // :param action: string
@@ -237,7 +195,10 @@ function buildHistoryEntry(metadata: PackageMetadata, action: "CREATE" | "UPDATE
   return historyEntry;
 }
 
-async function getMetadata(url: string, package_json: Object): Promise<PackageMetadata | undefined> {
+async function getMetadata(
+  url: string,
+  package_json: Object
+): Promise<PackageMetadata | undefined> {
   // Function description
   // :param packageData: PackageData
   // :return: PackageMetadata
@@ -262,102 +223,17 @@ async function getMetadata(url: string, package_json: Object): Promise<PackageMe
   return metadata;
 }
 
-export async function npm_2_git(npmUrl: string): Promise<string> {
-  // Takes a NPM package URL and returns the GitHub URL
-  // :param npmUrl: npm URL provided by text file
-  // :return: Promise of corresponding GitHub url string
-
-  // extract the package name from the npm URL
-  const packageName = npmUrl.split("/").pop();
-  let retries = 0;
-
-  while (retries < 1) {
-    try {
-      logger.info("Converting npm link (" + npmUrl + ") to GitHub link...");
-
-      // use the npm registry API to get the package information
-      const response: AxiosResponse = await axios.get(
-        `https://registry.npmjs.org/${packageName}`
-      );
-      const packageInfo = response.data;
-
-      // check if package has repository
-      if (!packageInfo.repository) {
-        logger.debug(`No repository found for package: ${packageName}`);
-        return Promise.resolve("");
-      }
-      let new_url = packageInfo.repository.url;
-
-      // Convert ssh to https url
-      if (new_url.startsWith("git+ssh://git@github.com")) {
-        new_url = new_url.replace(
-          "git+ssh://git@github.com",
-          "git://github.com"
-        );
-
-        logger.info("Converted npm link to " + new_url);
-
-        return new_url;
-      }
-      // check if repository is on github
-      if (isGitHubUrl(packageInfo.repository.url)) {
-        return packageInfo.repository.url.replace("git+https", "git");
-      } else {
-        logger.debug(`Repository of package: ${packageName} is not on GitHub`);
-        return Promise.resolve("");
-      }
-    } catch (error: any) {
-      // Error in getting GitHub url
-      logger.debug("Received error: " + error);
-      if (error.response && error.response.status === 404) {
-        logger.debug(`Package not found: ${packageName}`);
-        return Promise.resolve("");
-      } else if (error.response && error.response.status === 429) {
-        logger.debug(
-          `Rate limit exceeded: ${error.response.headers["Retry-After"]} seconds`
-        );
-        return Promise.resolve("");
-      } else if (error.code === "ECONNREFUSED") {
-        logger.debug(`Error: ${error.code}. Retrying...`);
-        retries++;
-        continue;
-      } else {
-        logger.debug(
-          "Respository of package: " + packageName + " is not on GitHub"
-        );
-        return Promise.resolve("");
-      }
-    }
-  }
-
-  logger.debug(`Error: Maximum retries exceeded for package: ${packageName}`);
-  return Promise.resolve("");
-}
-
 async function isNameInDb(name: string): Promise<Number | null> {
   // Search database for the name, return 1 if it is in the db, 0 otherwise
   // :param name: string name of package
   // :return: Number
 
-  return await PackageModel.findOne({ 'metadata.Name': name }) ? 1 : 0;
-}
-
-export function didChokeOnRating(rating: PackageRating): Number {
-  // Check if package choked on rating
-  // :param rating: PackageRating
-  // :return: Number
-
-  const {error, value} = PackageRatingChokedValidation.validate(rating);
-  return error ? 1 : 0;
+  return (await PackageModel.findOne({ "metadata.Name": name })) ? 1 : 0;
 }
 
 // Export all non-exported functions just for testing
-export const exportedForTesting = {
-  ratePackage,
-  verifyRating,
-  getPackageJSON,
-  getGitRepoDetails,
+export const exportedForTestingPackageController = {
   getVersionFromURL,
   buildHistoryEntry,
   getMetadata,
-}
+};

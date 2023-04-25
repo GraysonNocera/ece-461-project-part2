@@ -2,7 +2,7 @@
 openapi: 3.0.2
 info:
   title: ECE 461 - Spring 2023 - Project 2
-  version: 2.3.0
+  version: 2.3.5
   description: "API for ECE 461/Spring 2023/Project 2: A Trustworthy Module Registry"
   termsOfService: http://swagger.io/terms/
   contact:
@@ -51,10 +51,13 @@ paths:
                   value:
                   - Version: 1.2.3
                     Name: Underscore
+                    ID: underscore
                   - Version: 1.2.3-2.1.0
                     Name: Lodash
+                    ID: lodash
                   - Version: ^1.2.3
                     Name: React
+                    ID: react
           description: List of packages
         "400":
           description: "There is missing field(s) in the PackageQuery/AuthenticationToken\
@@ -344,8 +347,7 @@ paths:
                     name: ece30861defaultadminuser
                     isAdmin: true
                   Secret:
-                    password: correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE
-                      packages;
+                    password: correcthorsebatterystaple123(!__+@**(A'"`;DROP TABLE packages;
         required: true
       responses:
         "200":
@@ -477,7 +479,8 @@ paths:
               $ref: '#/components/schemas/PackageRegEx'
             examples:
               ExampleRegEx:
-                Regex: .*?Underscore.*
+                value:
+                  RegEx: .*?Underscore.*
         required: true
       responses:
         "200":
@@ -653,7 +656,7 @@ components:
           type: number
         NetScore:
           format: double
-          description: From Part 1
+          description: Scores calculated from other seven metrics.
           type: number
     PackageHistoryEntry:
       description: One entry of the history of this package.
@@ -734,15 +737,10 @@ components:
     PackageRegEx:
       description: ""
       required:
-      - Regex
+      - RegEx
       type: object
       properties:
-        Regex:
+        RegEx:
+          description: A regular expression over package names and READMEs that is
+            used for searching for a package
           type: string
-          description: A regular expression over package names and READMEs that is used for searching for a package
-  securitySchemes:
-    UserAndPasswordYieldsToken:
-      type: apiKey
-      description: Use the /authentication endpoint to obtain an authorization token.
-      name: X-Authorization
-      in: header

@@ -29,11 +29,10 @@ export const authorizeUser = async (
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
   logger.info("authorizeUser: Auth received " + auth);
-
   logger.info(auth);
   res.locals.auth = false;
   try {
-    if (auth != "") {
+    if (auth) {
       try {
         let test: any = await jwt.verify(auth, "B0!l3r-Up!");
         const query = ProfileModel.find();
@@ -85,7 +84,7 @@ export const authorizeUser = async (
         logger.debug(error);
         return res.status(400).send("Invalid Token");
       }
-    } else if (req.body.User.name && req.body.Secret.password) {
+    } else if (req.body.User && req.body.Secret) {
       const query = ProfileModel.find();
       query.or([
         {
@@ -141,7 +140,8 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-    logger.debug(error);
+    logger.info(error);
+    return;
   }
 
   //next();
