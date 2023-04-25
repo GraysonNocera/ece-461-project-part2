@@ -21,7 +21,12 @@ packagesRouter.post(
     let packages: any[] = [];
     let verionsToSearch: string[];
     try {
-      offset = parseInt(req.query.offset) || 1;
+      if (typeof req.query?.offset != "string") {
+        logger.info("Invalid offset for GET /packages");
+        return res.status(400).send("Invalid offset");
+      }
+
+      offset = parseInt(req.query?.offset) || 1;
       logger.info("package offset: " + offset);
       packageQuery = req.body;
 
@@ -89,7 +94,6 @@ async function getPackagesByVersionName(
   packages: any[],
   offset: number
 ): Promise<any[]> {
-
   // Search the database for all packages
   let results: any[] = await PackageModel.find({
     "metadata.Name": name,
@@ -119,7 +123,7 @@ function addResultToPackages(results: any[], packages: any[]): any[] {
 
 // Export all non-exported functions just for testing
 export const exportedForTesting = {
-    addResultToPackages,
-    getPackagesByVersionName,
-    getVersions,
-}
+  addResultToPackages,
+  getPackagesByVersionName,
+  getVersions,
+};

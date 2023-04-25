@@ -13,29 +13,31 @@
 import mongoose from "mongoose";
 import Joi from "joi";
 
-
 /**
- * 
+ *
  */
-export interface PackageQuery { 
-    /**
-     * 
-     */
-    Version?: string;
-    /**
-     * Name of a package.  - Names should only use typical \"keyboard\" characters. - The name \"*\" is reserved. See the `/packages` API for its meaning.
-     */
-    Name: string;
+export interface PackageQuery {
+  /**
+   *
+   */
+  Version?: string;
+  /**
+   * Name of a package.  - Names should only use typical \"keyboard\" characters. - The name \"*\" is reserved. See the `/packages` API for its meaning.
+   */
+  Name: string;
 }
 
 export const PackageQuerySchema = new mongoose.Schema<PackageQuery>({
-    Version: { type: String, required: false },
-    Name: { type: String, required: true },
+  Version: { type: String, required: false },
+  Name: { type: String, required: true },
 });
 
-export const PackageQueryModel = mongoose.model<PackageQuery>("PackageQuery", PackageQuerySchema);
+export const PackageQueryModel = mongoose.model<PackageQuery>(
+  "PackageQuery",
+  PackageQuerySchema
+);
 
 export const PackageQueryValidation = Joi.object({
-    Version: Joi.string(),
-    Name: Joi.string().required(),
+  Version: Joi.string(),
+  Name: Joi.string().required(),
 });

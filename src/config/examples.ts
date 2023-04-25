@@ -81,7 +81,7 @@ async function main() {
   );
   console.log((await res).modifiedCount);
 
-  console.log(await PackageModel.find({'metadata.Version': "1.0.0"}).exec());
+  console.log(await PackageModel.find({ "metadata.Version": "1.0.0" }).exec());
 
   disconnectFromMongo();
 }

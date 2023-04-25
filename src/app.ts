@@ -9,15 +9,16 @@ import { packagesRouter } from "./route/packages.route";
 import { resetRouter } from "./route/reset.route";
 import { userRouter } from "./route/user.route";
 import { connectToMongo, disconnectFromMongo } from "./config/config";
-
+var cors = require("cors");
 // define app
-const app = express();
 
 function defineServer() {
+  const app = express();
 
   logger.info("Starting up the API server...");
 
-  app.use(express.json());
+  app.use(express.json({limit: '50mb'}));
+  app.use(cors());
   app.use(express.urlencoded({ extended: false }));
 
   // Define placeholder endpoint for root route
@@ -31,11 +32,10 @@ function defineServer() {
   app.use("/reset", resetRouter);
   app.use("/user", userRouter);
 
+  return app;
 }
 
-function startServer() {
-  // Connect to database
-  connectToMongo();
+function startServer(app) {
 
   const port: Number = Number(process.env.PORT || 3000);
 
@@ -43,14 +43,23 @@ function startServer() {
     logger.info("API server listening on port 3000");
   });
 
-  // disconnectFromMongo();
 }
 
 function main() {
+  // Connect to database
+  connectToMongo();
 
   // Define and start the server
-  defineServer();
-  startServer();
+  let app = defineServer();
+  startServer(app);
 }
 
-main();
+// Run main conditionally if it is not a module import
+if (require.main === module) {
+  main();
+}
+
+export const exportedForTestingApp = {
+  defineServer,
+  startServer,
+};

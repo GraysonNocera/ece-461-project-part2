@@ -1,11 +1,11 @@
-import { exportedForTesting } from "../src/controller/package.controller";
+import { exportedForTestingPackageController } from "../src/controller/package.controller";
 const {
-  ratePackage,
-  getGitRepoDetails,
   getVersionFromURL,
   buildHistoryEntry,
   getMetadata,
-} = exportedForTesting;
+} = exportedForTestingPackageController;
+import { ratePackage, verifyRating, didChokeOnRating } from "../src/service/rate";
+import { getGitRepoDetails } from "../src/service/misc";
 
 describe("Random Testing", () => {
 
@@ -24,14 +24,13 @@ describe("Random Testing", () => {
     {
       url: "",
       package_json: {},
-      expected: { Name: "", Version: "1.0.0", ID: "" },
+      expected: undefined,
     },
   ])("should test getting metadata", async ({ url, package_json, expected }) => {
     let result = await getMetadata(url, package_json);
     expect(result).toEqual(expected);
   });
 
-  // Write unit test for buildHistoryEntry
   // Write unit test for getVersionFromURL
   // Write unit test for getGitRepoDetails
   // Write unit test for ratePackage

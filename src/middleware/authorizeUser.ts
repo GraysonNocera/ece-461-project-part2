@@ -35,7 +35,7 @@ export const authorizeUser = async (
   try {
     if (auth != "") {
       try {
-        let test: any = jwt.verify(auth, "B0!l3r-Up!");
+        let test: any = await jwt.verify(auth, "B0!l3r-Up!");
         const query = ProfileModel.find();
         query.or([
           {
@@ -99,6 +99,7 @@ export const authorizeUser = async (
           req.body.User.name == data.User.name &&
           req.body.Secret.password == data.Secret.password
         ) {
+          match = 1;
           if (data.User.isAdmin) {
             res.locals.isAdmin = true;
             match = 1;
@@ -124,6 +125,7 @@ export const authorizeUser = async (
             res.locals.download = false;
           }
           res.locals.auth = true;
+          match = 1;
           res.locals.username = req.body.User.name;
           next();
         }
@@ -139,7 +141,6 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-
     logger.debug(error);
   }
 

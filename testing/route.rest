@@ -61,8 +61,10 @@ GET http://localhost:3000/package/64422070fee64a16e1e96956/rate
 DELETE http://localhost:3000/reset
 X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwNjMwLCJleHAiOjE2ODE2NTY2MzB9.Md7lT4KK-cpxczJmYkyXMyD7g2mNPMrpFq7nXne66_0
 
-GET http://localhost:3000/package/5
-X-Authorization: ur dad
+###
+
+GET http://localhost:3000/package/6444b32de2ad5457d16b647e
+X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MjI4MTUyNiwiZXhwIjoxNjgyMzE3NTI2fQ.w6Rs9wmZtZ7XhJsrQUiGNBLyJui9mSPhlevfV-nyLJ8
 
 ###
 
@@ -119,19 +121,19 @@ Content-Type: application/json
 ###
 
 POST http://localhost:3000/user
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MTk0MDA3MywiZXhwIjoxNjgxOTc2MDczfQ.N_C0orTu8KKDSFJp_r8C8qaGxEJ4QrCuoOYnyaYtOQg
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfbmFtZSIsImlzQWRtaW4iOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoiYV9zaW1wbGVfcGFzc3dvcmQifX0sImlhdCI6MTY4MjA0Njk1MCwiZXhwIjoxNjgyMDgyOTUwfQ.oHFrDKoi2Ivq83FJJRb605srsCBmEDPxdKihlgs4UV0
 Content-Type: application/json
 
 {
         "User": {
-        "name": "test_name",
-        "isAdmin": false,
-        "isUpload": false,
-        "isDownload": false, 
-        "isSearch": false
+        "name": "billybob",
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true, 
+        "isSearch": true
     },
     "Secret": {
-        "password": "a_simple_password"
+        "password": "urmom"
     }
 }
 
