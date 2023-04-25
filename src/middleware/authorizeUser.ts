@@ -133,6 +133,12 @@ export const authorizeUser = async (
       }
       if (match != 1) {
         logger.debug("Invalid user name or passwords");
+        if (req.body.User.name != data?.User.name) {
+          logger.debug(`Invalid user name, ${req.body.User.name} != ${data?.User.name}`);
+        }
+        if (req.body.Secret.password != data?.Secret.password) {
+          logger.debug(`Invalid password, ${req.body.Secret.password} != ${data?.Secret.password}`);
+        }
         return res.status(401).send("Invalid user name or passwords");
       }
     } else {
