@@ -4,9 +4,8 @@ import { connectToMongo, disconnectFromMongo } from "../src/config/config";
 import { exportedForTestingApp } from "../src/app";
 const { defineServer, startServer } = exportedForTestingApp;
 
-
 jest.mock("../src/middleware/authorizeUser", () => {
-  const originalModule = jest.requireActual('../src/middleware/authorizeUser');
+  const originalModule = jest.requireActual("../src/middleware/authorizeUser");
 
   //Mock the default export and named export 'foo'
   return {
@@ -47,9 +46,7 @@ beforeAll(() => {
   startServer(app);
 });
 
-afterAll(() => {
-
-});
+afterAll(() => {});
 
 beforeEach(async () => {
   await connectToMongo();
@@ -61,20 +58,22 @@ afterEach(async () => {
 });
 
 describe("Testing endpoints (integration tests)", () => {
-
   test.skip("GET /", async () => {
     await fetch(baseURL, {
       method: "GET",
       headers: {
         "Content-Type": "",
-      }
-    }).then(async (response) => {
-      console.log(response.text());
-    }).then(async (data) => {
-      console.log(data);
-    }).catch((error) => {
-      console.error(error);
-    });
+      },
+    })
+      .then(async (response) => {
+        console.log(response.text());
+      })
+      .then(async (data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   });
 
   test("POST /package, both content and url supplied", async () => {
@@ -87,7 +86,7 @@ describe("Testing endpoints (integration tests)", () => {
         URL: "https://www.npmjs.com/package/lodash",
         Content: "test",
         JSProgram: "test",
-      })
+      }),
     });
 
     expect(response.status).toBe(400);
@@ -101,7 +100,7 @@ describe("Testing endpoints (integration tests)", () => {
       },
       body: JSON.stringify({
         JSProgram: "test",
-      })
+      }),
     });
 
     expect(response.status).toBe(400);
@@ -114,9 +113,12 @@ describe("Testing endpoints (integration tests)", () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Content: fs.readFileSync(path.join(__dirname, "lodash_base64"), "utf-8"),
+        Content: fs.readFileSync(
+          path.join(__dirname, "lodash_base64"),
+          "utf-8"
+        ),
         JSProgram: "test",
-      })
+      }),
     });
 
     expect(response.status).toBe(400);
@@ -130,15 +132,14 @@ describe("Testing endpoints (integration tests)", () => {
       },
       body: JSON.stringify({
         URL: "https://www.npmjs.com/package/react",
-        JSProgram: "console.log('Hello World')"
-      })
+        JSProgram: "console.log('Hello World')",
+      }),
     });
 
     expect(response.status).toBe(409);
   });
 
   test.skip("POST /package, package uploaded successfully", async () => {
-
     let url = "https://www.npmjs.com/package/express";
     let JSProgram = "console.log('Hello World')";
 
@@ -151,11 +152,11 @@ describe("Testing endpoints (integration tests)", () => {
       body: JSON.stringify({
         URL: url,
         JSProgram: JSProgram,
-      })
+      }),
     });
 
     expect(response.status).toBe(200);
-    
+
     let object = await response.json();
 
     expect(object).toHaveProperty("data");
@@ -182,18 +183,20 @@ describe("Testing endpoints (integration tests)", () => {
       },
       body: JSON.stringify([
         {
-            "Name": "express",
-            "Version": "Exact (4.4.4)"
+          Name: "express",
+          Version: "Exact (4.4.4)",
         },
         {
-            "Name": "express",
-            "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+          Name: "express",
+          Version:
+            "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)",
         },
         {
-            "Name": "react",
-            "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
-        }
-      ])
+          Name: "react",
+          Version:
+            "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)",
+        },
+      ]),
     });
 
     expect(response.status).toBe(200);
@@ -206,14 +209,17 @@ describe("Testing endpoints (integration tests)", () => {
     });
   });
 
-  test.only("GET /package/:id", async () => {
-    let response = await fetch(path.join(baseURL, "package/6444b32de2ad5457d16b647e"), {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Authorization": token,
+  test("GET /package/:id", async () => {
+    let response = await fetch(
+      path.join(baseURL, "package/6444b32de2ad5457d16b647e"),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Authorization": token,
+        },
       }
-    });
+    );
 
     expect(response.status).toBe(200);
 
@@ -236,21 +242,21 @@ describe("Testing endpoints (integration tests)", () => {
 });
 
 async function authenticate(): Promise<string> {
-
   let response = await fetch(path.join(baseURL, "authenticate"), {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      "User": {
-        "name": "ece30861defaultadminuser",
-        "isAdmin": true
+      User: {
+        name: "ece30861defaultadminuser",
+        isAdmin: true,
       },
-      "Secret": {
-        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;"
-      }
-    })
+      Secret: {
+        password:
+          "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLE packages;",
+      },
+    }),
   });
 
   console.log(await response.json());
