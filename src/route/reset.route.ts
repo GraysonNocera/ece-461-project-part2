@@ -1,11 +1,11 @@
-import { Router } from 'express';
-import { authorizeUser } from '../middleware/authorizeUser';
-import { logger } from '../logging';
-import { Request, Response } from 'express';
+import { Router } from "express";
+import { authorizeUser } from "../middleware/authorizeUser";
+import { logger } from "../logging";
+import { Request, Response } from "express";
 import { Package } from "../model/package";
 import { PackageMetadata } from "../model/packageMetadata";
 import { PackageData } from "../model/packageData";
-import { PackageModel } from '../model/package';
+import { PackageModel } from "../model/package";
 import { connectToMongo, disconnectFromMongo } from "../config/config";
 import { ProfileModel } from "../model/user";
 const express = require("express");
@@ -31,7 +31,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       },
       Secret: {
         password:
-          "576b3857ceded6b3612bd91d55438a261f83a1a79de85d042e71c4ae26cc5039",
+          "a59e5585c1b2b33a91a25ededf39827f93996da9b912f26f9766d45f9dfb0742",
       },
     });
     //await defaultuser.save();
