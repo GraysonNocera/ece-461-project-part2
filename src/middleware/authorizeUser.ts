@@ -142,6 +142,7 @@ export const authorizeUser = async (
     }
   } catch (error) {
     logger.debug(error);
+    return res.status(400).send("Invalid Token");
   }
 
   //next();
