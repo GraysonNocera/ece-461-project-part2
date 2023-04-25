@@ -8,6 +8,7 @@ GET http://localhost:3000/
 
 ###
 
+// Upload a package
 POST http://localhost:3000/package
 Content-Type: application/json
 
@@ -18,6 +19,7 @@ Content-Type: application/json
 
 ###
 
+// Authenicate a user
 PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
@@ -36,14 +38,17 @@ Content-Type: application/json
 
 ###
 
+// THESE ARE NOT PART OF THE BASELINE SO ARE BEING IGNORED
 GET http://localhost:3000/package/byName/testName
 
 ###
 
+// THESE ARE NOT PART OF THE BASELINE SO ARE BEING IGNORED
 DELETE http://localhost:3000/package/byName/testName
 
 ###
 
+// Search through database for pacakages fitting a query
 POST http://localhost:3000/packages
 Content-Type: application/json
 
@@ -64,20 +69,24 @@ Content-Type: application/json
 
 ###
 
+// Rate a pckage
 GET http://localhost:3000/package/64422070fee64a16e1e96956/rate
 
 ###
 
+// Reset registry to its default state
 DELETE http://localhost:3000/reset
 X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVyIG1vbSJ9fSwiaWF0IjoxNjgxNjIwNjMwLCJleHAiOjE2ODE2NTY2MzB9.Md7lT4KK-cpxczJmYkyXMyD7g2mNPMrpFq7nXne66_0
 
 ###
 
+// Get package by ID
 GET http://localhost:3000/package/6444b32de2ad5457d16b647e
 X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MjI4MTUyNiwiZXhwIjoxNjgyMzE3NTI2fQ.w6Rs9wmZtZ7XhJsrQUiGNBLyJui9mSPhlevfV-nyLJ8
 
 ###
 
+// Update content of a package
 PUT http://localhost:3000/package/5
 X-Authorization: ur dad
 Content-Type: application/json
@@ -97,11 +106,13 @@ Content-Type: application/json
 
 ###
 
+// Delete a package by ID
 DELETE http://localhost:3000/package/643adfae80c2fd3135350df5
 X-Authorization: ur brotha
 
 ###
 
+// Search a package by Regex
 POST http://localhost:3000/package/byRegEx
 X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MTk0MDA3MywiZXhwIjoxNjgxOTc2MDczfQ.N_C0orTu8KKDSFJp_r8C8qaGxEJ4QrCuoOYnyaYtOQg
 Content-Type: application/json
@@ -112,6 +123,7 @@ Content-Type: application/json
 
 ###
 
+// Authenticate a user
 PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
@@ -130,6 +142,7 @@ Content-Type: application/json
 
 ###
 
+// Create a user
 POST http://localhost:3000/user
 X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfbmFtZSIsImlzQWRtaW4iOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoiYV9zaW1wbGVfcGFzc3dvcmQifX0sImlhdCI6MTY4MjA0Njk1MCwiZXhwIjoxNjgyMDgyOTUwfQ.oHFrDKoi2Ivq83FJJRb605srsCBmEDPxdKihlgs4UV0
 Content-Type: application/json
@@ -149,6 +162,7 @@ Content-Type: application/json
 
 ###
 
+// Delete a user
 DELETE http://localhost:3000/user
 X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjpmYWxzZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoidXIgbW9tIn19LCJpYXQiOjE2ODE2MTk3NDQsImV4cCI6MTY4MTY1NTc0NH0.brIJG9rX2V2WuVzOP7w_8IX_od8cu2unMNPACNpneog
 Content-Type: application/json
