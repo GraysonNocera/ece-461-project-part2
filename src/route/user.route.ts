@@ -44,6 +44,9 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
     // add in stuff for checking admin if not admin check if user is the same as the profile trying to be deleted if not any of that then return no rights
   } catch (error) {
     logger.info("Internal Error");
+    return res
+      .status(400)
+      .send("There are missing fields in new user profile or internal error ");
   }
 });
 
@@ -71,5 +74,8 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
     }
   } catch (error) {
     logger.info("Internal Error");
+    return res
+      .status(400)
+      .send("There are missing fields in new user profile or internal error ");
   }
 });
