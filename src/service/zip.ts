@@ -113,8 +113,9 @@ export async function unzipContent(content: string) {
 
   let files = zip.getEntries();
   let folder = files[0].entryName;
-  let parentDir = folder;
+  let parentDir = "";
   if (folder.endsWith("/")) {
+    parentDir = folder;
     await Promise.all(files.map((file) => {
       if (!(file.entryName.startsWith(folder))) {
         parentDir = "";
