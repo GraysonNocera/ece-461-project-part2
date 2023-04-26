@@ -118,5 +118,9 @@ export async function downloadFileFromMongo(
 export async function deleteFileFromMongo(id: mongoose.Types.ObjectId) {
   logger.info("deleteFileFromMongo(): Deleting file from MongoDB: " + id);
 
-  bucket.delete(id);
+  try {
+    await bucket.delete(id);
+  } catch (err) {
+    logger.debug("No file to delete in mongo");
+  }
 }
