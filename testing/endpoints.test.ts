@@ -41,13 +41,16 @@ jest.setTimeout(10 * 60 * 1000);
 
 let baseURL: string = "http://localhost:3000/";
 let token: string;
+let app: any;
 
 beforeAll(() => {
-  let app = defineServer();
-  startServer(app);
+  app = defineServer();
+  app = startServer(app);
 });
 
-afterAll(() => {});
+afterAll(() => {
+  app.close();
+});
 
 beforeEach(async () => {
   await connectToMongo();
