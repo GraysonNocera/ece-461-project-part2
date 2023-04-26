@@ -10,9 +10,11 @@ import { PackageRating, PackageRatingModel } from "../model/packageRating";
 import { Package, PackageModel } from "../model/package";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
+import { uploadFileToMongo } from "../config/config";
 import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
 import express from "express";
+import path from "path";
 
 export const packageRouter: Router = express.Router();
 
@@ -127,8 +129,6 @@ packageRouter.get(
       _id: new mongoose.Types.ObjectId(id),
     });
     package_received = await query.findOne()
-
-    // Package doesn't exist, return 404
     if (!package_received) {
       logger.debug("GET /package/:id: Package does not exist");
       return res.status(404).send("Package does not exist.");
@@ -165,7 +165,6 @@ packageRouter.put(
       id = req.params.id;
 
       packageInfo = req.body; // Get user-inputted package details
-      // Validate with joi
 
       logger.info("PUT /package/:id: received package " + packageInfo)
 
@@ -188,17 +187,25 @@ packageRouter.put(
 
           logger.debug("PUT /package/:id: Package metadata does not match")
 
-          res
+          return res
             .status(400)
             .send(
               "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
             );
-          return;
         }
 
         // Update contents with new contents
         if (packageInfo.data.Content) {
-          package_received.data.Content = packageInfo.data.Content;
+          let fileName: string = `${package_received.metadata.Name}.txt`;
+          let filePath: string = path.join(
+            __dirname,
+            "..",
+            "artifacts",
+            fileName
+          );
+          package_received.data.Content = fileName;
+
+          uploadFileToMongo(filePath, fileName, new mongoose.Types.ObjectId(package_received.metadata.ID));
         }
         if (packageInfo.data.URL) {
           package_received.data.URL = packageInfo.data.URL;
@@ -209,10 +216,10 @@ packageRouter.put(
 
         logger.info("PUT /package/:id: Saving package")
 
-        await package_received.save();
+        package_received.save();
 
         // If status is 200, ok. Send 404 if package doesn't exist.
-        return res.status(200).send(package_received.toJSON());
+        return res.status(200).send(package_received.toObject());
       } catch (error) {
         logger.debug("PUT /package/:id: " + error);
         return res.status(404).send("Invalid JSON");
@@ -228,7 +235,7 @@ packageRouter.put(
 // Delete a package when DELETE /package/:id is called
 packageRouter.delete(
   "/:id",
-  /*authorizeUser, */
+  authorizeUser,
   async (req: Request, res: Response) => {
     logger.info("DELETE /package/:id");
 
