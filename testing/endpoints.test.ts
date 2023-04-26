@@ -7,7 +7,8 @@ const { defineServer, startServer } = exportedForTestingApp;
 jest.mock("../src/middleware/authorizeUser", () => {
   const originalModule = jest.requireActual("../src/middleware/authorizeUser");
 
-  //Mock the default export and named export 'foo'
+  // Mock the default export and named export authorizeUser
+  // Basically, I'm skipping auth for these tests
   return {
     __esModule: true,
     ...originalModule,
