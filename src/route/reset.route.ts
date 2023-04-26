@@ -26,7 +26,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       },
       Secret: {
         password:
-          "a59e5585c1b2b33a91a25ededf39827f93996da9b912f26f9766d45f9dfb0742",
+          "ee8eb0437b289df8e5786687473ae2b81dc4533b00b837b7b31ac4c292f89c5f",
       },
     });
 

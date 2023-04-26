@@ -29,6 +29,8 @@ export const authorizeUser = async (
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
   logger.info("authorizeUser: Auth received " + auth);
+  auth = auth.replace("bearer ", "");
+  auth = auth.replace("Bearer ", "");
   res.locals.auth = false;
   try {
     if (auth) {
