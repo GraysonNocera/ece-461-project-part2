@@ -13,9 +13,9 @@ export async function connectToMongo() {
 
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
-    // Set the following environment variables
-    const USERNAME: string = process.env.MONGODB_USERNAME || "";
-    const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
+  // Set the following environment variables
+  const USERNAME: string = process.env.MONGODB_USERNAME || "";
+  const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
 
   // Keep this as "database"
   // We connect to the database, which will hold a bunch of collections
@@ -52,9 +52,19 @@ export async function uploadFileToMongo(
   fileName: string,
   id: mongoose.Types.ObjectId
 ) {
+  // Uploads a file to MongoDB, assumes there is a txt file at filePath
+  // It removes the file aftewards
+
+  // If this is PUT /package, the package already exists, so we must delete it
+  try {
+    await bucket.delete(id);
+  } catch (err) {
+    logger.debug("No file to delete in mongo");
+  }
+
   logger.info("uploadFileToMongo(): Uploading file to MongoDB: " + fileName);
 
-  let stream = bucket.openUploadStream(fileName);
+  let stream = bucket.openUploadStreamWithId(id, fileName);
   stream.id = id;
 
   fs.createReadStream(filePath)
