@@ -57,12 +57,6 @@ export const postPackage = async (
     return res.status(409).send("Package exists already.");
   }
 
-  github_url = packageToUpload.data.URL.startsWith(
-    "https://www.npmjs.com/package/"
-  )
-    ? await npm_2_git(packageToUpload.data.URL)
-    : packageToUpload.data.URL;
-
   // Try to fetch the URL from the package_json
   if (!didUploadURL) {
     basePath = await unzipContent(packageToUpload.data.Content);
@@ -82,6 +76,12 @@ export const postPackage = async (
       return res.status(400).send("Invalid Content");
     }
   }
+
+  github_url = packageToUpload.data.URL.startsWith(
+    "https://www.npmjs.com/package/"
+  )
+    ? await npm_2_git(packageToUpload.data.URL)
+    : packageToUpload.data.URL;
 
   packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
