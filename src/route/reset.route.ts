@@ -2,12 +2,9 @@ import { Router } from "express";
 import { authorizeUser } from "../middleware/authorizeUser";
 import { logger } from "../logging";
 import { Request, Response } from "express";
-import { Package } from "../model/package";
-import { PackageMetadata } from "../model/packageMetadata";
-import { PackageData } from "../model/packageData";
 import { PackageModel } from "../model/package";
-import { connectToMongo, disconnectFromMongo } from "../config/config";
 import { ProfileModel } from "../model/user";
+import { PackageRatingModel } from "../model/packageRating";
 const express = require("express");
 
 export const resetRouter: Router = express.Router();
@@ -18,9 +15,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
   try {
     logger.info("Request body: " + req.headers);
-    // TODO: check authorization
 
-    // TODO: reset registry
     const defaultuser = new ProfileModel({
       User: {
         name: "ece30861defaultadminuser",
@@ -40,6 +35,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       logger.info("Resetting registry")
       await PackageModel.deleteMany({});
       await ProfileModel.deleteMany({});
+      await PackageRatingModel.deleteMany({});
       await defaultuser.save();
       return res.status(200).send("Registry is reset");
     }
