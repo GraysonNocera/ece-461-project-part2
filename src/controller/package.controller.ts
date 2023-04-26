@@ -87,16 +87,23 @@ export const postPackage = async (
   }
 
   // Package not updated due to disqualified rating: status 423
-  rating = ratePackage(packageToUpload.data.URL);
+  if (packageToUpload.data.URL) {
+    rating = ratePackage(packageToUpload.data.URL);
 
-  // For now, nothing passes this, so I'm commenting it out
-  // if (!verify(PackageRatingUploadValidation, rating)) {
-  //   logger.info("POST /package: Package not uploaded, disqualified rating");
-  //   res
-  //     .status(424)
-  //     .send("Package is not uploaded due to the disqualified rating.");
-  //   return;
-  // }
+    // For now, nothing passes this, so I'm commenting it out
+    // if (!verify(PackageRatingUploadValidation, rating)) {
+    //   logger.info("POST /package: Package not uploaded, disqualified rating");
+    //   res
+    //     .status(424)
+    //     .send("Package is not uploaded due to the disqualified rating.");
+    //   return;
+    // }
+
+    // Save rating
+    let rateEntry = new PackageRatingModel(rating);
+    rateEntry._id = packageToUpload._id;
+    rateEntry.save();
+  }
 
   let filePath: string = path.join(
     __dirname,
@@ -107,7 +114,7 @@ export const postPackage = async (
   let fileName: string = `${packageToUpload.metadata.Name}.txt`;
 
   if (!packageToUpload.data.Content) {
-    // Use URL to get the Content
+    // Use URL to get the Content, also writes Content to a file
     packageToUpload.data.Content = await getContentFromUrl(github_url);
     if (!packageToUpload.data.Content) {
       logger.info("POST /package: Package not uploaded, invalid content");
@@ -121,6 +128,8 @@ export const postPackage = async (
   logger.info("POST /package: Saving package: " + packageToUpload);
   packageToUpload.metadata.ID = packageToUpload._id.toString();
 
+  // This can be async because this is a separate collection in MongoDB
+  // that can be uploaded as we are finishing the rest of the logic
   uploadFileToMongo(filePath, fileName, packageToUpload._id);
 
   // Utter stupidity so that I don't have to research how to not upload the current Content
@@ -135,15 +144,8 @@ export const postPackage = async (
 
   packageToUpload.data.Content = temp;
 
-  // Save history entry
-  historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
-  await historyEntry.save();
-  logger.info("POST /package: History entry saved successfully");
-
-  // Save rating
-  let rateEntry = new PackageRatingModel(rating);
-  rateEntry._id = packageToUpload._id;
-  await rateEntry.save();
+  // We are not fulfilling the additional requirement of traceability
+  // so disregard package history entries
 
   logger.info("POST /package: Package created successfully");
 
