@@ -10,10 +10,11 @@ GET http://localhost:3000/
 
 // Upload a package
 POST http://localhost:3000/package
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNTQ1MjY2LCJleHAiOjE2ODI1ODEyNjZ9.F9r17aeoN2rnXuuCzrbaeYMGQZnDF8sKcJKixZLczU0
 Content-Type: application/json
 
 {
-    "URL": "https://www.npmjs.com/package/express",
+    "URL": "https://github.com/browserify/browserify",
     "JSProgram": "console.log('Hello World')"
 }
 
@@ -136,7 +137,7 @@ Content-Type: application/json
         "isSearch": true
       },
       "Secret": {
-        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLEpackages;"
+        "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"
       }
 }
 
