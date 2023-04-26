@@ -33,6 +33,7 @@
     "octokit": "^2.0.14",
     "prettier": "^2.8.8",
     "request-promise": "^4.2.6",
+    "safe-regex": "^2.1.1",
     "simple-git": "^3.17.0",
     "threads": "^1.7.0",
     "ts-jest": "^29.1.0",

@@ -22,6 +22,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       ]);
       let test = await query.deleteOne();
       if (test.acknowledged) {
+        logger.info("DELETE /user: User profile successfuly deleted, got result: " + test);
         return res.status(200).send("User profile successfuly deleted");
       }
     } else if (res.locals.username == req.body.User.name) {
@@ -33,9 +34,11 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       ]);
       let test = await query.deleteOne();
       if (test.acknowledged) {
+        logger.info("DELETE /user: User profile successfuly deleted, got result: " + test);
         return res.status(200).send("User profile successfuly deleted");
       }
     } else {
+      logger.debug("DELETE /user: User is not admin or the user trying to delete their account")
       return res
         .status(401)
         .send("You don't have the proper permissions to delete this account");
@@ -66,8 +69,13 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
         Secret: { password: hashedPassword },
       });
       await account.save();
+
+      logger.info("POST /user: Account successfully created")
       return res.status(200).send("Account successfully created");
     } else {
+
+      logger.debug("POST /user: User is not admin")
+
       return res
         .status(401)
         .send("You don't have proper permissions to add an account");

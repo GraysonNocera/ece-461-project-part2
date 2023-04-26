@@ -5,13 +5,14 @@ import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 import { getContentFromUrl } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
-import { PackageRating, PackageRatingModel } from "../model/packageRating";
+import { PackageRating, PackageRatingModel, PackageRatingUploadValidation } from "../model/packageRating";
 import { PackageModel } from "../model/package";
 import { getPackageJSON } from "../service/zip";
 import { ratePackage } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
 import fs from "fs";
+import axios from "axios";
 
 export const postPackage = async (
   req: Request,
@@ -76,60 +77,64 @@ export const postPackage = async (
     return res.status(400).send("Invalid Content or URL");
   }
 
+  if (packageToUpload.metadata.Name == "*") {
+    logger.info("POST /package: Package not uploaded, invalid name");
+    return res.status(400).send("Invalid Content or URL");
+  }
+
   if (await isNameInDb(packageToUpload.metadata.Name)) {
     return res.status(409).send("Package exists already.");
   }
 
   // Package not updated due to disqualified rating: status 423
-  rating = ratePackage(packageToUpload.data.URL);
+  if (packageToUpload.data.URL) {
+    rating = ratePackage(packageToUpload.data.URL);
 
-  // For now, nothing passes this, so I'm commenting it out
-  // if (!verifyRating(rating)) {
-  //   logger.info("POST /package: Package not uploaded, disqualified rating");
-  //   res
-  //     .status(424)
-  //     .send("Package is not uploaded due to the disqualified rating.");
-  //   return;
-  // }
+    // For now, nothing passes this, so I'm commenting it out
+    // if (!verify(PackageRatingUploadValidation, rating)) {
+    //   logger.info("POST /package: Package not uploaded, disqualified rating");
+    //   res
+    //     .status(424)
+    //     .send("Package is not uploaded due to the disqualified rating.");
+    //   return;
+    // }
+
+    // Save rating
+    let rateEntry = new PackageRatingModel(rating);
+    rateEntry._id = packageToUpload._id;
+    rateEntry.save();
+  }
+
+  let filePath: string = path.join(
+    __dirname,
+    "..",
+    "artifacts",
+    `${packageToUpload.metadata.Name}.txt`
+  );
+  let fileName: string = `${packageToUpload.metadata.Name}.txt`;
 
   if (!packageToUpload.data.Content) {
-    // Use URL to get the Content
+    // Use URL to get the Content, also writes Content to a file
     packageToUpload.data.Content = await getContentFromUrl(github_url);
     if (!packageToUpload.data.Content) {
       logger.info("POST /package: Package not uploaded, invalid content");
       return res.status(400).send("Invalid Content or URL");
     }
   } else {
-    fs.writeFileSync(
-      path.join(
-        __dirname,
-        "..",
-        "artifacts",
-        `${packageToUpload.metadata.Name}.txt`
-      ),
-      packageToUpload.data.Content
-    );
-  }
-
-  if (packageToUpload.data.Name == "*") {
-    logger.info("POST /package: Package not uploaded, invalid name");
-    return res.status(400).send("Invalid Content or URL");
+    fs.writeFileSync(filePath, packageToUpload.data.Content);
   }
 
   // Save package
   logger.info("POST /package: Saving package: " + packageToUpload);
   packageToUpload.metadata.ID = packageToUpload._id.toString();
 
-  let filename: string = `${packageToUpload.metadata.Name}.txt`;
-  uploadFileToMongo(
-    path.join(__dirname, "..", "artifacts", filename),
-    filename,
-    packageToUpload._id
-  );
+  // This can be async because this is a separate collection in MongoDB
+  // that can be uploaded as we are finishing the rest of the logic
+  uploadFileToMongo(filePath, packageToUpload._id);
 
   // Utter stupidity so that I don't have to research how to not upload the current Content
   temp = packageToUpload.data.Content;
-  packageToUpload.data.Content = filename;
+  packageToUpload.data.Content = fileName;
 
   await packageToUpload.save();
   logger.info(
@@ -139,15 +144,8 @@ export const postPackage = async (
 
   packageToUpload.data.Content = temp;
 
-  // Save history entry
-  historyEntry = buildHistoryEntry(packageToUpload.metadata, "CREATE");
-  await historyEntry.save();
-  logger.info("POST /package: History entry saved successfully");
-
-  // Save rating
-  let rateEntry = new PackageRatingModel(rating);
-  rateEntry._id = packageToUpload._id;
-  await rateEntry.save();
+  // We are not fulfilling the additional requirement of traceability
+  // so disregard package history entries
 
   logger.info("POST /package: Package created successfully");
 
@@ -160,8 +158,47 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param name: string name of package
 
   // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
+  let apiUrl = "";
+  // chekcing if url is gh or npm
+  if (url.startsWith("https://www.npmjs.com/package/")) {
+    const packageName = url.split("/").pop();
+    try {
+      const npmResponse = await axios.get(
+        `https://registry.npmjs.org/${packageName}`
+      );
+      const repositoryUrl = npmResponse.data.repository.url;
 
-  return "1.0.0";
+      // maybe check here that the url is *actually* a gh url?
+      apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
+        repositoryUrl.split("/")[4]
+      }/releases`;
+    } catch (error) {
+      logger.debug("Error fetching GitHub URL from npm URL:", error);
+      return "1.0.0"; // default
+    }
+  } else if (url.startsWith("https://github.com/")) {
+    apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
+      url.split("/")[4]
+    }/releases`;
+  } else {
+    logger.info("Invalid URL provided");
+    return "1.0.0"; // default
+  }
+
+  try {
+    const response = await axios.get(apiUrl);
+    const releases = response.data;
+
+    if (releases.length > 0) {
+      const latestRelease = releases[0];
+      return latestRelease.tag_name;
+    } else {
+      return "1.0.0"; // default
+    }
+  } catch (error) {
+    logger.info("Unable to get version from URL: ", error);
+    return "1.0.0"; // default
+  }
 }
 
 function buildHistoryEntry(
@@ -217,9 +254,11 @@ async function getMetadata(
 
   if (!metadata.Name || !metadata.Version) {
     // We choked on the package trying to get its name and version
+    logger.info("Unable to get metadata from package");
     return undefined;
   }
 
+  logger.info("Successfully got metadata from package: " + metadata);
   return metadata;
 }
 
@@ -227,6 +266,8 @@ async function isNameInDb(name: string): Promise<Number | null> {
   // Search database for the name, return 1 if it is in the db, 0 otherwise
   // :param name: string name of package
   // :return: Number
+
+  logger.info("Checking if package name is in database");
 
   return (await PackageModel.findOne({ "metadata.Name": name })) ? 1 : 0;
 }
