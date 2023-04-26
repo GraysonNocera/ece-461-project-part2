@@ -277,7 +277,7 @@ packageRouter.delete(
 // Search packages via a Regex when POST /package/byRegEx is called
 packageRouter.post(
   "/byRegEx",
-  /*authorizeUser, */ async (req: Request, res: Response) => {
+  authorizeUser, async (req: Request, res: Response) => {
     logger.info("POST /package/byRegEx/{regex}");
 
     // let regex: string;
