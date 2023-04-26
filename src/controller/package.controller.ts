@@ -5,9 +5,13 @@ import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 import { getContentFromUrl } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
-import { PackageRating, PackageRatingModel, PackageRatingUploadValidation } from "../model/packageRating";
+import {
+  PackageRating,
+  PackageRatingModel,
+  PackageRatingUploadValidation,
+} from "../model/packageRating";
 import { PackageModel } from "../model/package";
-import { getPackageJSON } from "../service/zip";
+import { getInfoFromContent } from "../service/zip";
 import { ratePackage } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
@@ -28,6 +32,7 @@ export const postPackage = async (
   let historyEntry;
   let github_url: string;
   let temp: string;
+  let dataFromContent: any = {};
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
@@ -51,9 +56,9 @@ export const postPackage = async (
 
   // Try to fetch the URL from the package_json
   if (packageToUpload.data.Content) {
-    package_json = await getPackageJSON(packageToUpload.data.Content);
+    dataFromContent = await getInfoFromContent(packageToUpload.data.Content);
     try {
-      packageToUpload.data.URL = package_json["homepage"];
+      packageToUpload.data.URL = dataFromContent.package_json["homepage"];
       if (!packageToUpload.data.URL) {
         logger.debug("POST /package: Package not uploaded, no homepage field");
         return res.status(400).send("Invalid Content (could not find url)");
@@ -121,8 +126,19 @@ export const postPackage = async (
       logger.info("POST /package: Package not uploaded, invalid content");
       return res.status(400).send("Invalid Content or URL");
     }
+
+    // Get the readme from the Content
+    if (dataFromContent.readme)
+      packageToUpload.data.Readme = dataFromContent.readme;
+    else
+      dataFromContent = await getInfoFromContent(packageToUpload.data.Content);
+
+    if (dataFromContent.readme)
+      packageToUpload.data.Readme = dataFromContent.readme;
   } else {
     fs.writeFileSync(filePath, packageToUpload.data.Content);
+    if (dataFromContent.readme)
+      packageToUpload.data.Readme = dataFromContent.readme;
   }
 
   // Save package
