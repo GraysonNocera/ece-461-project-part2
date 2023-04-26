@@ -3,7 +3,7 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { getContentFromUrl } from "../service/zip";
+import { getContentFromUrl, getPackageJSON, getReadme } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
 import {
   PackageRating,
@@ -11,7 +11,7 @@ import {
   PackageRatingUploadValidation,
 } from "../model/packageRating";
 import { PackageModel } from "../model/package";
-import { getInfoFromContent } from "../service/zip";
+import { getInfoFromContent, unzipContent } from "../service/zip";
 import { ratePackage } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
@@ -29,15 +29,18 @@ export const postPackage = async (
   let packageToUpload;
   let rating: PackageRating;
   let package_json: Object = {};
-  let historyEntry;
   let github_url: string;
   let temp: string;
   let dataFromContent: any = {};
+  let didUploadURL: boolean = false;
+  let basePath: string = ""; // Base path to the unzipped folder
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
     data: req?.body,
   });
+  didUploadURL = packageToUpload.data.URL ? true : false;
+  logger.info("postPackage: didUploadURL: " + didUploadURL);
 
   // Package already exists: status 409
   const query = PackageModel.find();
@@ -54,11 +57,20 @@ export const postPackage = async (
     return res.status(409).send("Package exists already.");
   }
 
+  github_url = packageToUpload.data.URL.startsWith(
+    "https://www.npmjs.com/package/"
+  )
+    ? await npm_2_git(packageToUpload.data.URL)
+    : packageToUpload.data.URL;
+
   // Try to fetch the URL from the package_json
-  if (packageToUpload.data.Content) {
-    dataFromContent = await getInfoFromContent(packageToUpload.data.Content);
+  if (!didUploadURL) {
+    basePath = await unzipContent(packageToUpload.data.Content);
+    logger.info("postPackage: basePath: " + basePath);
+
+    package_json = await getPackageJSON(basePath);
     try {
-      packageToUpload.data.URL = dataFromContent.package_json["homepage"];
+      packageToUpload.data.URL = package_json["homepage"];
       if (!packageToUpload.data.URL) {
         logger.debug("POST /package: Package not uploaded, no homepage field");
         return res.status(400).send("Invalid Content (could not find url)");
@@ -70,12 +82,6 @@ export const postPackage = async (
       return res.status(400).send("Invalid Content");
     }
   }
-
-  github_url = packageToUpload.data.URL.startsWith(
-    "https://www.npmjs.com/package/"
-  )
-    ? await npm_2_git(packageToUpload.data.URL)
-    : packageToUpload.data.URL;
 
   packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
@@ -93,7 +99,7 @@ export const postPackage = async (
   }
 
   // Package not updated due to disqualified rating: status 423
-  if (packageToUpload.data.URL) {
+  if (didUploadURL) {
     rating = ratePackage(packageToUpload.data.URL);
 
     // For now, nothing passes this, so I'm commenting it out
@@ -119,26 +125,25 @@ export const postPackage = async (
   );
   let fileName: string = `${packageToUpload.metadata.Name}.txt`;
 
-  if (!packageToUpload.data.Content) {
+  if (didUploadURL) {
     // Use URL to get the Content, also writes Content to a file
     packageToUpload.data.Content = await getContentFromUrl(github_url);
+
+    basePath = await unzipContent(packageToUpload.data.Content);
+    logger.info("POST /package: Got content from URL: " + basePath);
+
     if (!packageToUpload.data.Content) {
       logger.info("POST /package: Package not uploaded, invalid content");
       return res.status(400).send("Invalid Content or URL");
     }
-
-    // Get the readme from the Content
-    if (dataFromContent.readme)
-      packageToUpload.data.Readme = dataFromContent.readme;
-    else
-      dataFromContent = await getInfoFromContent(packageToUpload.data.Content);
-
-    if (dataFromContent.readme)
-      packageToUpload.data.Readme = dataFromContent.readme;
   } else {
     fs.writeFileSync(filePath, packageToUpload.data.Content);
-    if (dataFromContent.readme)
-      packageToUpload.data.Readme = dataFromContent.readme;
+  }
+
+  // Get readme
+  packageToUpload.data.Readme = await getReadme(basePath);
+  if (!packageToUpload.data.Readme) {
+    logger.info("POST /package: invalid readme, still uploading");
   }
 
   // Save package
@@ -161,10 +166,25 @@ export const postPackage = async (
 
   packageToUpload.data.Content = temp;
 
-  // We are not fulfilling the additional requirement of traceability
-  // so disregard package history entries
-
   logger.info("POST /package: Package created successfully");
+
+  // Delete text file
+  if (fs.existsSync(filePath)) {
+    fs.rm(filePath, (err) => {
+      if (err) {
+        logger.error("POST /package: Error deleting file: " + err);
+      }
+    });
+  }
+
+  // Delete the unzipped folder
+  if (fs.existsSync(basePath)) {
+    fs.rm(basePath, { recursive: true }, (err) => {
+      if (err) {
+        logger.error("POST /package: Error deleting folder: " + err);
+      }
+    });
+  }
 
   return res.status(201).send(packageToUpload.toObject());
 };
@@ -268,7 +288,6 @@ async function getMetadata(
   let metadata: PackageMetadata = { Name: "", Version: "", ID: "" };
 
   // Add metadata to package
-  // TODO: If Name is "*" we throw error because that's reserved?
   if (package_json && package_json["name"] && package_json["version"]) {
     metadata.Name = package_json["name"];
     metadata.Version = package_json["version"];
