@@ -13,6 +13,7 @@ import { uploadFileToMongo } from "../config/config";
 import path from "path";
 import fs from "fs";
 import axios from "axios";
+let isGitHubUrl = require("is-github-url");
 
 export const postPackage = async (
   req: Request,
@@ -154,36 +155,44 @@ export const postPackage = async (
 
 async function getVersionFromURL(url: string, name: string): Promise<string> {
   // API call to get the version of a package from its url and name
-  // :param url: string url
+  // :param url: string url (github url)
   // :param name: string name of package
 
-  // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
   let apiUrl = "";
-  // chekcing if url is gh or npm
-  if (url.startsWith("https://www.npmjs.com/package/")) {
-    const packageName = url.split("/").pop();
-    try {
-      const npmResponse = await axios.get(
-        `https://registry.npmjs.org/${packageName}`
-      );
-      const repositoryUrl = npmResponse.data.repository.url;
+  // // chekcing if url is gh or npm
+  // if (url.startsWith("https://www.npmjs.com/package/")) {
+  //   const packageName = url.split("/").pop();
+  //   try {
+  //     const npmResponse = await axios.get(
+  //       `https://registry.npmjs.org/${packageName}`
+  //     );
+  //     const repositoryUrl = npmResponse.data.repository.url;
 
-      // maybe check here that the url is *actually* a gh url?
-      apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
-        repositoryUrl.split("/")[4]
-      }/releases`;
-    } catch (error) {
-      logger.debug("Error fetching GitHub URL from npm URL:", error);
-      return "1.0.0"; // default
-    }
-  } else if (url.startsWith("https://github.com/")) {
-    apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
-      url.split("/")[4]
-    }/releases`;
-  } else {
+  //     // maybe check here that the url is *actually* a gh url?
+  //     apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
+  //       repositoryUrl.split("/")[4]
+  //     }/releases`;
+  //   } catch (error) {
+  //     logger.debug("Error fetching GitHub URL from npm URL:", error);
+  //     return "1.0.0"; // default
+  //   }
+  // } else if (url.startsWith("https://github.com/")) {
+  //   apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
+  //     url.split("/")[4]
+  //   }/releases`;
+  // } else {
+  //   logger.info("Invalid URL provided");
+  //   return "1.0.0"; // default
+  // }
+
+  if (!isGitHubUrl(url)) {
     logger.info("Invalid URL provided");
     return "1.0.0"; // default
   }
+
+  apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
+    url.split("/")[4]
+  }/releases`;
 
   try {
     const response = await axios.get(apiUrl);
