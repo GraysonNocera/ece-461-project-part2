@@ -49,11 +49,12 @@ export async function disconnectFromMongo() {
 
 export async function uploadFileToMongo(
   filePath: string,
-  fileName: string,
   id: mongoose.Types.ObjectId
 ) {
   // Uploads a file to MongoDB, assumes there is a txt file at filePath
   // It removes the file aftewards
+
+  let fileName: string = path.basename(filePath);
 
   // If this is PUT /package, the package already exists, so we must delete it
   try {

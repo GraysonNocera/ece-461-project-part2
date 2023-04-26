@@ -205,7 +205,7 @@ packageRouter.put(
           );
           package_received.data.Content = fileName;
 
-          uploadFileToMongo(filePath, fileName, new mongoose.Types.ObjectId(package_received.metadata.ID));
+          uploadFileToMongo(filePath, new mongoose.Types.ObjectId(package_received.metadata.ID));
         }
         if (packageInfo.data.URL) {
           package_received.data.URL = packageInfo.data.URL;

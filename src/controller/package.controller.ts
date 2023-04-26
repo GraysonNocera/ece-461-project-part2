@@ -130,7 +130,7 @@ export const postPackage = async (
 
   // This can be async because this is a separate collection in MongoDB
   // that can be uploaded as we are finishing the rest of the logic
-  uploadFileToMongo(filePath, fileName, packageToUpload._id);
+  uploadFileToMongo(filePath, packageToUpload._id);
 
   // Utter stupidity so that I don't have to research how to not upload the current Content
   temp = packageToUpload.data.Content;
