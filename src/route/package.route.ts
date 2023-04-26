@@ -10,7 +10,7 @@ import { PackageRating, PackageRatingModel } from "../model/packageRating";
 import { Package, PackageModel } from "../model/package";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
-import { uploadFileToMongo } from "../config/config";
+import { deleteFileFromMongo, uploadFileToMongo } from "../config/config";
 import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
 import express from "express";
@@ -244,21 +244,25 @@ packageRouter.delete(
 
     logger.info("DELETE /package/:id: Deleting package " + id);
 
-    try {
-      const query = PackageModel.where({
-        _id: new mongoose.Types.ObjectId(id),
-      });
-      package_received = await query.deleteOne();
-    } catch {
-      logger.debug("DELETE /package/:id: Invalid ID + " + id);
-      return res.status(400).send("Invalid ID");
+    // Ensure valid ID
+    if (id != new mongoose.Types.ObjectId(id).toString()) {
+      logger.debug("DELETE /package/:id: Invalid package ID + " + id);
+      return res.status(400).send("Invalid package ID");
     }
+
+    const query = PackageModel.where({
+      _id: new mongoose.Types.ObjectId(id),
+    });
+    package_received = await query.deleteOne();
 
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
       logger.debug("DELETE /package/:id: Package does not exist");
       return res.status(404).send("Package does not exist.");
     }
+
+    // Remove the Content
+    deleteFileFromMongo(new mongoose.Types.ObjectId(id));
 
     logger.info("DELETE /package/:id: Package is deleted");
     return res.status(200).send("Package is deleted.");
