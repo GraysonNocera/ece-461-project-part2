@@ -1,6 +1,7 @@
 import JSZip, { files } from "jszip";
 import { Octokit as OctokitType } from "octokit";
 import * as fs from "fs/promises";
+import * as fsSync from "fs";
 const AdmZip = require("adm-zip");
 import { Buffer } from "buffer";
 import * as path from "path";
@@ -91,7 +92,7 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
   return content;
 }
 
-async function unzipContent(content: string) {
+export async function unzipContent(content: string) {
   logger.info("unzipContent: Unzipping content");
 
   const buffer = Buffer.from(content, "base64");
@@ -110,7 +111,18 @@ async function unzipContent(content: string) {
 
   await zip.extractAllTo(basePath, true);
 
-  return basePath;
+  let files = zip.getEntries();
+  let folder = files[0].entryName;
+  let parentDir = folder;
+  if (folder.endsWith("/")) {
+    await Promise.all(files.map((file) => {
+      if (!(file.entryName.startsWith(folder))) {
+        parentDir = "";
+      }
+    }));
+  }
+
+  return path.join(basePath, parentDir);
 }
 
 export async function getInfoFromContent(content: string): Promise<{ package_json: Object, readme: string }> {
@@ -126,8 +138,8 @@ export async function getInfoFromContent(content: string): Promise<{ package_jso
   return { package_json, readme };
 }
 
-async function getReadme(basePath: string): Promise<string> {
-  logger.info("getReadme: Getting readme from content base64 string");
+export async function getReadme(basePath: string): Promise<string> {
+  logger.info("getReadme: Getting readme from content base64 string, basePath: " + basePath);
 
   // Search for string case insensitive
   let readme_regex: RegExp = /readme\..+/i;
@@ -150,13 +162,13 @@ async function getReadme(basePath: string): Promise<string> {
 
   logger.info("getReadme: Found readme");
 
-  return readme_data.substring(0, 150);
+  return readme_data.substring(0, 250);
 }
 
-async function getPackageJSON(basePath: string): Promise<Object> {
-  logger.info("getPackageJSON: Getting url from content base64 string");
+export async function getPackageJSON(basePath: string): Promise<Object> {
+  // This function assumes the folder is unzipped
 
-  logger.info("getPackageJSON: Read base64 string into zip file");
+  logger.info("getPackageJSON: Getting url from content base64 string");
 
   let package_json_path: string = path.join(basePath, "package.json");
   let package_json_contents: string = await fs.readFile(
@@ -164,16 +176,24 @@ async function getPackageJSON(basePath: string): Promise<Object> {
     "utf8"
   );
 
+  let package_json_object = await getPackageJSONObject(package_json_contents);
+
+  return package_json_object;
+}
+
+async function getPackageJSONObject(package_json_contents: string) {
+  logger.info("getPackageJSONObject: Getting package.json object");
+
   let package_json_object: Object;
   if (package_json_contents) {
     package_json_object = JSON.parse(package_json_contents);
     if (package_json_object) {
-      logger.info("getPackageJSON: Found package.json");
+      logger.info("getPackageJSONObject: Found package.json");
       return package_json_object;
     }
-    logger.debug("getPackageJSON: Unable to parse package.json");
+    logger.debug("getPackageJSONObject: Unable to parse package.json");
   }
 
-  logger.debug("getPackageJSON: No package.json found");
+  logger.debug("getPackageJSONObject: No package.json found");
   return {};
 }
