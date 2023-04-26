@@ -15,6 +15,7 @@ import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
 import express from "express";
 import path from "path";
+let safe = require("safe-regex");
 
 export const packageRouter: Router = express.Router();
 
@@ -77,7 +78,9 @@ packageRouter.get(
 
       existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
       if (existingRating) {
-        logger.info("GET /package/:id/rate: Package already rated, returning existing rating");
+        logger.info(
+          "GET /package/:id/rate: Package already rated, returning existing rating"
+        );
         return res.status(200).send(existingRating.toObject());
       }
 
@@ -96,7 +99,7 @@ packageRouter.get(
       ratingToSave = new PackageRatingModel(rating);
       ratingToSave._id = packageToRate._id;
 
-      logger.info("GET /package/:id/rate: Saving rating")
+      logger.info("GET /package/:id/rate: Saving rating");
       await ratingToSave.save();
 
       return res.status(200).send(rating);
@@ -128,7 +131,7 @@ packageRouter.get(
     const query = PackageModel.where({
       _id: new mongoose.Types.ObjectId(id),
     });
-    package_received = await query.findOne()
+    package_received = await query.findOne();
     if (!package_received) {
       logger.debug("GET /package/:id: Package does not exist");
       return res.status(404).send("Package does not exist.");
@@ -166,7 +169,7 @@ packageRouter.put(
 
       packageInfo = req.body; // Get user-inputted package details
 
-      logger.info("PUT /package/:id: received package " + packageInfo)
+      logger.info("PUT /package/:id: received package " + packageInfo);
 
       const query = PackageModel.where({ _id: id });
 
@@ -174,7 +177,7 @@ packageRouter.put(
         const package_received = await query.findOne();
         // Package doesn't exist, return 404
         if (!package_received) {
-          logger.debug("PUT /package/:id: Packaged don't exist")
+          logger.debug("PUT /package/:id: Packaged don't exist");
           res.status(404).send("Package does not exist");
           return;
         }
@@ -184,8 +187,7 @@ packageRouter.put(
           package_received.metadata.Version != packageInfo.metadata.Version ||
           package_received.metadata.ID != packageInfo.metadata.ID
         ) {
-
-          logger.debug("PUT /package/:id: Package metadata does not match")
+          logger.debug("PUT /package/:id: Package metadata does not match");
 
           return res
             .status(400)
@@ -205,7 +207,10 @@ packageRouter.put(
           );
           package_received.data.Content = fileName;
 
-          uploadFileToMongo(filePath, new mongoose.Types.ObjectId(package_received.metadata.ID));
+          uploadFileToMongo(
+            filePath,
+            new mongoose.Types.ObjectId(package_received.metadata.ID)
+          );
         }
         if (packageInfo.data.URL) {
           package_received.data.URL = packageInfo.data.URL;
@@ -214,7 +219,7 @@ packageRouter.put(
           package_received.data.JSProgram = packageInfo.data.JSProgram;
         }
 
-        logger.info("PUT /package/:id: Saving package")
+        logger.info("PUT /package/:id: Saving package");
 
         package_received.save();
 
@@ -270,86 +275,81 @@ packageRouter.delete(
 );
 
 // Search packages via a Regex when POST /package/byRegEx is called
-packageRouter.post("/byRegEx", async (req: Request, res: Response) => {
-  //authorizeUser,
-  logger.info("POST /package/byRegEx/{regex}");
+packageRouter.post(
+  "/byRegEx",
+  /*authorizeUser, */ async (req: Request, res: Response) => {
+    logger.info("POST /package/byRegEx/{regex}");
 
-  // let regex: string;
-  let regex_body: string;
-  let auth: string;
-  let packageMetadata: PackageMetadata;
-  let return_data: Object;
-  try {
-    // regex will be in the body of the request; Example request:
-    // {
-    //   "Regex": "string"
-    // }
-    // logger.info("Got regex: " + regex);
+    // let regex: string;
+    let regex_body: string;
+    let auth: string;
+    let packageMetadata: PackageMetadata;
+    let return_data: Object;
+    try {
+      // regex will be in the body of the request; Example request:
+      // {
+      //   "Regex": "string"
+      // }
+      // logger.info("Got regex: " + regex);
 
-    // Require auth
+      regex_body = req.body.PackageRegEx;
+      let isSafe = safe(new RegExp(regex_body));
+      if (!isSafe) {
+        logger.debug("POST /package/byRegEx: Regex is not safe");
+        return res.status(400).send("Regex is not safe");
+      }
 
-    regex_body = req.body.PackageRegEx;
+      logger.info("Got regex body: " + regex_body);
 
-    logger.info("Got regex body: " + regex_body);
+      // Get the package from the database using the regex
+      const regex = new RegExp(regex_body, "i");
+      const packages = await PackageModel.find({
+        "metadata.Name": regex,
+      }).exec();
 
-    // TODO: Get the package from the database using the regex
-    // TODO: Return a list of packages
-    const regex = new RegExp(regex_body, "i");
-    const packages = await PackageModel.find({ "metadata.Name": regex }).exec();
+      // EXAMPLE RESPONSE:
+      // [
+      //   {
+      //     "Version": "1.2.3",
+      //     "Name": "Underscore"
+      //   },
+      //   {
+      //     "Version": "1.2.3-2.1.0",
+      //     "Name": "Lodash"
+      //   },
+      //   {
+      //     "Version": "^1.2.3",
+      //     "Name": "Re
+      //   }
+      // ]
 
-    // EXAMPLE RESPONSE:
-    // [
-    //   {
-    //     "Version": "1.2.3",
-    //     "Name": "Underscore"
-    //   },
-    //   {
-    //     "Version": "1.2.3-2.1.0",
-    //     "Name": "Lodash"
-    //   },
-    //   {
-    //     "Version": "^1.2.3",
-    //     "Name": "Re
-    //   }
-    // ]
+      logger.info("Got packages: " + packages);
+      logger.info("Preparing return_data");
 
-    // TODO: Hit database for this metadata
-    // packageMetadata = {
-    //   Name: "test",
-    //   Version: "1.0.0",
-    //   ID: "1234",
-    // };
+      // According to YML spec, return only name and version
+      return_data = packages.map((pkg) => {
+        return {
+          Name: pkg.metadata.Name,
+          Version: pkg.metadata.Version,
+        };
+      });
 
-    logger.info("Got packages: " + packages);
-    logger.info("Preparing return_data");
-    // logger.info()
+      logger.info("Sending status");
 
-    // According to YML spec, return only name and version
-    return_data = packages.map((pkg) => {
-      return {
-        Name: pkg.metadata.Name,
-        Version: pkg.metadata.Version,
-      };
-    });
-
-    logger.info("Sending status");
-
-    // If status is 200, ok. Send 404 if package doesn't exist.
-    if (packages.length > 0) {
-      logger.info("Sending return_data");
-      return res.status(200).send(return_data);
-    } else {
-      logger.info("Sending 404, no packaged found");
-      return res.status(404).send("No package found under this regex.");
+      // If status is 200, ok. Send 404 if package doesn't exist.
+      if (packages.length > 0) {
+        logger.info("Sending return_data");
+        return res.status(200).send(return_data);
+      } else {
+        logger.info("Sending 404, no packaged found");
+        return res.status(404).send("No package found under this regex.");
+      }
+    } catch {
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for POST /RegEx/{regex}");
+      return res.status(400).send("Invalid JSON");
     }
-    
-    logger.info("Done sending status, 404, no package");
-    return res.status(404).send("No package found under this regex.");
-  } catch {
-    // Request body is not valid JSON
-    logger.info("Invalid JSON for POST /RegEx/{regex}");
-    return res.status(400).send("Invalid JSON");
   }
-});
+);
 
 // module.exports = packageRouter;
