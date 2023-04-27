@@ -3,7 +3,7 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { getContentFromUrl, getPackageJSON, getReadme } from "../service/zip";
+import { deleteUnzippedFolder, getContentFromUrl, getPackageJSON, getReadme } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
 import {
   PackageRating,
@@ -67,12 +67,14 @@ export const postPackage = async (
       packageToUpload.data.URL = package_json["homepage"];
       if (!packageToUpload.data.URL) {
         logger.debug("POST /package: Package not uploaded, no homepage field");
+        deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content (could not find url)");
       }
     } catch (error) {
       logger.debug(
         "POST /package: Package not uploaded, no homepage field or no package.json"
       );
+      deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content");
     }
   }
@@ -86,15 +88,18 @@ export const postPackage = async (
   packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
     logger.info("POST /package: Package not uploaded, invalid metadata");
+    deleteUnzippedFolder(basePath);
     return res.status(400).send("Invalid Content or URL");
   }
 
   if (packageToUpload.metadata.Name == "*") {
     logger.info("POST /package: Package not uploaded, invalid name");
+    deleteUnzippedFolder(basePath);
     return res.status(400).send("Invalid Content or URL");
   }
 
   if (await isNameInDb(packageToUpload.metadata.Name)) {
+    deleteUnzippedFolder(basePath);
     return res.status(409).send("Package exists already.");
   }
 
@@ -134,6 +139,7 @@ export const postPackage = async (
 
     if (!packageToUpload.data.Content) {
       logger.info("POST /package: Package not uploaded, invalid content");
+      deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content or URL");
     }
   } else {
@@ -177,14 +183,7 @@ export const postPackage = async (
     });
   }
 
-  // Delete the unzipped folder
-  if (fs.existsSync(basePath)) {
-    fs.rm(basePath, { recursive: true }, (err) => {
-      if (err) {
-        logger.error("POST /package: Error deleting folder: " + err);
-      }
-    });
-  }
+  deleteUnzippedFolder(basePath);
 
   return res.status(201).send(packageToUpload.toObject());
 };
