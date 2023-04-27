@@ -208,3 +208,17 @@ async function getPackageJSONObject(package_json_contents: string) {
   logger.debug("getPackageJSONObject: No package.json found");
   return {};
 }
+
+export async function deleteUnzippedFolder(basePath: string) {
+
+  logger.info("deleteUnzippedFolder: Deleting unzipped folder")
+
+  // Delete the unzipped folder
+  if (fsSync.existsSync(basePath)) {
+    try {
+      fs.rm(basePath, { recursive: true });
+    } catch (err) {
+      logger.debug("deleteUnzippedFolder: Error deleting unzipped folder");
+    }
+  }
+}
