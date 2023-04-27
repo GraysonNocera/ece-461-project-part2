@@ -1,0 +1,379 @@
+// *******************
+// 1
+// POST /packages - Get the packages from the registry.
+
+// Test successful request
+POST http://localhost:3000/packages
+Content-Type: application/json
+
+{}
+// Expect: 200 - List of packages
+
+// Test missing or invalid request body
+POST http://localhost:3000/packages
+Content-Type: application/json
+
+// Expect: 400 - There is missing field(s) in the PackageQuery/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// Test request body exceeding size limit
+POST http://localhost:3000/packages
+Content-Type: application/json
+
+{
+    // Large request body exceeding size limit
+}
+// Expect: 413 - Too many packages returned.
+
+
+// *******************
+// 2
+// DELETE /reset - Reset the registry
+
+// Test successful request
+DELETE http://localhost:3000/reset
+X-Authorization: bearer <valid_token>
+
+// Expect: 200 - Registry is reset.
+
+// Test missing or invalid token
+DELETE http://localhost:3000/reset
+X-Authorization: bearer <invalid_token>
+
+// Expect: 401 - ou do not have permission to reset the registry.
+
+// Test request without a token
+DELETE http://localhost:3000/reset
+
+// Expect: 401 - You do not have permission to reset the registry.
+
+// Test malformed request
+DELETE http://localhost:3000/reset
+X-Authorization: bearer
+
+// Expect: 400 - There is missing field(s) in the AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+
+// *******************
+// 3
+// GET /package/{id} - Interact with the package with this ID
+
+// Test existing package ID
+GET http://localhost:3000/package/<replaceherelol>
+
+// Expect: 200 - Return the package. Content is required.
+
+// Test non-existing package ID
+GET http://localhost:3000/package/<replaceherelol>
+
+// Expect: 404 - Package does not exist.
+
+// Test malformed request
+GET http://localhost:3000/package/
+
+// Expect: 400 - There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// *******************
+// 4
+// PUT /package/{id} - Update this content of the package.
+
+// Test updating an existing package
+PUT http://localhost:3000/package/<replaceherelol>
+Content-Type: application/json
+
+{
+    "metadata": {
+        "Name": "",
+        "Version": "",
+        "ID": ""
+    },
+    "data": {
+        "Content": "",
+        "URL": "",
+        "JSProgram": ""
+    }
+}
+
+// Expect: 200 - Version is updated.
+
+// Test updating a non-existing package
+PUT http://localhost:3000/package/<replaceherelol>
+Content-Type: application/json
+
+{
+    "metadata": {
+        "Name": "",
+        "Version": "",
+        "ID": ""
+    },
+    "data": {
+        "Content": "",
+        "URL": "",
+        "JSProgram": ""
+    }
+}
+
+// Expect: 404 - Package does not exist.
+
+// Test malformed request
+PUT http://localhost:3000/package/<replaceherelol>
+Content-Type: application/json
+
+{
+    "metadata": {
+        "Name": "",
+        "Version": "",
+        "ID": ""
+    },
+    "data": {
+        "Content": "",
+        "URL": "",
+        "JSProgram": ""
+    }
+}
+
+// Expect: 400 - There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+
+// *******************
+// 5
+// DELETE /package/{id} - Delete this version of the package.
+
+// Test deleting an existing package
+DELETE http://localhost:3000/package/<replaceherelol>
+
+// Expect: 200 - Package is deleted.
+
+// Test deleting a non-existing package
+DELETE http://localhost:3000/package/<replaceherelol>
+
+// Expect: 404 - Package does not exist.
+
+// Test malformed request
+DELETE http://localhost:3000/package/
+
+// Expect: 400 - There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+
+// *******************
+// 6
+// POST /package
+
+// Test uploading a new package
+POST http://localhost:3000/package
+Content-Type: application/json
+
+{
+    "URL": "https://www.npmjs.com/package/express",
+    "JSProgram": "console.log('Hello World')"
+}
+
+// Expect: 201 - Success. Check the ID in the returned metadata for the official ID.
+
+// Test uploading a package with missing fields
+POST http://localhost:3000/package
+Content-Type: application/json
+
+{
+    "URL": "https://www.npmjs.com/package/express"
+}
+
+// Expect: 400 - There is missing field(s) in the PackageData/AuthenticationToken or it is formed improperly (e.g. Content and URL are both set), or the AuthenticationToken is invalid.
+
+// Test uploading a package that already exists
+POST http://localhost:3000/package
+Content-Type: application/json
+
+{
+    "URL": "https://www.npmjs.com/package/express",
+    "JSProgram": "console.log('Hello World')"
+}
+
+// Expect: 409 - Package exists already.
+
+// Test uploading a package with invalid dependencies
+// Dunno if this is right.
+POST http://localhost:3000/package
+Content-Type: application/json
+
+{
+    "URL": "https://www.npmjs.com/package/express",
+    "JSProgram": "console.log('Hello World')",
+    "Dependencies": {
+        "invalid-package": "1.0.0"
+    }
+}
+
+// Expect: 424 - Package is not uploaded due to the disqualified rating.
+
+
+// *******************
+// 7
+// GET /package/{id}/rate
+
+// Test rating a package
+GET http://localhost:3000/package/<replaceherelol>/rate
+
+// Expect: 200 - Return the rating. Only use this if each metric was computed successfully.
+
+// Test rating a package with missing fields
+GET http://localhost:3000/package/invalid-id/rate
+
+// Expect: 400 - There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// Test rating a non-existing package
+GET http://localhost:3000/package/nonexisting-id/rate
+
+// Expect: 404 - Package does not exist.
+
+// Test rating a package with internal server error
+// This needs fixing. Not quite sure how to do this.
+GET http://localhost:3000/package/
+
+// Expect: 500 - The package rating system choked on at least one of the metrics.
+
+// *******************
+// 8
+// PUT /authenticate
+
+// Test authenticating a user
+PUT http://localhost:3000/authenticate
+Content-Type: application/json
+
+{
+    "User": {
+        "name": "test_user",
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true,
+        "isSearch": true
+    },
+    "Secret": {
+        "password": "urmom"
+    }
+}
+
+// Expect: 200 - Return an AuthenticationToken.
+
+// Test authenticating a user with missing fields
+PUT http://localhost:3000/authenticate
+Content-Type: application/json
+
+{
+    "User": {
+        "name": "test_user"
+    }
+}
+
+// Expect: 400 - There is missing field(s) in the AuthenticationRequest or it is formed improperly.
+
+// Test authenticating a user with incorrect credentials
+PUT http://localhost:3000/authenticate
+Content-Type: application/json
+
+{
+    "User": {
+        "name": "test_user",
+        "isAdmin": true
+    },
+    "Secret": {
+        "password": "peen"
+    }
+}
+
+// Expect: 401 - The user or password is invalid.
+
+// Test authenticating a user with unsupported authentication method
+// is this right??
+PUT http://localhost:3000/authenticate
+Content-Type: application/xml
+
+{
+    "User": {
+        "name": "test_user",
+        "isAdmin": true,
+        "isUpload": true,
+        "isDownload": true,
+        "isSearch": true
+    },
+    "Secret": {
+        "password": "boo"
+    }
+}
+
+// Expect: 501 - This system does not support authentication.
+
+// *******************
+// 9
+// GET /package/byName/{name}
+
+// Test getting a package by name
+GET http://localhost:3000/package/byName/testName
+
+// Expect: 200 - Return the package history.
+
+// Test getting a package by name with missing name parameter
+GET http://localhost:3000/package/byName/
+
+// Expect: 400 - There is missing field(s) in the PackageName/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// Test getting a package by name that does not exist
+GET http://localhost:3000/package/byName/nonExistingPackage
+
+// Expect: 404 - No such package.
+
+// *******************
+// 10
+// DELETE /package/byName/{name} - Delete all versions of this package.
+
+// Test deleting all versions of a package by name
+DELETE http://localhost:3000/package/byName/<replaceherelol>
+
+// Expect: 200 - Package is deleted.
+
+// Test deleting all versions of a package by name with missing name parameter
+DELETE http://localhost:3000/package/byName/
+
+// Expect: 400 - There is missing field(s) in the PackageName/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// Test deleting all versions of a package by name that does not exist
+DELETE http://localhost:3000/package/byName/nonExistingPackage
+
+// Expect: 404 - Package does not exist.
+
+// *******************
+// 11
+// POST /package/byRegEx - Get any packages fitting the regular expression.
+
+// Test searching for packages fitting a regular expression
+POST http://localhost:3000/package/byRegEx
+
+{
+    "PackageRegEx": "exp?res*"
+}
+
+// Expect: 200 - Return a list of packages.
+
+// Test searching for packages with missing request body
+POST http://localhost:3000/package/byRegEx
+
+// Expect: 400 - There is missing field(s) in the PackageRegEx/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// Test searching for packages with invalid regular expression
+POST http://localhost:3000/package/byRegEx
+
+{
+    "PackageRegEx": "(?!.*[A-Za-z]).*"
+}
+
+// Expect: 400 - There is missing field(s) in the PackageRegEx/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
+
+// Test searching for packages with regular expression that does not match any packages
+POST http://localhost:3000/package/byRegEx
+
+{
+    "PackageRegEx": "nonExistingPackage"
+}
+
+// Expect: 404 - No package found under this regex.
+
+// *******************
