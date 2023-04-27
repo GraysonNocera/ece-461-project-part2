@@ -14,8 +14,7 @@ X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibm
 Content-Type: application/json
 
 {
-    "URL": "https://github.com/browserify/browserify",
-    "JSProgram": "console.log('Hello World')"
+    "Content": "https://github.com/cloudinary/cloudinary_npm"
 }
 
 ###
