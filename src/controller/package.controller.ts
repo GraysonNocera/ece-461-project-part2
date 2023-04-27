@@ -3,7 +3,13 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { deleteBase64File, deleteUnzippedFolder, getContentFromUrl, getPackageJSON, getReadme } from "../service/zip";
+import {
+  deleteBase64File,
+  deleteUnzippedFolder,
+  getContentFromUrl,
+  getPackageJSON,
+  getReadme,
+} from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
 import {
   PackageRating,
@@ -70,7 +76,10 @@ export const postPackage = async (
         deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content (could not find url)");
       }
-      logger.info("postPackage: packageToUpload.data.URL from package_json['hompage']: " + packageToUpload.data.URL);
+      logger.info(
+        "postPackage: packageToUpload.data.URL from package_json['hompage']: " +
+          packageToUpload.data.URL
+      );
     } catch (error) {
       logger.debug(
         "POST /package: Package not uploaded, no homepage field or no package.json"
@@ -230,10 +239,15 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
     if (releases.length > 0) {
       const latestRelease = releases[0];
 
-      logger.info("getVersionFromURL: latest release: ", latestRelease.tag_name);
+      logger.info(
+        "getVersionFromURL: latest release: ",
+        latestRelease.tag_name
+      );
       return latestRelease.tag_name;
     } else {
-      logger.info("getVersionFromURL: No releases found, returning 1.0.0 as the version");
+      logger.info(
+        "getVersionFromURL: No releases found, returning 1.0.0 as the version"
+      );
       return "1.0.0"; // default
     }
   } catch (error) {
@@ -302,7 +316,12 @@ async function getMetadata(
     return undefined;
   }
 
-  logger.info("Successfully got metadata from package: name: " + metadata.Name + " version: " + metadata.Version);
+  logger.info(
+    "Successfully got metadata from package: name: " +
+      metadata.Name +
+      " version: " +
+      metadata.Version
+  );
   return metadata;
 }
 

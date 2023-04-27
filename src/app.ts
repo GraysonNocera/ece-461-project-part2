@@ -17,7 +17,7 @@ function defineServer() {
 
   logger.info("Starting up the API server...");
 
-  app.use(express.json({limit: '50mb'}));
+  app.use(express.json({ limit: "50mb" }));
   app.use(cors());
   app.use(express.urlencoded({ extended: false }));
 
@@ -36,7 +36,6 @@ function defineServer() {
 }
 
 function startServer(app) {
-
   const port: Number = Number(process.env.PORT || 3000);
 
   app = app.listen(port, () => {

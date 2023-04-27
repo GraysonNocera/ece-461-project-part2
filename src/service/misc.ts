@@ -26,12 +26,17 @@ export async function getGitRepoDetails(
     let repoName = match[2];
     let username = match[1];
 
-    logger.info("getGitRepoDetails: Extracted username: " + username + " and repoName: " + repoName);
+    logger.info(
+      "getGitRepoDetails: Extracted username: " +
+        username +
+        " and repoName: " +
+        repoName
+    );
 
     return { username, repoName };
   }
 
-  logger.info("Invalid URL provided")
+  logger.info("Invalid URL provided");
 
   return null;
 }

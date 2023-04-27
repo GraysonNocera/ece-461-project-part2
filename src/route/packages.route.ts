@@ -10,46 +10,43 @@ const express = require("express");
 export const packagesRouter: Router = express.Router();
 
 // Create a package when POST /packages is called
-packagesRouter.post(
-  "/",
-  authorizeUser, 
-  async (req: Request, res: Response) => {
-    logger.info("POST /packages");
+packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
+  logger.info("POST /packages");
 
-    let offset: number;
-    let packages: any[] = [];
-    let verionsToSearch: string[];
-    let arr: PackageQuery[] = [];
-    try {
-      if (typeof req.query?.offset != "string") {
-        offset = 1;
-      } else {
-        offset = parseInt(req.query?.offset) || 1;
+  let offset: number;
+  let packages: any[] = [];
+  let verionsToSearch: string[];
+  let arr: PackageQuery[] = [];
+  try {
+    if (typeof req.query?.offset != "string") {
+      offset = 1;
+    } else {
+      offset = parseInt(req.query?.offset) || 1;
+    }
+
+    logger.info("package offset: " + offset);
+
+    arr = req.body;
+
+    // Manually validate each package query
+    arr.forEach((packageQuery) => {
+      let { error, value } = PackageQueryValidation.validate(packageQuery);
+      if (error) {
+        throw new Error("Invalid package query");
       }
+    });
 
-      logger.info("package offset: " + offset);
+    logger.info("POST /packages: Received " + arr);
 
-      arr = req.body;
-
-      // Manually validate each package query
-      arr.forEach((packageQuery) => {
-        let { error, value } = PackageQueryValidation.validate(packageQuery);
-        if (error) {
-          throw new Error("Invalid package query");
-        }
-      });
-
-      logger.info("POST /packages: Received " + arr)
-
-      await Promise.all(arr.map(async (packageQuery) => {
-
+    await Promise.all(
+      arr.map(async (packageQuery) => {
         verionsToSearch = getVersions(packageQuery.Version || "");
 
         logger.info("Versions to search: " + verionsToSearch);
         logger.info("Name: " + packageQuery.Name);
 
         if (packageQuery.Name == "*") {
-          logger.info("Searching for all packages")
+          logger.info("Searching for all packages");
           packages = await getAllPackages(packages, offset);
           return res.status(200).send(packages);
         }
@@ -66,26 +63,25 @@ packagesRouter.post(
             );
           })
         );
-      }));
+      })
+    );
 
-      logger.info("Packages: " + packages);
-      
-      return res.status(200).send(packages);
-    } catch {
-      // Request body is not valid JSON
-      logger.info("Invalid JSON for POST /packages");
-      return res.status(400).send("Invalid JSON");
-    }
+    logger.info("Packages: " + packages);
+
+    return res.status(200).send(packages);
+  } catch {
+    // Request body is not valid JSON
+    logger.info("Invalid JSON for POST /packages");
+    return res.status(400).send("Invalid JSON");
   }
-);
+});
 
 // Regex to get the version numbers from a string like this:
 // Exact (1.2.3) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
 // Return a list of whatever is in the parentheses
 // The output of this would be ["1.2.3", "1.2.3-2.1.0", "^1.2.3", "~1.2.0"] (include the ^, ~, etc)
 function getVersions(versionString: string): string[] {
-
-  logger.info("Version string: " + versionString)
+  logger.info("Version string: " + versionString);
 
   const regex = /\((.*?)\)/g;
   const matches = versionString.match(regex);
@@ -96,8 +92,7 @@ function getVersions(versionString: string): string[] {
 }
 
 async function getAllPackages(packages: any[], offset: number): Promise<any[]> {
-
-  logger.info("Getting all packages")
+  logger.info("Getting all packages");
 
   // Search the database for all packages
   let results: any[] = await PackageModel.find({})
@@ -116,7 +111,6 @@ async function getPackagesByVersionName(
   packages: any[],
   offset: number
 ): Promise<any[]> {
-  
   // Search the database for all packages
   let results: any[] = await PackageModel.find({
     "metadata.Name": name,
@@ -132,7 +126,6 @@ async function getPackagesByVersionName(
 }
 
 function addResultToPackages(results: any[], packages: any[]): any[] {
-
   if (results.length == 0) {
     return packages;
   }

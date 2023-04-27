@@ -14,7 +14,6 @@ export async function connectToMongo() {
 
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
-
   // Set the following environment variables
   const USERNAME: string = process.env.MONGODB_USERNAME || "";
   const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
@@ -76,7 +75,9 @@ export async function uploadFileToMongo(
       logger.debug("uploadFileToMongo: Error in inserting file: " + error);
     })
     .on("finish", function () {
-      logger.info("uploadFileToMongo: File Inserted into mongo, deleting it locally");
+      logger.info(
+        "uploadFileToMongo: File Inserted into mongo, deleting it locally"
+      );
       deleteBase64File(filePath);
     });
 }
@@ -96,7 +97,9 @@ export async function downloadFileFromMongo(
     .openDownloadStream(id)
     .pipe(fs.createWriteStream(filePath))
     .on("error", function (error) {
-      logger.debug("downloadFileFromMongo: Error in downloading file: " + error);
+      logger.debug(
+        "downloadFileFromMongo: Error in downloading file: " + error
+      );
       callback(null, error);
     })
     .on("finish", function () {

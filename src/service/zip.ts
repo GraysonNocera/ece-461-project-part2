@@ -117,11 +117,13 @@ export async function unzipContent(content: string) {
     let parentDir = "";
     if (folder.endsWith("/")) {
       parentDir = folder;
-      await Promise.all(files.map((file) => {
-        if (!(file.entryName.startsWith(folder))) {
-          parentDir = "";
-        }
-      }));
+      await Promise.all(
+        files.map((file) => {
+          if (!file.entryName.startsWith(folder)) {
+            parentDir = "";
+          }
+        })
+      );
     }
 
     return path.join(basePath, parentDir);
@@ -132,7 +134,9 @@ export async function unzipContent(content: string) {
   }
 }
 
-export async function getInfoFromContent(content: string): Promise<{ package_json: Object, readme: string }> {
+export async function getInfoFromContent(
+  content: string
+): Promise<{ package_json: Object; readme: string }> {
   logger.info("getInfoFromContent: Getting package_json and readme");
 
   let basePath = await unzipContent(content);
@@ -150,18 +154,23 @@ export async function getInfoFromContent(content: string): Promise<{ package_jso
 }
 
 export async function getReadme(basePath: string): Promise<string> {
-  logger.info("getReadme: Getting readme from content base64 string, basePath: " + basePath);
+  logger.info(
+    "getReadme: Getting readme from content base64 string, basePath: " +
+      basePath
+  );
 
   // Search for string case insensitive
   let readme_regex: RegExp = /readme\..+/i;
   let readme_name: string = "";
 
-  let files = await fs.readdir(basePath)
-  await Promise.all(files.map((file) => {
-    if (readme_regex.test(file)) {
-      readme_name = file;
-    }
-  }));
+  let files = await fs.readdir(basePath);
+  await Promise.all(
+    files.map((file) => {
+      if (readme_regex.test(file)) {
+        readme_name = file;
+      }
+    })
+  );
 
   if (!readme_name) {
     logger.debug("getReadme: No readme found");
@@ -210,8 +219,7 @@ async function getPackageJSONObject(package_json_contents: string) {
 }
 
 export async function deleteUnzippedFolder(basePath: string) {
-
-  logger.info("deleteUnzippedFolder: Deleting unzipped folder")
+  logger.info("deleteUnzippedFolder: Deleting unzipped folder");
 
   // Delete the unzipped folder
   if (fsSync.existsSync(basePath)) {
@@ -222,12 +230,11 @@ export async function deleteUnzippedFolder(basePath: string) {
     }
   }
 
-  logger.info("deleteUnzippedFolder: Deleted unzipped folder")
+  logger.info("deleteUnzippedFolder: Deleted unzipped folder");
 }
 
 export async function deleteBase64File(base64FilePath: string) {
-
-  logger.info("deleteBase64File: Deleting base64 file")
+  logger.info("deleteBase64File: Deleting base64 file");
 
   // Delete the base64 file
   if (fsSync.existsSync(base64FilePath)) {
@@ -238,5 +245,5 @@ export async function deleteBase64File(base64FilePath: string) {
     }
   }
 
-  logger.info("deleteBase64File: Deleted base64 file")
+  logger.info("deleteBase64File: Deleted base64 file");
 }
