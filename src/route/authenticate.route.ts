@@ -25,7 +25,7 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     };
     // authToken = { Token: authData.Secret.password };
     if (res.locals.auth) {
-      res.status(200).send(authToken);
+      res.status(200).send(authToken.Token);
     } else {
       res.status(403).send("Authentication Failed");
     }
