@@ -17,7 +17,7 @@ function defineServer() {
 
   logger.info("Starting up the API server...");
 
-  app.use(express.json({limit: '50mb'}));
+  app.use(express.json({ limit: "50mb" }));
   app.use(cors());
   app.use(express.urlencoded({ extended: false }));
 
@@ -36,13 +36,13 @@ function defineServer() {
 }
 
 function startServer(app) {
-
   const port: Number = Number(process.env.PORT || 3000);
 
-  app.listen(port, () => {
+  app = app.listen(port, () => {
     logger.info("API server listening on port 3000");
   });
 
+  return app;
 }
 
 function main() {
@@ -51,7 +51,7 @@ function main() {
 
   // Define and start the server
   let app = defineServer();
-  startServer(app);
+  app = startServer(app);
 }
 
 // Run main conditionally if it is not a module import

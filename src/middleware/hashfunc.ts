@@ -7,7 +7,10 @@ export function hashPassword(password: string): string {
   return hash.digest("hex");
 }
 
-export function verifyPassword(password: string, hashedPassword: string): boolean {
+export function verifyPassword(
+  password: string,
+  hashedPassword: string
+): boolean {
   const hash = hashPassword(password);
   return hash === hashedPassword;
 }

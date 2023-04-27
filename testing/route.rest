@@ -10,11 +10,11 @@ GET http://localhost:3000/
 
 // Upload a package
 POST http://localhost:3000/package
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNjAwNDU1LCJleHAiOjE2ODI2MzY0NTV9.9bCTLJoeuyDt3u40qyFo87PJiJ3DoHMMsdhXpvhRwRg
 Content-Type: application/json
 
 {
-    "URL": "https://www.npmjs.com/package/express",
-    "JSProgram": "console.log('Hello World')"
+    "URL": "https://github.com/davisjam/safe-regex"
 }
 
 ###

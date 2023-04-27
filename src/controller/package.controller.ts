@@ -3,16 +3,27 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { getContentFromUrl } from "../service/zip";
+import {
+  deleteBase64File,
+  deleteUnzippedFolder,
+  getContentFromUrl,
+  getPackageJSON,
+  getReadme,
+} from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
-import { PackageRating, PackageRatingModel, PackageRatingUploadValidation } from "../model/packageRating";
+import {
+  PackageRating,
+  PackageRatingModel,
+  PackageRatingUploadValidation,
+} from "../model/packageRating";
 import { PackageModel } from "../model/package";
-import { getPackageJSON } from "../service/zip";
+import { getInfoFromContent, unzipContent } from "../service/zip";
 import { ratePackage } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
 import fs from "fs";
 import axios from "axios";
+let isGitHubUrl = require("is-github-url");
 
 export const postPackage = async (
   req: Request,
@@ -24,14 +35,18 @@ export const postPackage = async (
   let packageToUpload;
   let rating: PackageRating;
   let package_json: Object = {};
-  let historyEntry;
   let github_url: string;
   let temp: string;
+  let dataFromContent: any = {};
+  let didUploadURL: boolean = false;
+  let basePath: string = ""; // Base path to the unzipped folder
 
   // You must set the metadata before trying to save this
   packageToUpload = new PackageModel({
     data: req?.body,
   });
+  didUploadURL = packageToUpload.data.URL ? true : false;
+  logger.info("postPackage: didUploadURL: " + didUploadURL);
 
   // Package already exists: status 409
   const query = PackageModel.find();
@@ -49,18 +64,27 @@ export const postPackage = async (
   }
 
   // Try to fetch the URL from the package_json
-  if (packageToUpload.data.Content) {
-    package_json = await getPackageJSON(packageToUpload.data.Content);
+  if (!didUploadURL) {
+    basePath = await unzipContent(packageToUpload.data.Content);
+    logger.info("postPackage: basePath: " + basePath);
+
+    package_json = await getPackageJSON(basePath);
     try {
       packageToUpload.data.URL = package_json["homepage"];
       if (!packageToUpload.data.URL) {
         logger.debug("POST /package: Package not uploaded, no homepage field");
+        deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content (could not find url)");
       }
+      logger.info(
+        "postPackage: packageToUpload.data.URL from package_json['hompage']: " +
+          packageToUpload.data.URL
+      );
     } catch (error) {
       logger.debug(
         "POST /package: Package not uploaded, no homepage field or no package.json"
       );
+      deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content");
     }
   }
@@ -74,20 +98,23 @@ export const postPackage = async (
   packageToUpload.metadata = await getMetadata(github_url, package_json);
   if (!packageToUpload.metadata) {
     logger.info("POST /package: Package not uploaded, invalid metadata");
+    deleteUnzippedFolder(basePath);
     return res.status(400).send("Invalid Content or URL");
   }
 
   if (packageToUpload.metadata.Name == "*") {
     logger.info("POST /package: Package not uploaded, invalid name");
+    deleteUnzippedFolder(basePath);
     return res.status(400).send("Invalid Content or URL");
   }
 
   if (await isNameInDb(packageToUpload.metadata.Name)) {
+    deleteUnzippedFolder(basePath);
     return res.status(409).send("Package exists already.");
   }
 
   // Package not updated due to disqualified rating: status 423
-  if (packageToUpload.data.URL) {
+  if (didUploadURL) {
     rating = ratePackage(packageToUpload.data.URL);
 
     // For now, nothing passes this, so I'm commenting it out
@@ -113,15 +140,26 @@ export const postPackage = async (
   );
   let fileName: string = `${packageToUpload.metadata.Name}.txt`;
 
-  if (!packageToUpload.data.Content) {
+  if (didUploadURL) {
     // Use URL to get the Content, also writes Content to a file
     packageToUpload.data.Content = await getContentFromUrl(github_url);
+
+    basePath = await unzipContent(packageToUpload.data.Content);
+    logger.info("POST /package: Got content from URL: " + basePath);
+
     if (!packageToUpload.data.Content) {
       logger.info("POST /package: Package not uploaded, invalid content");
+      deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content or URL");
     }
   } else {
     fs.writeFileSync(filePath, packageToUpload.data.Content);
+  }
+
+  // Get readme
+  packageToUpload.data.Readme = await getReadme(basePath);
+  if (!packageToUpload.data.Readme) {
+    logger.info("POST /package: invalid readme, still uploading");
   }
 
   // Save package
@@ -144,46 +182,55 @@ export const postPackage = async (
 
   packageToUpload.data.Content = temp;
 
-  // We are not fulfilling the additional requirement of traceability
-  // so disregard package history entries
-
   logger.info("POST /package: Package created successfully");
+
+  // Clean up artifacts, we are letting the mongo upload take care of the text file deletion
+  // deleteBase64File(filePath);
+  deleteUnzippedFolder(basePath);
 
   return res.status(201).send(packageToUpload.toObject());
 };
 
 async function getVersionFromURL(url: string, name: string): Promise<string> {
   // API call to get the version of a package from its url and name
-  // :param url: string url
+  // :param url: string url (github url)
   // :param name: string name of package
 
-  // TODO: Could someone who worked closely with the APIs in Part 1 do this part :)
   let apiUrl = "";
-  // chekcing if url is gh or npm
-  if (url.startsWith("https://www.npmjs.com/package/")) {
-    const packageName = url.split("/").pop();
-    try {
-      const npmResponse = await axios.get(
-        `https://registry.npmjs.org/${packageName}`
-      );
-      const repositoryUrl = npmResponse.data.repository.url;
+  // // chekcing if url is gh or npm
+  // if (url.startsWith("https://www.npmjs.com/package/")) {
+  //   const packageName = url.split("/").pop();
+  //   try {
+  //     const npmResponse = await axios.get(
+  //       `https://registry.npmjs.org/${packageName}`
+  //     );
+  //     const repositoryUrl = npmResponse.data.repository.url;
 
-      // maybe check here that the url is *actually* a gh url?
-      apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
-        repositoryUrl.split("/")[4]
-      }/releases`;
-    } catch (error) {
-      logger.debug("Error fetching GitHub URL from npm URL:", error);
-      return "1.0.0"; // default
-    }
-  } else if (url.startsWith("https://github.com/")) {
-    apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
-      url.split("/")[4]
-    }/releases`;
-  } else {
+  //     // maybe check here that the url is *actually* a gh url?
+  //     apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
+  //       repositoryUrl.split("/")[4]
+  //     }/releases`;
+  //   } catch (error) {
+  //     logger.debug("Error fetching GitHub URL from npm URL:", error);
+  //     return "1.0.0"; // default
+  //   }
+  // } else if (url.startsWith("https://github.com/")) {
+  //   apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
+  //     url.split("/")[4]
+  //   }/releases`;
+  // } else {
+  //   logger.info("Invalid URL provided");
+  //   return "1.0.0"; // default
+  // }
+
+  if (!isGitHubUrl(url)) {
     logger.info("Invalid URL provided");
     return "1.0.0"; // default
   }
+
+  apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
+    url.split("/")[4]
+  }/releases`;
 
   try {
     const response = await axios.get(apiUrl);
@@ -191,12 +238,20 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
 
     if (releases.length > 0) {
       const latestRelease = releases[0];
+
+      logger.info(
+        "getVersionFromURL: latest release: ",
+        latestRelease.tag_name
+      );
       return latestRelease.tag_name;
     } else {
+      logger.info(
+        "getVersionFromURL: No releases found, returning 1.0.0 as the version"
+      );
       return "1.0.0"; // default
     }
   } catch (error) {
-    logger.info("Unable to get version from URL: ", error);
+    logger.info("getVersionFromURL: Unable to get version from URL: ", error);
     return "1.0.0"; // default
   }
 }
@@ -240,14 +295,17 @@ async function getMetadata(
   // :param packageData: PackageData
   // :return: PackageMetadata
 
+  logger.info("getMetadata: Getting metadata from package");
+
   let metadata: PackageMetadata = { Name: "", Version: "", ID: "" };
 
   // Add metadata to package
-  // TODO: If Name is "*" we throw error because that's reserved?
   if (package_json && package_json["name"] && package_json["version"]) {
+    logger.info("getMetadata: Getting metadata from package.json");
     metadata.Name = package_json["name"];
     metadata.Version = package_json["version"];
   } else {
+    logger.info("getMetadata: Getting metadata from URL");
     metadata.Name = (await getGitRepoDetails(url || ""))?.repoName || "";
     metadata.Version = await getVersionFromURL(url || "", metadata.Name);
   }
@@ -258,7 +316,12 @@ async function getMetadata(
     return undefined;
   }
 
-  logger.info("Successfully got metadata from package: " + metadata);
+  logger.info(
+    "Successfully got metadata from package: name: " +
+      metadata.Name +
+      " version: " +
+      metadata.Version
+  );
   return metadata;
 }
 

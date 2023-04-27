@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { logger } from "../logging";
 import * as fs from "fs";
 import path from "path";
+import { deleteBase64File } from "../service/zip";
 
 let bucket: mongoose.mongo.GridFSBucket;
 export async function connectToMongo() {
@@ -12,7 +13,6 @@ export async function connectToMongo() {
    */
 
   logger.info("connectToMongo(): Connecting to MongoDB...");
-
 
   // Set the following environment variables
   const USERNAME: string = process.env.MONGODB_USERNAME || "";
@@ -61,10 +61,10 @@ export async function uploadFileToMongo(
   try {
     await bucket.delete(id);
   } catch (err) {
-    logger.debug("No file to delete in mongo");
+    logger.debug("uploadFileToMongo: No file to delete in mongo");
   }
 
-  logger.info("uploadFileToMongo(): Uploading file to MongoDB: " + fileName);
+  logger.info("uploadFileToMongo: Uploading file to MongoDB: " + fileName);
 
   let stream = bucket.openUploadStreamWithId(id, fileName);
   stream.id = id;
@@ -72,15 +72,13 @@ export async function uploadFileToMongo(
   fs.createReadStream(filePath)
     .pipe(stream)
     .on("error", function (error) {
-      logger.debug("Error in inserting file: " + error);
+      logger.debug("uploadFileToMongo: Error in inserting file: " + error);
     })
     .on("finish", function () {
-      logger.info("File Inserted into mongo, deleting it locally");
-      fs.rm(filePath, function (err) {
-        if (err) {
-          logger.debug("Error in deleting file: " + err);
-        }
-      });
+      logger.info(
+        "uploadFileToMongo: File Inserted into mongo, deleting it locally"
+      );
+      deleteBase64File(filePath);
     });
 }
 
@@ -91,7 +89,7 @@ export async function downloadFileFromMongo(
   let content: string;
   let filePath: string;
 
-  logger.info("downloadFileFromMongo(): Downloading file from MongoDB: " + id);
+  logger.info("downloadFileFromMongo: Downloading file from MongoDB: " + id);
 
   filePath = path.join(__dirname, "..", "artifacts", id.toString());
 
@@ -99,19 +97,15 @@ export async function downloadFileFromMongo(
     .openDownloadStream(id)
     .pipe(fs.createWriteStream(filePath))
     .on("error", function (error) {
-      logger.debug("Error in downloading file: " + error);
+      logger.debug(
+        "downloadFileFromMongo: Error in downloading file: " + error
+      );
       callback(null, error);
     })
     .on("finish", function () {
-      logger.info("File Downloaded");
+      logger.info("downloadFileFromMongo: File Downloaded");
       content = fs.readFileSync(filePath, "base64");
-      fs.rm(filePath, function (err) {
-        if (err) {
-          logger.debug("Error in deleting file: " + err);
-          callback(null, err);
-        }
-      });
-
+      deleteBase64File(filePath);
       callback(content, null);
     });
 }
@@ -122,6 +116,6 @@ export async function deleteFileFromMongo(id: mongoose.Types.ObjectId) {
   try {
     await bucket.delete(id);
   } catch (err) {
-    logger.debug("No file to delete in mongo");
+    logger.debug("deleteFileFromMongo: No file to delete in mongo");
   }
 }

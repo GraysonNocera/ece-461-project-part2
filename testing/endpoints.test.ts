@@ -7,7 +7,8 @@ const { defineServer, startServer } = exportedForTestingApp;
 jest.mock("../src/middleware/authorizeUser", () => {
   const originalModule = jest.requireActual("../src/middleware/authorizeUser");
 
-  //Mock the default export and named export 'foo'
+  // Mock the default export and named export authorizeUser
+  // Basically, I'm skipping auth for these tests
   return {
     __esModule: true,
     ...originalModule,
@@ -40,13 +41,16 @@ jest.setTimeout(10 * 60 * 1000);
 
 let baseURL: string = "http://localhost:3000/";
 let token: string;
+let app: any;
 
 beforeAll(() => {
-  let app = defineServer();
-  startServer(app);
+  app = defineServer();
+  app = startServer(app);
 });
 
-afterAll(() => {});
+afterAll(() => {
+  app.close();
+});
 
 beforeEach(async () => {
   await connectToMongo();
