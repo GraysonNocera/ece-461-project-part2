@@ -221,4 +221,22 @@ export async function deleteUnzippedFolder(basePath: string) {
       logger.debug("deleteUnzippedFolder: Error deleting unzipped folder");
     }
   }
+
+  logger.info("deleteUnzippedFolder: Deleted unzipped folder")
+}
+
+export async function deleteBase64File(base64FilePath: string) {
+
+  logger.info("deleteBase64File: Deleting base64 file")
+
+  // Delete the base64 file
+  if (fsSync.existsSync(base64FilePath)) {
+    try {
+      fs.rm(base64FilePath);
+    } catch (err) {
+      logger.debug("deleteBase64File: Error deleting base64 file");
+    }
+  }
+
+  logger.info("deleteBase64File: Deleted base64 file")
 }

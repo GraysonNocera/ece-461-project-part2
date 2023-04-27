@@ -3,7 +3,7 @@ import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
 import { PackageHistoryEntry } from "../model/packageHistoryEntry";
 import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
-import { deleteUnzippedFolder, getContentFromUrl, getPackageJSON, getReadme } from "../service/zip";
+import { deleteBase64File, deleteUnzippedFolder, getContentFromUrl, getPackageJSON, getReadme } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
 import {
   PackageRating,
@@ -70,6 +70,7 @@ export const postPackage = async (
         deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content (could not find url)");
       }
+      logger.info("postPackage: packageToUpload.data.URL from package_json['hompage']: " + packageToUpload.data.URL);
     } catch (error) {
       logger.debug(
         "POST /package: Package not uploaded, no homepage field or no package.json"
@@ -174,15 +175,8 @@ export const postPackage = async (
 
   logger.info("POST /package: Package created successfully");
 
-  // Delete text file
-  if (fs.existsSync(filePath)) {
-    fs.rm(filePath, (err) => {
-      if (err) {
-        logger.error("POST /package: Error deleting file: " + err);
-      }
-    });
-  }
-
+  // Clean up artifacts, we are letting the mongo upload take care of the text file deletion
+  // deleteBase64File(filePath);
   deleteUnzippedFolder(basePath);
 
   return res.status(201).send(packageToUpload.toObject());
@@ -235,12 +229,15 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
 
     if (releases.length > 0) {
       const latestRelease = releases[0];
+
+      logger.info("getVersionFromURL: latest release: ", latestRelease.tag_name);
       return latestRelease.tag_name;
     } else {
+      logger.info("getVersionFromURL: No releases found, returning 1.0.0 as the version");
       return "1.0.0"; // default
     }
   } catch (error) {
-    logger.info("Unable to get version from URL: ", error);
+    logger.info("getVersionFromURL: Unable to get version from URL: ", error);
     return "1.0.0"; // default
   }
 }
@@ -284,13 +281,17 @@ async function getMetadata(
   // :param packageData: PackageData
   // :return: PackageMetadata
 
+  logger.info("getMetadata: Getting metadata from package");
+
   let metadata: PackageMetadata = { Name: "", Version: "", ID: "" };
 
   // Add metadata to package
   if (package_json && package_json["name"] && package_json["version"]) {
+    logger.info("getMetadata: Getting metadata from package.json");
     metadata.Name = package_json["name"];
     metadata.Version = package_json["version"];
   } else {
+    logger.info("getMetadata: Getting metadata from URL");
     metadata.Name = (await getGitRepoDetails(url || ""))?.repoName || "";
     metadata.Version = await getVersionFromURL(url || "", metadata.Name);
   }
@@ -301,7 +302,7 @@ async function getMetadata(
     return undefined;
   }
 
-  logger.info("Successfully got metadata from package: " + metadata);
+  logger.info("Successfully got metadata from package: name: " + metadata.Name + " version: " + metadata.Version);
   return metadata;
 }
 
