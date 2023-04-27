@@ -3,10 +3,7 @@ import { logger } from "../logging";
 import * as cp from "child_process";
 import { readFileSync } from "fs";
 import * as path from "path";
-import {
-  PackageRatingUploadValidation,
-  PackageRatingChokedValidation,
-} from "../model/packageRating";
+import Joi from "joi";
 
 export function ratePackage(url: string): PackageRating {
   logger.info("ratePackage: Running rate script on url " + url + "...");
@@ -21,31 +18,20 @@ export function ratePackage(url: string): PackageRating {
   const packageRate: PackageRating = JSON.parse(test_file);
 
   logger.info("ratePackage: Package received rating " + packageRate.NetScore);
-  logger.info("ratePackage: Package rated successfully");
 
   return packageRate;
 }
 
-export function verifyRating(packageRate: PackageRating): boolean {
-  // There's gotta be a way to do this is one line with joi
+export function verify(schema: Joi.Schema, object: object) {
+  // Verify that object meets schema requirements
 
-  const { error, value } = PackageRatingUploadValidation.validate(packageRate);
+  logger.info("verify: Verifying object against schema...");
+
+  const { error, value } = schema.validate(object);
   if (error) {
-    logger.debug(
-      "verifyRating: Package does not meet qualifications for upload."
-    );
+    logger.debug("verify: Object does not meet schema requirements.");
     return false;
   }
 
-  logger.info("verifyRating: Package meets qualifications for upload.");
   return true;
-}
-
-export function didChokeOnRating(rating: PackageRating): Number {
-  // Check if package choked on rating
-  // :param rating: PackageRating
-  // :return: Number
-
-  const { error, value } = PackageRatingChokedValidation.validate(rating);
-  return error ? 1 : 0;
 }
