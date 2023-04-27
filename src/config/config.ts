@@ -13,6 +13,7 @@ export async function connectToMongo() {
 
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
+
   // Set the following environment variables
   const USERNAME: string = process.env.MONGODB_USERNAME || "";
   const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
