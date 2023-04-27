@@ -95,41 +95,51 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
 export async function unzipContent(content: string) {
   logger.info("unzipContent: Unzipping content");
 
-  const buffer = Buffer.from(content, "base64");
-  const zip = new AdmZip(buffer);
-  let basePath = path.join(__dirname, "..", "artifacts", "unzipped");
+  try {
+    const buffer = Buffer.from(content, "base64");
+    const zip = new AdmZip(buffer);
+    let basePath = path.join(__dirname, "..", "artifacts", "unzipped");
 
-  // Keeping this just as an example
-  // let zipEntries = zip.getEntries();
-  // This folder contains all of the things
-  // let folder = zipEntries[0].entryName;
-  // zipEntries.forEach((zipEntry) => {
-  //   console.log(zipEntry.entryName);
-  // });
-  // let certain_file = zip.readAsText(zipEntries[1].entryName);
-  // console.log(certain_file)
+    // Keeping this just as an example
+    // let zipEntries = zip.getEntries();
+    // This folder contains all of the things
+    // let folder = zipEntries[0].entryName;
+    // zipEntries.forEach((zipEntry) => {
+    //   console.log(zipEntry.entryName);
+    // });
+    // let certain_file = zip.readAsText(zipEntries[1].entryName);
+    // console.log(certain_file)
 
-  await zip.extractAllTo(basePath, true);
+    await zip.extractAllTo(basePath, true);
 
-  let files = zip.getEntries();
-  let folder = files[0].entryName;
-  let parentDir = "";
-  if (folder.endsWith("/")) {
-    parentDir = folder;
-    await Promise.all(files.map((file) => {
-      if (!(file.entryName.startsWith(folder))) {
-        parentDir = "";
-      }
-    }));
+    let files = zip.getEntries();
+    let folder = files[0].entryName;
+    let parentDir = "";
+    if (folder.endsWith("/")) {
+      parentDir = folder;
+      await Promise.all(files.map((file) => {
+        if (!(file.entryName.startsWith(folder))) {
+          parentDir = "";
+        }
+      }));
+    }
+
+    return path.join(basePath, parentDir);
+  } catch (err) {
+    logger.error("unzipContent: Error unzipping content");
+    logger.error(err);
+    return "";
   }
-
-  return path.join(basePath, parentDir);
 }
 
 export async function getInfoFromContent(content: string): Promise<{ package_json: Object, readme: string }> {
   logger.info("getInfoFromContent: Getting package_json and readme");
 
   let basePath = await unzipContent(content);
+  if (!basePath) {
+    logger.debug("getInfoFromContent: Could not get base path");
+    return { package_json: {}, readme: "" };
+  }
 
   let package_json = await getPackageJSON(basePath);
   let readme = await getReadme(basePath);
