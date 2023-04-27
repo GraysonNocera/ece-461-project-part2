@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { logger } from "../logging";
 import * as fs from "fs";
 import path from "path";
+import { deleteBase64File } from "../service/zip";
 
 let bucket: mongoose.mongo.GridFSBucket;
 export async function connectToMongo() {
@@ -76,11 +77,7 @@ export async function uploadFileToMongo(
     })
     .on("finish", function () {
       logger.info("uploadFileToMongo: File Inserted into mongo, deleting it locally");
-      fs.rm(filePath, function (err) {
-        if (err) {
-          logger.debug("uploadFileToMongo: Error in deleting file: " + err);
-        }
-      });
+      deleteBase64File(filePath);
     });
 }
 
@@ -105,13 +102,7 @@ export async function downloadFileFromMongo(
     .on("finish", function () {
       logger.info("downloadFileFromMongo: File Downloaded");
       content = fs.readFileSync(filePath, "base64");
-      fs.rm(filePath, function (err) {
-        if (err) {
-          logger.debug("downloadFileFromMongo: Error in deleting file: " + err);
-          callback(null, err);
-        }
-      });
-
+      deleteBase64File(filePath);
       callback(content, null);
     });
 }
