@@ -37,6 +37,11 @@ jobs:
         run: |
           chmod +x ./run
           ./run build
+          
+      - name: Set MongoDB env vars
+        env:
+          MONGODB_USERNAME: brian
+          MONGODB_PASSWORD: 64ba20XbTNElNJPw
 
       - name: Start API
         run: |
