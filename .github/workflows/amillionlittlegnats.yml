@@ -40,7 +40,7 @@ jobs:
 
       - name: Start API
         run: |
-          npx ts-node app.ts
+          npx ts-node src/app.ts
 
       - name: Comprehensive API Endpoint Tests
         run: npm test -- --verbose --testPathPattern=testing/comprehensiveendpoints.test.ts
