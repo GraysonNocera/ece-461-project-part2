@@ -99,7 +99,7 @@ packageRouter.get(
       ratingToSave = new PackageRatingModel(rating);
       ratingToSave._id = packageToRate._id;
 
-      logger.info("GET /package/:id/rate: Saving rating");
+      logger.info("GET /package/:id/rate: Saving rating: " + ratingToSave);
       await ratingToSave.save();
 
       return res.status(200).send(rating);
@@ -149,6 +149,8 @@ packageRouter.get(
       logger.info("Downloaded content");
 
       package_received.data.Content = content;
+
+      logger.info("Returning package: " + package_received?.toObject());
       return res.status(200).send(package_received.toObject());
     });
   }
@@ -227,6 +229,8 @@ packageRouter.put(
         logger.info("PUT /package/:id: Saving package");
 
         package_received.save();
+
+        logger.info("PUT /package/:id: Saved package: " + package_received.toObject());
 
         // If status is 200, ok. Send 404 if package doesn't exist.
         return res.status(200).send(package_received.toObject());
@@ -344,7 +348,7 @@ packageRouter.post(
 
       // If status is 200, ok. Send 404 if package doesn't exist.
       if (packages.length > 0) {
-        logger.info("Sending return_data");
+        logger.info("Sending return_data: " + return_data);
         return res.status(200).send(return_data);
       } else {
         logger.info("Sending 404, no packaged found");

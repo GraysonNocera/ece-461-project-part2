@@ -18,7 +18,7 @@ import {
 } from "../model/packageRating";
 import { PackageModel } from "../model/package";
 import { getInfoFromContent, unzipContent } from "../service/zip";
-import { ratePackage } from "../service/rate";
+import { ratePackage, verify } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
 import fs from "fs";
@@ -45,6 +45,11 @@ export const postPackage = async (
   packageToUpload = new PackageModel({
     data: req?.body,
   });
+  if (packageToUpload.data.Content && packageToUpload.data.URL) {
+    logger.info("postPackage: Package has both Content and URL");
+    return res.status(400).send("Invalid request data");
+  }
+
   didUploadURL = packageToUpload.data.URL ? true : false;
   logger.info("postPackage: didUploadURL: " + didUploadURL);
 
@@ -117,14 +122,16 @@ export const postPackage = async (
   if (didUploadURL) {
     rating = ratePackage(packageToUpload.data.URL);
 
+    logger.info("POST /package: verifying rating");
+
     // For now, nothing passes this, so I'm commenting it out
-    // if (!verify(PackageRatingUploadValidation, rating)) {
-    //   logger.info("POST /package: Package not uploaded, disqualified rating");
-    //   res
-    //     .status(424)
-    //     .send("Package is not uploaded due to the disqualified rating.");
-    //   return;
-    // }
+    if (!verify(PackageRatingUploadValidation, rating)) {
+      logger.info("POST /package: Package not uploaded, disqualified rating");
+      res
+        .status(424)
+        .send("Package is not uploaded due to the disqualified rating.");
+      return;
+    }
 
     // Save rating
     let rateEntry = new PackageRatingModel(rating);
@@ -269,20 +276,6 @@ function buildHistoryEntry(
   historyEntry.Date = new Date().toISOString();
   historyEntry.PackageMetadata = metadata;
   historyEntry.Action = action;
-
-  // Assign user that performed action
-  // TODO: Koltan :) how do we know the user that uploaded this?
-  // historyEntry.User = {
-  //   name: "test",
-  //   isAdmin: true,
-  // }
-  // historyEntry.User = {
-  //   name: "test",
-  //   isAdmin: true,
-  //   isUpload: true,
-  //   isSearch: true,
-  //   isDownload: true,
-  // };
 
   return historyEntry;
 }
