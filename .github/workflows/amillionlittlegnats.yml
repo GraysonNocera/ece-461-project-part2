@@ -42,6 +42,7 @@ jobs:
         env:
           MONGODB_USERNAME: brian
           MONGODB_PASSWORD: 64ba20XbTNElNJPw
+        run: echo Environment variables for MongoDB set.
 
       - name: Start API
         run: |
