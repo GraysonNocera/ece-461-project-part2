@@ -45,8 +45,12 @@ export const postPackage = async (
   packageToUpload = new PackageModel({
     data: req?.body,
   });
+  
   if (packageToUpload.data.Content && packageToUpload.data.URL) {
     logger.info("postPackage: Package has both Content and URL");
+    return res.status(400).send("Invalid request data");
+  } else if (!packageToUpload.data.Content && !packageToUpload.data.URL) {
+    logger.info("postPackage: Package has neither Content nor URL");
     return res.status(400).send("Invalid request data");
   }
 
