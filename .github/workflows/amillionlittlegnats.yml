@@ -40,8 +40,7 @@ jobs:
 
       - name: Start API
         run: |
-          tsc --project tsconfig.json
-          node dist/app.js &
+          ts-node app.ts
 
       - name: Comprehensive API Endpoint Tests
         run: npm test -- --verbose --testPathPattern=testing/comprehensiveendpoints.test.ts
