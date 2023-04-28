@@ -65,13 +65,8 @@ packageRouter.get(
     try {
       id = req?.params?.id;
 
-      if (!isNaN(Number(id))) {
-        if (id != new mongoose.Types.ObjectId(id).toString()) {
-          logger.debug("DELETE /package/:id: Invalid package ID + " + id);
-          return res.status(400).send("Invalid package ID");
-        }
-      } else {
-        logger.debug("DELETE /package/:id: Invalid package ID + " + id);
+      if (!mongoose.isObjectIdOrHexString(id)) {
+        logger.debug("GET /package/:id/rate: Invalid package ID + " + id);
         return res.status(400).send("Invalid package ID");
       }
 
@@ -127,13 +122,8 @@ packageRouter.get(
     let package_received: any;
 
     // Ensure valid ID
-    if (!isNaN(Number(id))) {
-      if (id != new mongoose.Types.ObjectId(id).toString()) {
-        logger.debug("DELETE /package/:id: Invalid package ID + " + id);
-        return res.status(400).send("Invalid package ID");
-      }
-    } else {
-      logger.debug("DELETE /package/:id: Invalid package ID + " + id);
+    if (!mongoose.isObjectIdOrHexString(id)) {
+      logger.debug("GET /package/:id: Invalid package ID + " + id);
       return res.status(400).send("Invalid package ID");
     }
 
@@ -175,7 +165,12 @@ packageRouter.put(
     let auth: string;
     let packageInfo: Package;
     try {
-      id = req.params.id;
+      id = req?.params?.id;
+
+      if (!mongoose.isObjectIdOrHexString(id)) {
+        logger.debug("PUT /package/:id: Invalid package ID + " + id);
+        return res.status(400).send("Invalid package ID");
+      }
 
       packageInfo = req.body; // Get user-inputted package details
 
@@ -260,13 +255,7 @@ packageRouter.delete(
     logger.info("DELETE /package/:id: Deleting package " + id);
 
     // Ensure valid ID
-    //console.log(id)
-    if (!isNaN(Number(id))) {
-      if (id != new mongoose.Types.ObjectId(id).toString()) {
-        logger.debug("DELETE /package/:id: Invalid package ID + " + id);
-        return res.status(400).send("Invalid package ID");
-      }
-    } else {
+    if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("DELETE /package/:id: Invalid package ID + " + id);
       return res.status(400).send("Invalid package ID");
     }
