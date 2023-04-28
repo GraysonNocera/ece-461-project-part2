@@ -1,2 +1,9 @@
-/src
-/testing
+/src/angular_autogen
+/src/artifacts
+/src/config
+/src/controller
+/src/middleware
+/src/model
+/src/rate
+/src/route
+/src/service
