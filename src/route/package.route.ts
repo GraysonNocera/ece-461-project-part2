@@ -11,7 +11,7 @@ import { Package, PackageModel } from "../model/package";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
 import { deleteFileFromMongo, uploadFileToMongo } from "../config/config";
-import mongoose, { isValidObjectId } from "mongoose";
+import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
 import express from "express";
 import path from "path";
