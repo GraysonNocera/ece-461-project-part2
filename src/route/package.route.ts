@@ -11,7 +11,7 @@ import { Package, PackageModel } from "../model/package";
 import { postPackage } from "../controller/package.controller";
 import { Validate } from "../middleware/validate";
 import { deleteFileFromMongo, uploadFileToMongo } from "../config/config";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
 import express from "express";
 import path from "path";
@@ -65,7 +65,7 @@ packageRouter.get(
     try {
       id = req?.params?.id;
 
-      if (id != new mongoose.Types.ObjectId(id).toString()) {
+      if (!mongoose.isObjectIdOrHexString(id)) {
         logger.debug("GET /package/:id/rate: Invalid package ID + " + id);
         return res.status(400).send("Invalid package ID");
       }
@@ -122,7 +122,7 @@ packageRouter.get(
     let package_received: any;
 
     // Ensure valid ID
-    if (id != new mongoose.Types.ObjectId(id).toString()) {
+    if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("GET /package/:id: Invalid package ID + " + id);
       return res.status(400).send("Invalid package ID");
     }
@@ -167,7 +167,7 @@ packageRouter.put(
     try {
       id = req?.params?.id;
 
-      if (id != new mongoose.Types.ObjectId(id).toString()) {
+      if (!mongoose.isObjectIdOrHexString(id)) {
         logger.debug("PUT /package/:id: Invalid package ID + " + id);
         return res.status(400).send("Invalid package ID");
       }
@@ -255,7 +255,7 @@ packageRouter.delete(
     logger.info("DELETE /package/:id: Deleting package " + id);
 
     // Ensure valid ID
-    if (id != new mongoose.Types.ObjectId(id).toString()) {
+    if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("DELETE /package/:id: Invalid package ID + " + id);
       return res.status(400).send("Invalid package ID");
     }
