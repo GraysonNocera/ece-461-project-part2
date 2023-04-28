@@ -12,7 +12,7 @@ export class PostsComponent {
 
   newPost = '';
   isLoggedIn = false;
-  apiUrl = 'http://localhost:3000/';
+  apiUrl = 'http://35.223.191.75:3000/';
 
   addPost(postInput: HTMLTextAreaElement) {
     const authToken = localStorage.getItem('jwtToken_461_API');

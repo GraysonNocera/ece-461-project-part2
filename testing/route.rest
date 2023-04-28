@@ -59,7 +59,7 @@ GET http://localhost:3000/package/64422070fee64a16e1e96956/rate
 ###
 
 DELETE http://localhost:3000/reset
-X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihB4oCZ4oCdYDtEUk9QIFRBQkxFcGFja2FnZXM7In19LCJpYXQiOjE2ODIzMTIxNDIsImV4cCI6MTY4MjM0ODE0Mn0.H3ojLoM5NT9K2rqdyHKYK6Cvt1qItwapcYxa13nZq04
+X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfdXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVybW9tIn19LCJpYXQiOjE2ODI0NTYwMzIsImV4cCI6MTY4MjQ5MjAzMn0.6Uxwgjia9JpqT9veZMMWv_loOdG_Ywcqz7D23W6g8lU
 
 GET http://localhost:3000/package/5
 X-Authorization: ur dad
@@ -104,52 +104,52 @@ PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
 {
-      "User": {
-        "name": "ece30861defaultadminuser",
-        "isAdmin": true,
-        "isUpload": true,
-        "isDownload": true,
-        "isSearch": true
-      },
-      "Secret": {
-        "password": "correcthorsebatterystaple123(!__+@**(A’”`;DROP TABLEpackages;"
-      }
+  "User": {
+    "name": "ece30861defaultadminuser",
+    "isAdmin": true,
+    "isSearch" : true,
+    "isDownload" : true, 
+    "isUpload" : true
+  },
+  "Secret": {
+    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"
+  }
 }
 
 ###
 
 POST http://localhost:3000/user
-X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihB4oCZ4oCdYDtEUk9QIFRBQkxFcGFja2FnZXM7In19LCJpYXQiOjE2ODIzMTIxNDIsImV4cCI6MTY4MjM0ODE0Mn0.H3ojLoM5NT9K2rqdyHKYK6Cvt1qItwapcYxa13nZq04
+X-Authorization:bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNDYzMjE5LCJleHAiOjE2ODI0OTkyMTl9.ubD_KydMsYdfFhBHJxVD-jJ7mjqKZUsuLulAY0wY_lc
 Content-Type: application/json
 
 {
-      "User": {
-        "name": "test_user",
-        "isAdmin": true,
-        "isUpload": true,
-        "isDownload": true,
-        "isSearch": true
-      },
-      "Secret": {
-        "password": "urmom"
-      }
+  "User": {
+    "name": "test",
+    "isAdmin": true,
+    "isSearch" : true,
+    "isDownload" : true, 
+    "isUpload" : true
+  },
+  "Secret": {
+    "password": "ur_mom"
+  }
 }
 
 ###
 
 DELETE http://localhost:3000/user
-X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3QgbmFtZSIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjpmYWxzZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOmZhbHNlfSwiU2VjcmV0Ijp7InBhc3N3b3JkIjoidXIgbW9tIn19LCJpYXQiOjE2ODE2MTk3NDQsImV4cCI6MTY4MTY1NTc0NH0.brIJG9rX2V2WuVzOP7w_8IX_od8cu2unMNPACNpneog
+X-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNDYzMjE5LCJleHAiOjE2ODI0OTkyMTl9.ubD_KydMsYdfFhBHJxVD-jJ7mjqKZUsuLulAY0wY_lc
 Content-Type: application/json
 
 {
-        "User": {
-        "name": "ur_mom",
-        "isAdmin": true,
-        "isUpload": false,
-        "isDownload": true, 
-        "isSearch": false
-    },
-    "Secret": {
-        "password": "ece"
-    }
+ "User": {
+    "name": "test",
+    "isAdmin": true,
+    "isSearch" : true,
+    "isDownload" : true, 
+    "isUpload" : true
+  },
+  "Secret": {
+    "password": "ur_mom"
+  }
 }

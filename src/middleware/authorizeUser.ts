@@ -6,8 +6,7 @@ import { User } from "../model/user";
 import mongoose from "mongoose";
 const jwt = require("jsonwebtoken");
 import { ProfileModel } from "../model/user";
-import { verifyPassword } from "../route/hashfunc";
-
+import { verifyPassword } from "./hashfunc";
 export const authorizeUser = async (
   req: Request,
   res: Response,
@@ -30,7 +29,8 @@ export const authorizeUser = async (
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";
   logger.info("authorizeUser: Auth received " + auth);
-  logger.info(auth);
+  auth = auth.replace("bearer ", "");
+  auth = auth.replace("Bearer ", "");
   res.locals.auth = false;
   try {
     if (auth) {
