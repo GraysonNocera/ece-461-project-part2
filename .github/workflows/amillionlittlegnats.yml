@@ -42,7 +42,8 @@ jobs:
           MONGODB_PASSWORD: 64ba20XbTNElNJPw
         run: |
           echo Environment variables for MongoDB set. Username is $MONGODB_USERNAME
-          npx ts-node src/app.ts & 
+          PORT=$(npx ts-node src/app.ts 2>&1 | grep "Listening on port" | awk '{print $4}')
+          echo "API is running on port $PORT"
 
       - name: Comprehensive API Endpoint Tests
         run: npm test -- --verbose --testPathPattern=testing/comprehensiveendpoints.test.ts
