@@ -530,14 +530,14 @@ paths:
                 $ref: '#/components/schemas/AuthenticationRequest'
         required: true 
       responses: 
-       "200":
-          description: 'Account successfully created'
-       "400":
-          description: 'You don't have proper permissions to add an account'
+        "200":
+          description: Account successfully created
+        "400":
+          description: You don't have proper permissions to add an account
       operationId: user
       summary: Add a new user
     delete: 
-     requestBody: 
+      requestBody: 
         content: 
           application/json: 
             schema: 
@@ -546,10 +546,10 @@ paths:
                 $ref: '#/components/schemas/AuthenticationRequest'
         required: true 
       responses: 
-       "200":
-          description: 'User profile successfuly deleted'
-       "400":
-          description: 'You don't have the proper permissions to delete this account'
+        "200":
+          description: User profile successfuly deleted
+        "400":
+          description: You don't have the proper permissions to delete this account
       operationId: user
       summary: Add a new user
     parameters:
