@@ -38,15 +38,13 @@ jobs:
           chmod +x ./run
           ./run build
           
-      - name: Set MongoDB env vars
+      - name: Set MongoDB Env Vars and Start API
         env:
           MONGODB_USERNAME: brian
           MONGODB_PASSWORD: 64ba20XbTNElNJPw
-        run: echo Environment variables for MongoDB set. Username is $MONGODB_USERNAME
-
-      - name: Start API
         run: |
-          npx ts-node src/app.ts
+          echo Environment variables for MongoDB set. Username is $MONGODB_USERNAME
+          npx ts-node src/app.ts          
 
       - name: Comprehensive API Endpoint Tests
         run: npm test -- --verbose --testPathPattern=testing/comprehensiveendpoints.test.ts
