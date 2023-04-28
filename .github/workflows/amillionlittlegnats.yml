@@ -36,6 +36,8 @@ jobs:
       - name: Build
         run: |
           chmod +x ./run
+          echo "Contents of dist directory:"
+          ls -al dist
           ./run build
           ./run testing/part1test.txt
           
