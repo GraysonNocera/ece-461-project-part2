@@ -53,6 +53,6 @@ export const PackageDataModel = mongoose.model<PackageData>(
 export const PackageDataUploadValidation = Joi.object({
   Content: Joi.string().allow(null).allow(""),
   URL: Joi.string().allow(null).allow(""),
-  JSProgram: Joi.string(),
+  JSProgram: Joi.string().allow(null).allow(""),
   Readme: Joi.string(),
 }).or("Content", "URL");
