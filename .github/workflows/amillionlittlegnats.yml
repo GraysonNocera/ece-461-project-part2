@@ -25,11 +25,6 @@ jobs:
           npm install --save-dev ts-jest @types/jest @angular/router typescript@4.5.4
           npm install axios ts-node @types/axios @types/node winston @types/winston --save
 
-      - name: Install cloc
-        run: |
-          sudo apt-get update
-          sudo apt-get install cloc -y
-
       - name: Linter
         run: npm run lint
 
