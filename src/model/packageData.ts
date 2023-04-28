@@ -30,6 +30,9 @@ export interface PackageData {
    * A JavaScript program (for use with sensitive modules).
    */
   JSProgram?: string;
+
+  // First 150 words of the README
+  Readme?: string;
 }
 
 export const PackageDataSchema: mongoose.Schema<PackageData> =
@@ -37,6 +40,7 @@ export const PackageDataSchema: mongoose.Schema<PackageData> =
     Content: { type: String, required: false },
     URL: { type: String, required: false },
     JSProgram: { type: String, required: false },
+    Readme: { type: String, required: false },
   });
 
 PackageDataSchema.set("toObject", { transform });
@@ -50,4 +54,5 @@ export const PackageDataUploadValidation = Joi.object({
   Content: Joi.string(),
   URL: Joi.string(),
   JSProgram: Joi.string(),
+  Readme: Joi.string(),
 }).xor("Content", "URL");

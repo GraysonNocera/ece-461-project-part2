@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { logger } from "../logging";
 import * as fs from "fs";
 import path from "path";
+import { deleteBase64File } from "../service/zip";
 
 let bucket: mongoose.mongo.GridFSBucket;
 export async function connectToMongo() {
@@ -13,9 +14,9 @@ export async function connectToMongo() {
 
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
-    // Set the following environment variables
-    const USERNAME: string = process.env.MONGODB_USERNAME || "";
-    const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
+  // Set the following environment variables
+  const USERNAME: string = process.env.MONGODB_USERNAME || "";
+  const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
 
   // Keep this as "database"
   // We connect to the database, which will hold a bunch of collections
@@ -27,7 +28,7 @@ export async function connectToMongo() {
   await mongoose.connect(uri);
 
   //creating bucket
-  var db = mongoose.connections[0].db;
+  let db = mongoose.connections[0].db;
   bucket = new mongoose.mongo.GridFSBucket(db, {
     bucketName: "Content",
   });
@@ -49,26 +50,35 @@ export async function disconnectFromMongo() {
 
 export async function uploadFileToMongo(
   filePath: string,
-  fileName: string,
   id: mongoose.Types.ObjectId
 ) {
-  logger.info("uploadFileToMongo(): Uploading file to MongoDB: " + fileName);
+  // Uploads a file to MongoDB, assumes there is a txt file at filePath
+  // It removes the file aftewards
 
-  let stream = bucket.openUploadStream(fileName);
+  let fileName: string = path.basename(filePath);
+
+  // If this is PUT /package, the package already exists, so we must delete it
+  try {
+    await bucket.delete(id);
+  } catch (err) {
+    logger.debug("uploadFileToMongo: No file to delete in mongo");
+  }
+
+  logger.info("uploadFileToMongo: Uploading file to MongoDB: " + fileName);
+
+  let stream = bucket.openUploadStreamWithId(id, fileName);
   stream.id = id;
 
   fs.createReadStream(filePath)
     .pipe(stream)
     .on("error", function (error) {
-      logger.debug("Error in inserting file: " + error);
+      logger.debug("uploadFileToMongo: Error in inserting file: " + error);
     })
     .on("finish", function () {
-      logger.info("File Inserted into mongo, deleting it locally");
-      fs.rm(filePath, function (err) {
-        if (err) {
-          logger.debug("Error in deleting file: " + err);
-        }
-      });
+      logger.info(
+        "uploadFileToMongo: File Inserted into mongo, deleting it locally"
+      );
+      deleteBase64File(filePath);
     });
 }
 
@@ -79,25 +89,23 @@ export async function downloadFileFromMongo(
   let content: string;
   let filePath: string;
 
+  logger.info("downloadFileFromMongo: Downloading file from MongoDB: " + id);
+
   filePath = path.join(__dirname, "..", "artifacts", id.toString());
 
   bucket
     .openDownloadStream(id)
     .pipe(fs.createWriteStream(filePath))
     .on("error", function (error) {
-      logger.debug("Error in downloading file: " + error);
+      logger.debug(
+        "downloadFileFromMongo: Error in downloading file: " + error
+      );
       callback(null, error);
     })
     .on("finish", function () {
-      logger.info("File Downloaded");
+      logger.info("downloadFileFromMongo: File Downloaded");
       content = fs.readFileSync(filePath, "base64");
-      fs.rm(filePath, function (err) {
-        if (err) {
-          logger.debug("Error in deleting file: " + err);
-          callback(null, err);
-        }
-      });
-
+      deleteBase64File(filePath);
       callback(content, null);
     });
 }
@@ -105,5 +113,9 @@ export async function downloadFileFromMongo(
 export async function deleteFileFromMongo(id: mongoose.Types.ObjectId) {
   logger.info("deleteFileFromMongo(): Deleting file from MongoDB: " + id);
 
-  bucket.delete(id);
+  try {
+    await bucket.delete(id);
+  } catch (err) {
+    logger.debug("deleteFileFromMongo: No file to delete in mongo");
+  }
 }

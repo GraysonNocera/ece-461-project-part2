@@ -25,8 +25,18 @@ export async function getGitRepoDetails(
   if (match) {
     let repoName = match[2];
     let username = match[1];
+
+    logger.info(
+      "getGitRepoDetails: Extracted username: " +
+        username +
+        " and repoName: " +
+        repoName
+    );
+
     return { username, repoName };
   }
+
+  logger.info("Invalid URL provided");
 
   return null;
 }
@@ -34,6 +44,8 @@ export async function npm_2_git(npmUrl: string): Promise<string> {
   // Takes a NPM package URL and returns the GitHub URL
   // :param npmUrl: npm URL provided by text file
   // :return: Promise of corresponding GitHub url string
+
+  logger.info("Converting npm link (" + npmUrl + ") to GitHub link...");
 
   // extract the package name from the npm URL
   const packageName = npmUrl.split("/").pop();
@@ -60,7 +72,7 @@ export async function npm_2_git(npmUrl: string): Promise<string> {
       if (new_url.startsWith("git+ssh://git@github.com")) {
         new_url = new_url.replace(
           "git+ssh://git@github.com",
-          "git://github.com"
+          "https://github.com"
         );
 
         logger.info("Converted npm link to " + new_url);
@@ -69,7 +81,8 @@ export async function npm_2_git(npmUrl: string): Promise<string> {
       }
       // check if repository is on github
       if (isGitHubUrl(packageInfo.repository.url)) {
-        return packageInfo.repository.url.replace("git+https", "git");
+        logger.info("Converted npm link to " + packageInfo.repository.url);
+        return packageInfo.repository.url.replace("git+https", "https");
       } else {
         logger.debug(`Repository of package: ${packageName} is not on GitHub`);
         return Promise.resolve("");

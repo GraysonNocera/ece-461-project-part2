@@ -9,7 +9,7 @@ dist/**
 
 package-lock.json
 .DS_Store
-*.log
+# *.log
 
 # Some bug in Grayson's OS or something not sure
 **/*2*

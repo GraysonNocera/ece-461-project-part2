@@ -73,16 +73,17 @@ export const authorizeUser = async (
               }
               res.locals.auth = true;
               res.locals.username = test.data.User.name;
-              next();
               logger.info("auth success");
+              next();
             }
           }
         }
         if (match != 1) {
+          logger.debug("auth failed");
           return res.status(400).send("Invalid Token");
         }
       } catch (error) {
-        logger.debug(error);
+        logger.debug("authorizeUser: error: " + error);
         return res.status(400).send("Invalid Token");
       }
     } else if (req.body.User && req.body.Secret) {
@@ -127,13 +128,28 @@ export const authorizeUser = async (
           res.locals.auth = true;
           match = 1;
           res.locals.username = req.body.User.name;
+          logger.info("authorizeUser: auth success");
           next();
         }
       }
       if (match != 1) {
+        logger.debug("authorizeUser: Invalid user name or passwords");
+        if (req.body.User.name != data?.User.name) {
+          logger.debug(
+            `authorizeUser: Invalid user name, ${req.body.User.name} != ${data?.User.name}`
+          );
+        }
+        if (req.body.Secret.password != data?.Secret.password) {
+          logger.debug(
+            `authorizeUser: Invalid password, ${req.body.Secret.password} != ${data?.Secret.password}`
+          );
+        }
         return res.status(401).send("Invalid user name or passwords");
       }
     } else {
+      logger.debug(
+        "authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly"
+      );
       return res
         .status(400)
         .send(
@@ -141,8 +157,8 @@ export const authorizeUser = async (
         );
     }
   } catch (error) {
-    logger.info(error);
-    return;
+    logger.debug("authorizeUser: error: " + error);
+    return res.status(400).send("Invalid Token");
   }
 
   //next();

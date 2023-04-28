@@ -8,16 +8,18 @@ GET http://localhost:3000/
 
 ###
 
+// Upload a package
 POST http://localhost:3000/package
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNjAwNDU1LCJleHAiOjE2ODI2MzY0NTV9.9bCTLJoeuyDt3u40qyFo87PJiJ3DoHMMsdhXpvhRwRg
 Content-Type: application/json
 
 {
-    "URL": "https://www.npmjs.com/package/react",
-    "JSProgram": "console.log('Hello World')"
+    "URL": "https://github.com/davisjam/safe-regex"
 }
 
 ###
 
+// Authenicate a user
 PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
@@ -36,36 +38,55 @@ Content-Type: application/json
 
 ###
 
+// THESE ARE NOT PART OF THE BASELINE SO ARE BEING IGNORED
 GET http://localhost:3000/package/byName/testName
 
 ###
 
+// THESE ARE NOT PART OF THE BASELINE SO ARE BEING IGNORED
 DELETE http://localhost:3000/package/byName/testName
 
 ###
 
+// Search through database for pacakages fitting a query
 POST http://localhost:3000/packages
 Content-Type: application/json
 
-{
-    "Name": "express",
-    "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
-}
+[
+    {
+        "Name": "express",
+        "Version": "Exact (4.4.4)"
+    },
+    {
+        "Name": "express",
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+    },
+    {
+        "Name": "react",
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+    }
+]
 
 ###
 
+// Rate a pckage
 GET http://localhost:3000/package/64422070fee64a16e1e96956/rate
 
 ###
 
+// Reset registry to its default state
 DELETE http://localhost:3000/reset
 X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6InRlc3RfdXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6InVybW9tIn19LCJpYXQiOjE2ODI0NTYwMzIsImV4cCI6MTY4MjQ5MjAzMn0.6Uxwgjia9JpqT9veZMMWv_loOdG_Ywcqz7D23W6g8lU
 
-GET http://localhost:3000/package/5
-X-Authorization: ur dad
+###
+
+// Get package by ID
+GET http://localhost:3000/package/6444b32de2ad5457d16b647e
+X-Authorization:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MjI4MTUyNiwiZXhwIjoxNjgyMzE3NTI2fQ.w6Rs9wmZtZ7XhJsrQUiGNBLyJui9mSPhlevfV-nyLJ8
 
 ###
 
+// Update content of a package
 PUT http://localhost:3000/package/5
 X-Authorization: ur dad
 Content-Type: application/json
@@ -85,11 +106,13 @@ Content-Type: application/json
 
 ###
 
+// Delete a package by ID
 DELETE http://localhost:3000/package/643adfae80c2fd3135350df5
 X-Authorization: ur brotha
 
 ###
 
+// Search a package by Regex
 POST http://localhost:3000/package/byRegEx
 X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTQ2MWRlZmF1bHRhZG1pbnVzZXIiLCJpc0FkbWluIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZSwiaXNEb3dubG9hZCI6dHJ1ZSwiaXNTZWFyY2giOnRydWV9LCJTZWNyZXQiOnsicGFzc3dvcmQiOiJjb3JyZWN0aG9yc2ViYXR0ZXJ5c3RhcGxlMTIzKCFfXytAKiooQeKAmeKAnWA7RFJPUCBUQUJMRSBwYWNrYWdlczsifX0sImlhdCI6MTY4MTk0MDA3MywiZXhwIjoxNjgxOTc2MDczfQ.N_C0orTu8KKDSFJp_r8C8qaGxEJ4QrCuoOYnyaYtOQg
 Content-Type: application/json
@@ -100,6 +123,7 @@ Content-Type: application/json
 
 ###
 
+// Authenticate a user
 PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
@@ -118,6 +142,7 @@ Content-Type: application/json
 
 ###
 
+// Create a user
 POST http://localhost:3000/user
 X-Authorization:bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNDYzMjE5LCJleHAiOjE2ODI0OTkyMTl9.ubD_KydMsYdfFhBHJxVD-jJ7mjqKZUsuLulAY0wY_lc
 Content-Type: application/json
@@ -137,6 +162,7 @@ Content-Type: application/json
 
 ###
 
+// Delete a user
 DELETE http://localhost:3000/user
 X-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyNDYzMjE5LCJleHAiOjE2ODI0OTkyMTl9.ubD_KydMsYdfFhBHJxVD-jJ7mjqKZUsuLulAY0wY_lc
 Content-Type: application/json
