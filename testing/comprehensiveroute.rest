@@ -1,17 +1,36 @@
 // *******************
-// 1
+// 1 done
 // POST /packages - Get the packages from the registry.
 
 // Test successful request
 POST http://localhost:3000/packages
 Content-Type: application/json
 
-{}
+[
+    {
+        "Name": "express",
+        "Version": "Exact (4.4.4)"
+    },
+    {
+        "Name": "express",
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+    },
+    {
+        "Name": "react",
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+    }
+]
 // Expect: 200 - List of packages
 
 // Test missing or invalid request body
 POST http://localhost:3000/packages
 Content-Type: application/json
+
+[
+    {
+
+    }
+]
 
 // Expect: 400 - There is missing field(s) in the PackageQuery/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
 
@@ -37,7 +56,7 @@ X-Authorization: bearer <valid_token>
 
 // Test missing or invalid token
 DELETE http://localhost:3000/reset
-X-Authorization: bearer <invalid_token>
+X-Authorization: bearer 123456789
 
 // Expect: 401 - ou do not have permission to reset the registry.
 
@@ -54,7 +73,7 @@ X-Authorization: bearer
 
 
 // *******************
-// 3
+// 3 done
 // GET /package/{id} - Interact with the package with this ID
 
 // Test existing package ID
@@ -63,7 +82,7 @@ GET http://localhost:3000/package/<replaceherelol>
 // Expect: 200 - Return the package. Content is required.
 
 // Test non-existing package ID
-GET http://localhost:3000/package/<replaceherelol>
+GET http://localhost:3000/package/123456789
 
 // Expect: 404 - Package does not exist.
 
@@ -73,7 +92,7 @@ GET http://localhost:3000/package/
 // Expect: 400 - There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
 
 // *******************
-// 4
+// 4 done
 // PUT /package/{id} - Update this content of the package.
 
 // Test updating an existing package
@@ -101,14 +120,14 @@ Content-Type: application/json
 
 {
     "metadata": {
-        "Name": "",
-        "Version": "",
-        "ID": ""
+        "Name": "test_package",
+        "Version": "1.0.0",
+        "ID": "1234"
     },
     "data": {
-        "Content": "",
-        "URL": "",
-        "JSProgram": ""
+        "Content": "test",
+        "URL": "test",
+        "JSProgram": "test"
     }
 }
 
@@ -120,14 +139,13 @@ Content-Type: application/json
 
 {
     "metadata": {
-        "Name": "",
-        "Version": "",
-        "ID": ""
+        "Name": "test_package",
+        "Version": "1.0.0"
     },
     "data": {
-        "Content": "",
-        "URL": "",
-        "JSProgram": ""
+        "Content": "test",
+        "URL": "test",
+        "JSProgram": "test"
     }
 }
 
@@ -135,7 +153,7 @@ Content-Type: application/json
 
 
 // *******************
-// 5
+// 5 done
 // DELETE /package/{id} - Delete this version of the package.
 
 // Test deleting an existing package
@@ -155,7 +173,7 @@ DELETE http://localhost:3000/package/
 
 
 // *******************
-// 6
+// 6 done
 // POST /package
 
 // Test uploading a new package
@@ -207,7 +225,7 @@ Content-Type: application/json
 
 
 // *******************
-// 7
+// 7done
 // GET /package/{id}/rate
 
 // Test rating a package
@@ -216,7 +234,7 @@ GET http://localhost:3000/package/<replaceherelol>/rate
 // Expect: 200 - Return the rating. Only use this if each metric was computed successfully.
 
 // Test rating a package with missing fields
-GET http://localhost:3000/package/invalid-id/rate
+GET http://localhost:3000/package/rate
 
 // Expect: 400 - There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid.
 
@@ -232,7 +250,7 @@ GET http://localhost:3000/package/
 // Expect: 500 - The package rating system choked on at least one of the metrics.
 
 // *******************
-// 8
+// 8 done
 // PUT /authenticate
 
 // Test authenticating a user
@@ -241,14 +259,14 @@ Content-Type: application/json
 
 {
     "User": {
-        "name": "test_user",
+        "name": "ece30861defaultadminuser",
         "isAdmin": true,
         "isUpload": true,
         "isDownload": true,
         "isSearch": true
     },
     "Secret": {
-        "password": "urmom"
+        "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"
     }
 }
 
@@ -260,7 +278,7 @@ Content-Type: application/json
 
 {
     "User": {
-        "name": "test_user"
+        "name": "ece30861defaultadminuser"
     }
 }
 
@@ -272,7 +290,7 @@ Content-Type: application/json
 
 {
     "User": {
-        "name": "test_user",
+        "name": "ece30861defaultadminuser",
         "isAdmin": true
     },
     "Secret": {
@@ -289,25 +307,25 @@ Content-Type: application/xml
 
 {
     "User": {
-        "name": "test_user",
+        "name": "ece30861defaultadminuser",
         "isAdmin": true,
         "isUpload": true,
         "isDownload": true,
         "isSearch": true
     },
     "Secret": {
-        "password": "boo"
+        "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"
     }
 }
 
 // Expect: 501 - This system does not support authentication.
 
 // *******************
-// 9
+// 9done
 // GET /package/byName/{name}
 
 // Test getting a package by name
-GET http://localhost:3000/package/byName/testName
+GET http://localhost:3000/package/byName/express
 
 // Expect: 200 - Return the package history.
 
@@ -341,7 +359,7 @@ DELETE http://localhost:3000/package/byName/nonExistingPackage
 // Expect: 404 - Package does not exist.
 
 // *******************
-// 11
+// 11 done
 // POST /package/byRegEx - Get any packages fitting the regular expression.
 
 // Test searching for packages fitting a regular expression

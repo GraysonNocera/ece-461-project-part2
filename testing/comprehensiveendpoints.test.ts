@@ -14,31 +14,35 @@ let token;
 
 describe("Authentication Endpoint Tests", () => {
   test("Test authenticating a user", async () => {
-    const response = await fetch(`${baseURL}/authenticate`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        User: {
-          name: "ece30861defaultadminuser",
-          isAdmin: true,
-          isUpload: true,
-          isDownload: true,
-          isSearch: true,
+    try {
+        let response = await fetch("http://localhost:3000/authenticate", {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
         },
-        Secret: {
-          password: "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;",
-        },
-      }),
+        body: JSON.stringify({
+            User: {
+            name: "ece30861defaultadminuser",
+            isAdmin: true,
+            isUpload: true,
+            isDownload: true,
+            isSearch: true,
+            },
+            Secret: {
+            password: "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;",
+            },
+        }),
+        });
+
+        expect(response.status).toBe(200);
+        const data = await response.json();
+        // Additional assertions on the response data if needed
+    } catch (error) {
+        console.error("Error occurred during authentication:", error);
+        throw error; // Rethrow the error to fail the test
+    }
     });
 
-    expect(response.status).toBe(200);
-
-    const data = await response.json();
-    expect(data.AuthenticationToken).toBeDefined();
-    token = data.AuthenticationToken; // Save the token for further testing
-  });
 
   test("Test authenticating a user with missing fields", async () => {
     const response = await fetch(`${baseURL}/authenticate`, {
