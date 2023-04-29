@@ -190,15 +190,20 @@ export async function getPackageJSON(basePath: string): Promise<Object> {
 
   logger.info("getPackageJSON: Getting url from content base64 string");
 
-  let package_json_path: string = path.join(basePath, "package.json");
-  let package_json_contents: string = await fs.readFile(
-    package_json_path,
-    "utf8"
-  );
+  try {
+    let package_json_path: string = path.join(basePath, "package.json");
+    let package_json_contents: string = await fs.readFile(
+      package_json_path,
+      "utf8"
+    );
 
-  let package_json_object = await getPackageJSONObject(package_json_contents);
+    let package_json_object = await getPackageJSONObject(package_json_contents);
 
-  return package_json_object;
+    return package_json_object;
+  } catch (err) {
+    logger.debug("getPackageJSON: Could not get package.json");
+    return {};
+  }
 }
 
 async function getPackageJSONObject(package_json_contents: string) {
