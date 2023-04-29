@@ -15,8 +15,8 @@ export async function connectToMongo() {
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
   // Set the following environment variables
-  const USERNAME: string = process.env.MONGODB_USERNAME || "";
-  const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
+  const USERNAME: string = process.env.MONGODB_USERNAME || "brian";
+  const PASSWORD: string = process.env.MONGODB_PASSWORD || "64ba20XbTNElNJPw";
 
   // Keep this as "database"
   // We connect to the database, which will hold a bunch of collections
