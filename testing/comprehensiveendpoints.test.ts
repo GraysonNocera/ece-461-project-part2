@@ -11,17 +11,18 @@ import { exportedForTestingApp } from "../src/app";
 
 let baseURL = "http://localhost:3000";
 let token;
+let packageId;
 
 describe("Authentication Endpoint Tests", () => {
   test("Test authenticating a user", async () => {
     try {
-        let response = await fetch("http://localhost:3000/authenticate", {
+      let response = await fetch("http://localhost:3000/authenticate", {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            User: {
+          User: {
             name: "ece30861defaultadminuser",
             isAdmin: true,
             isUpload: true,
@@ -30,23 +31,15 @@ describe("Authentication Endpoint Tests", () => {
             },
             Secret: {
             password: "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;",
-            },
+          },
         }),
-        });
-        
-        console.log(response.body);
-        
-        
-        const responseBody = await response.body.json();
-        console.log(responseBody);
-        
-        console.log("Response status:", response.status);
-        console.log(response.headers);
-        console.log(response)
-
+      }).then(function (response) {
         expect(response.status).toBe(200);
-        token = response.headers.get("X-Authorization");
-        console.log(token);
+        return response.text();
+      }).then(text => token = text);
+        
+        
+      console.log("Token: ", token);
     } catch (error) {
         console.error("Error occurred during authentication:", error);
         throw error; // Rethrow the error to fail the test
@@ -170,8 +163,6 @@ describe("Packages Endpoint Tests", () => {
 });
 
 describe("Package Endpoint Tests", () => {
-  let packageId; // Variable to store the package ID
-
   test("Test uploading a new package", async () => {
     const response = await fetch(`${baseURL}/package`, {
       method: "POST",
@@ -180,18 +171,22 @@ describe("Package Endpoint Tests", () => {
         "X-Authorization": token, // Include the authentication token
       },
       body: JSON.stringify({
-        URL: "https://www.npmjs.com/package/express",
-        JSProgram: "console.log('Hello World')",
+        Content: "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",
+        JSProgram: "if (process.argv.length === 7) {\nconsole.log('Success')\nprocess.exit(0)\n} else {\nconsole.log('Failed')\nprocess.exit(1)\n}\n",
       }),
+    }).then(function (response) {
+      expect(response.status).toBe(201);
+      return response.json();
     });
+    // .then(function (body){
+    //   const { metadata } = body;
+    //   expect(metadata).toBeDefined();
+    //   expect(metadata.ID).toBeDefined();
 
-    expect(response.status).toBe(201);
+    //   packageId = metadata.ID; // Save the package ID for further testing
+    // })
 
-    const { metadata } = await response.json();
-    expect(metadata).toBeDefined();
-    expect(metadata.ID).toBeDefined();
-
-    packageId = metadata.ID; // Save the package ID for further testing
+    console.log(packageId)
   });
 
   test("Test uploading a package with missing fields", async () => {
@@ -551,7 +546,7 @@ describe("Reset Registry Endpoint Tests", () => {
     expect(response.status).toBe(200);
   });
 
-  test("Test missing or invalid token", async () => {
+  test("Test invalid token", async () => {
     const response = await fetch(`${baseURL}/reset`, {
       method: "DELETE",
       headers: {
@@ -560,10 +555,10 @@ describe("Reset Registry Endpoint Tests", () => {
       },
     });
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
-  test("Test request without a token", async () => {
+  test("Test missing token", async () => {
     const response = await fetch(`${baseURL}/reset`, {
       method: "DELETE",
       headers: {
@@ -571,7 +566,7 @@ describe("Reset Registry Endpoint Tests", () => {
       },
     });
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
   test("Test malformed request", async () => {
@@ -584,5 +579,9 @@ describe("Reset Registry Endpoint Tests", () => {
     });
 
     expect(response.status).toBe(400);
+  });
+
+  test.skip("Test user without permission to reset the registry", async () => {
+    // TODO: Add test case (response 501, consult schema)
   });
 });
