@@ -34,9 +34,9 @@ describe("Authentication Endpoint Tests", () => {
         }),
         });
         console.log("Response status:", response.status);
-        console.log("Response data:", data);
         expect(response.status).toBe(200);
-        const data = await response.json();
+        token = await response.json();
+        console.log("Response data:", token);
         // Additional assertions on the response data if needed
     } catch (error) {
         console.error("Error occurred during authentication:", error);
