@@ -519,6 +519,48 @@ paths:
         $ref: '#/components/schemas/AuthenticationToken'
       in: header
       required: true
+  /user: 
+    post: 
+      requestBody: 
+        content: 
+          application/json: 
+            schema: 
+              type: array
+              items:
+                $ref: '#/components/schemas/AuthenticationRequest'
+        required: true 
+      responses: 
+        "200":
+          description: Account successfully created
+        "400":
+          description: You don't have proper permissions to add an account
+      operationId: user
+      summary: Add a new user
+    delete: 
+      requestBody: 
+        content: 
+          application/json: 
+            schema: 
+              type: array
+              items:
+                $ref: '#/components/schemas/AuthenticationRequest'
+        required: true 
+      responses: 
+        "200":
+          description: User profile successfuly deleted
+        "400":
+          description: You don't have the proper permissions to delete this account
+      operationId: user
+      summary: Add a new user
+    parameters:
+        name: X-Authorization
+        description: ""
+        schema:
+            $ref: '#/components/schemas/AuthenticationToken'
+        in: header
+        required: true
+    
+
 components:
   schemas:
     Package:
@@ -583,6 +625,9 @@ components:
       required:
       - name
       - isAdmin
+      - isUpload
+      - isDownload
+      - isSearch
       type: object
       properties:
         name:
@@ -591,6 +636,15 @@ components:
           example: Alfalfa
         isAdmin:
           description: Is this user an admin?
+          type: boolean
+        isUpload: 
+          description: Is this user allowed to upload? 
+          type: boolean
+        isDownload: 
+          description: Is this user allowed to Download?
+          type: boolean
+        isSearch: 
+          description: Is this user allowed to Search? 
           type: boolean
     UserAuthenticationInfo:
       description: Authentication info for a user

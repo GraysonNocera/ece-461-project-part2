@@ -25,16 +25,16 @@ PUT http://localhost:3000/authenticate
 Content-Type: application/json
 
 {
-    "User": {
-        "name": "test name",
-        "isAdmin": true,
-        "isUpload": true,
-        "isDownload": true, 
-        "isSearch": true
-    },
-    "Secret": {
-        "password": "ur mom"
-    }
+  "User": {
+    "name": "ece30861defaultadminuser",
+    "isAdmin": true,
+    "isSearch" : true,
+    "isDownload" : true, 
+    "isUpload" : true
+  },
+  "Secret": {
+    "password": "correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"
+  }
 }
 
 ###
