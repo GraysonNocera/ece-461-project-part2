@@ -34,9 +34,11 @@ describe("Authentication Endpoint Tests", () => {
         }),
         });
         
+        console.log(response);
+        
         
         const responseBody = await response.json();
-        console.log(responseBody)
+        console.log(responseBody);
         
         console.log("Response status:", response.status);
         console.log(response.headers);
