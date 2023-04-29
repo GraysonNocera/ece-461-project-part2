@@ -43,6 +43,7 @@ jobs:
         run: |
           echo Environment variables for MongoDB set. Username is $MONGODB_USERNAME
           npx ts-node src/app.ts &
+          sleep 10
 
       - name: Comprehensive API Endpoint Tests
         run: npm test -- --verbose --testPathPattern=testing/comprehensiveendpoints.test.ts
