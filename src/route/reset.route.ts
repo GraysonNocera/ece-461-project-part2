@@ -37,6 +37,8 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       await ProfileModel.deleteMany({});
       await PackageRatingModel.deleteMany({});
       await defaultuser.save();
+
+      logger.info("Registry is reset");
       return res.status(200).send("Registry is reset");
     }
 

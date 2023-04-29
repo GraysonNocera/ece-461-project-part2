@@ -65,7 +65,7 @@ packageRouter.get(
     try {
       id = req?.params?.id;
 
-      if (id != new mongoose.Types.ObjectId(id).toString()) {
+      if (!mongoose.isObjectIdOrHexString(id)) {
         logger.debug("GET /package/:id/rate: Invalid package ID + " + id);
         return res.status(400).send("Invalid package ID");
       }
@@ -99,7 +99,7 @@ packageRouter.get(
       ratingToSave = new PackageRatingModel(rating);
       ratingToSave._id = packageToRate._id;
 
-      logger.info("GET /package/:id/rate: Saving rating");
+      logger.info("GET /package/:id/rate: Saving rating: " + ratingToSave);
       await ratingToSave.save();
 
       return res.status(200).send(rating);
@@ -122,7 +122,7 @@ packageRouter.get(
     let package_received: any;
 
     // Ensure valid ID
-    if (id != new mongoose.Types.ObjectId(id).toString()) {
+    if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("GET /package/:id: Invalid package ID + " + id);
       return res.status(400).send("Invalid package ID");
     }
@@ -149,6 +149,8 @@ packageRouter.get(
       logger.info("Downloaded content");
 
       package_received.data.Content = content;
+
+      logger.info("Returning package: " + package_received?.toObject());
       return res.status(200).send(package_received.toObject());
     });
   }
@@ -165,7 +167,12 @@ packageRouter.put(
     let auth: string;
     let packageInfo: Package;
     try {
-      id = req.params.id;
+      id = req?.params?.id;
+
+      if (!mongoose.isObjectIdOrHexString(id)) {
+        logger.debug("PUT /package/:id: Invalid package ID + " + id);
+        return res.status(400).send("Invalid package ID");
+      }
 
       packageInfo = req.body; // Get user-inputted package details
 
@@ -223,6 +230,8 @@ packageRouter.put(
 
         package_received.save();
 
+        logger.info("PUT /package/:id: Saved package: " + package_received.toObject());
+
         // If status is 200, ok. Send 404 if package doesn't exist.
         return res.status(200).send(package_received.toObject());
       } catch (error) {
@@ -250,7 +259,7 @@ packageRouter.delete(
     logger.info("DELETE /package/:id: Deleting package " + id);
 
     // Ensure valid ID
-    if (id != new mongoose.Types.ObjectId(id).toString()) {
+    if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("DELETE /package/:id: Invalid package ID + " + id);
       return res.status(400).send("Invalid package ID");
     }
@@ -339,7 +348,7 @@ packageRouter.post(
 
       // If status is 200, ok. Send 404 if package doesn't exist.
       if (packages.length > 0) {
-        logger.info("Sending return_data");
+        logger.info("Sending return_data: " + return_data);
         return res.status(200).send(return_data);
       } else {
         logger.info("Sending 404, no packaged found");

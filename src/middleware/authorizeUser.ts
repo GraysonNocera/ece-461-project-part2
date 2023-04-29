@@ -25,6 +25,7 @@ export const authorizeUser = async (
   // data2.save();
   // Authentication failed: status 403
   // req.body.authorized = false;
+  logger.info("req" + JSON.stringify(req.body));
   let match: Number = 0;
   logger.info("authorizeUser: Authorizing user...");
   let auth: string = req.header("X-Authorization") || "";

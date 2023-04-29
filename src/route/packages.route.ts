@@ -111,6 +111,8 @@ async function getPackagesByVersionName(
   packages: any[],
   offset: number
 ): Promise<any[]> {
+  logger.info("Getting packages by version and name: " + version + " " + name);
+
   // Search the database for all packages
   let results: any[] = await PackageModel.find({
     "metadata.Name": name,
