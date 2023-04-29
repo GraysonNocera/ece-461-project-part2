@@ -4,7 +4,8 @@
   "main": "run",
   "scripts": {
     "lint": "eslint --fix --ext .ts src --ignore-path .eslintignore",
-    "test": "jest"
+    "test": "jest",
+    "clear-logs": "rm log.log"
   },
   "dependencies": {
     "@angular/common": "^15.2.5",
