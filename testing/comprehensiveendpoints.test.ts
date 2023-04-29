@@ -43,7 +43,8 @@ describe("Authentication Endpoint Tests", () => {
         console.log(response)
 
         expect(response.status).toBe(200);
-        token = await response.json();
+        token = response.headers.get("X-Authorization");
+        console.log(token);
     } catch (error) {
         console.error("Error occurred during authentication:", error);
         throw error; // Rethrow the error to fail the test
