@@ -34,6 +34,7 @@ describe("Authentication Endpoint Tests", () => {
         }),
         });
         console.log("Response status:", response.status);
+        console.log(response)
         console.log(response.headers);
         //console.log(response.headers[“X-Authorization”]);
         expect(response.status).toBe(200);
