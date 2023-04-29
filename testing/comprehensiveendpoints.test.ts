@@ -36,11 +36,14 @@ describe("Authentication Endpoint Tests", () => {
         console.log("Response status:", response.status);
         console.log(response)
         console.log(response.headers);
-        console.log(JSON.parse(await response.json()));
-        //console.log(response.headers[“X-Authorization”]);
+        
+        const responseBody = await response.text();
+        const token = JSON.parse(responseBody);
+        console.log("Token:", token);
+
         expect(response.status).toBe(200);
-        token = await response.json();
-        console.log("Response data:", token);
+        //token = await response.json();
+        //console.log("Response data:", token);
         // Additional assertions on the response data if needed
     } catch (error) {
         console.error("Error occurred during authentication:", error);
