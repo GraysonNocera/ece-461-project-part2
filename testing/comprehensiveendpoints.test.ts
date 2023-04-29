@@ -36,7 +36,7 @@ describe("Authentication Endpoint Tests", () => {
         console.log("Response status:", response.status);
         //console.log(response);
         //console.log(response.headers);
-        console.log(response.json());
+        console.log(await response.json());
         expect(response.status).toBe(200);
         token = await response.json();
         console.log("Response data:", token);
