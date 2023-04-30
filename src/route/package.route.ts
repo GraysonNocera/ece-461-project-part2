@@ -152,7 +152,7 @@ packageRouter.get(
       package_received.data.Content = content;
 
       logger.info("Returning package: " + package_received?.toObject());
-      return res.status(200).send(package_received.toObject());
+      return res.status(200).send(package_received.toObject({ remove: "URL" }));
     });
   }
 );
