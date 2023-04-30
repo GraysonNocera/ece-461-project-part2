@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import { PackageModel } from "../model/package";
 import { ProfileModel } from "../model/user";
 import { PackageRatingModel } from "../model/packageRating";
+import { deleteAllFilesFromMongo } from "../config/config";
 const express = require("express");
 
 export const resetRouter: Router = express.Router();
@@ -36,6 +37,7 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       await PackageModel.deleteMany({});
       await ProfileModel.deleteMany({});
       await PackageRatingModel.deleteMany({});
+      deleteAllFilesFromMongo();
       await defaultuser.save();
 
       logger.info("Registry is reset");
