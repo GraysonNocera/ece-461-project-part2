@@ -233,7 +233,7 @@ packageRouter.put(
         logger.info("PUT /package/:id: Saved package: " + package_received.toObject());
 
         // If status is 200, ok. Send 404 if package doesn't exist.
-        return res.status(200).send(package_received.toObject());
+        return res.status(200).send();
       } catch (error) {
         logger.debug("PUT /package/:id: " + error);
         return res.status(404).send("Invalid JSON");
