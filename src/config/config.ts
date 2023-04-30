@@ -66,21 +66,26 @@ export async function uploadFileToMongo(
   }
 
   logger.info("uploadFileToMongo: Uploading file to MongoDB: " + fileName);
+  try {
+    let stream = bucket.openUploadStreamWithId(id, fileName);
+    logger.debug(stream);
+    stream.id = id;
 
-  let stream = bucket.openUploadStreamWithId(id, fileName);
-  stream.id = id;
+    fs.createReadStream(filePath)
+      .pipe(stream)
+      .on("error", function (error) {
+        logger.debug("uploadFileToMongo: Error in inserting file: " + error);
+      })
+      .on("finish", function () {
+        logger.info(
+          "uploadFileToMongo: File Inserted into mongo, deleting it locally"
+        );
+        deleteBase64File(filePath);
+      });
+  } catch (error) {
+    logger.debug("error:" + error);
+  }
 
-  fs.createReadStream(filePath)
-    .pipe(stream)
-    .on("error", function (error) {
-      logger.debug("uploadFileToMongo: Error in inserting file: " + error);
-    })
-    .on("finish", function () {
-      logger.info(
-        "uploadFileToMongo: File Inserted into mongo, deleting it locally"
-      );
-      deleteBase64File(filePath);
-    });
 }
 
 */

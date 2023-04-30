@@ -144,6 +144,7 @@ async function main() {
         logger.error(error);
       }
       try {
+        logger.info("Rate: Getting pinned metric...")
         await runPythonScript("get_pinned", user, repo);
         //function for getting version pinned dependencies
         const path = require("path");
@@ -163,11 +164,16 @@ async function main() {
         output = output + " " + temp;
 
         netscore += Math.min(temp, 1) * 0.1;
+
+        logger.info("Rate: got pinned metric of " + temp + " for " + repo + "and netscore is " + netscore);
       } catch (error) {
         logger.error(error);
       }
 
       try {
+
+        logger.info("Rate: Getting percentage of comments...")
+
         // await runPythonScript("get_downloads", user, repo);
         // logger.log(`${result}`);
         let repo_2: string = repo;
@@ -198,6 +204,8 @@ async function main() {
           percent = parseFloat(data.split("\n")[0]);
           output = output + " " + Math.min(1, percent / 100 + 0.33);
           netscore += Math.min(1, percent / 100 + 0.33) * 0.2;
+
+          logger.info("Rate: got percentage of comments (ramp up) score of " + Math.min(1, percent / 100 + 0.33) + " with a percentage of " + percent + " and net score of " + netscore);
         } catch (err) {
           logger.error(err);
         }
@@ -205,6 +213,7 @@ async function main() {
         logger.error(error);
       }
       try {
+        logger.info("Rate: Getting issues metric (correctness)...")
         await runPythonScript("get_issues", user, repo);
         // logger.log(`${result}`);
         const path = require("path");
@@ -226,11 +235,14 @@ async function main() {
         output = output + " " + temp;
         // netscore += temp * 0.2;
         netscore = Math.min(temp, 1) * 0.2;
+
+        logger.info("Rate: Got issues (correctness) metric of " + temp + " and netscore of " + netscore);
       } catch (error) {
         logger.error(error);
       }
 
       try {
+        logger.info("Rate: Getting contributors metric (bus factor)...")
         await runPythonScript("get_contributors", user, repo);
         // logger.log(`${result}`);
         const path = require("path");
@@ -255,12 +267,13 @@ async function main() {
         // netscore += temp * 0.15;
 
         // logger.log((forks*2).toString());
+        logger.info("Rate: Got contributors (bus factor) metric of " + temp + " and netscore of " + netscore);
       } catch (error) {
         logger.error(error);
       }
 
       try {
-        logger.info("Getting forks of the repo...")
+        logger.info("Rate: Getting forks (responsiveness) of the repo...")
         await runPythonScript("get_forks", user, repo);
         // logger.log(`${result}`);
         const path = require("path");
@@ -282,6 +295,7 @@ async function main() {
         output = output + " " + temp;
         // netscore += temp * 0.1;
         netscore += Math.min(temp, 1) * 0.1;
+        logger.info("Rate: Got forks metric of " + Math.min(temp, 1) + "netscore is now " + netscore);
       } catch (error) {
         logger.error(error);
       }
@@ -301,7 +315,7 @@ async function main() {
         output = output + " " + Number(license);
         // netscore += Number(license) * 0.2;
 
-        logger.info("Rate: Got license score " + Number(license))
+        logger.info("Rate: Got license score " + Number(license) + ", netscore is now " + netscore);
         netscore = Math.min(Number(license), 1) * 0.2;
       } catch (error) {
         logger.error(error);
@@ -335,9 +349,8 @@ async function main() {
       } catch (error) {
         logger.error(error);
       }
-      // logger.log(URL + " " + netscore.toString() + output)
-      logger.info("Rate: " + netscore.toString() + " " + output);
-      netscore = Math.round(netscore * 100) / 100;
+      // console.log(URL + " " + netscore.toString() + output)
+      netscore = Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
     } else {
@@ -347,8 +360,7 @@ async function main() {
       outputStrings.push(
         URL + ": -1, Can only accept github URLs or npm URLs."
       );
-      netscore = Math.round(netscore * 100) / 100;
-      logger.info("Rate: " + netscore.toString() + " " + output);
+      netscore = Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
     }
