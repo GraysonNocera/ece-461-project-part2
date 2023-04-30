@@ -83,7 +83,6 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
 // Return a list of the version numbers
 // The output of this would be ["1.2.3", "1.2.3-2.1.0", "^1.2.3", "~1.2.0"] (include the ^, ~, etc)
 
-/*
 function getVersions(versionString: string): string[] {
   logger.info("Version string: " + versionString);
 
@@ -93,25 +92,6 @@ function getVersions(versionString: string): string[] {
     return [];
   }
   return matches.map((match) => match.slice(1, -1));
-}
-*/
-
-function getVersions(versionString: string): string[] {
-  logger.info("Version string: " + versionString);
-
-  const regex = /((?:~|\^)?\d+\.\d+\.\d+)(?:-(\d+\.\d+\.\d+))?/;
-  const matches = versionString.match(regex);
-  if (matches === null) {
-    return [];
-  }
-  const versions = [];
-  if (matches[1]) {
-    versions.push(matches[1]);
-  }
-  if (matches[2]) {
-    versions.push(matches[2]);
-  }
-  return versions;
 }
 
 
