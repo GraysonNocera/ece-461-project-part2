@@ -74,7 +74,7 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /packages");
-    return res.status(400).send("Invalid JSON");
+    return res.status(400).send("Invalid Request Body");
   }
 });
 
@@ -86,11 +86,16 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
 function getVersions(versionString: string): string[] {
   logger.info("Version string: " + versionString);
 
-  const regex = /((?:~|\^)?\d+\.\d+\.\d+(?:-\d+\.\d+\.\d+)*)/;
-  const matches = versionString.match(regex);
+  const regex = /^(~|\^)?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+  var matches = versionString.match(regex);
   if (matches === null) {
-    return [];
+    const bounded_version_regex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
+    matches = versionString.match(bounded_version_regex);
+    if (matches === null) {
+      return [];
+    }
   }
+
   return matches.map((match) => match.slice(1, -1));
 }
 
