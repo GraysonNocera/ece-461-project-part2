@@ -68,7 +68,7 @@ packageRouter.get(
 
       if (!mongoose.isObjectIdOrHexString(id)) {
         logger.debug("GET /package/:id/rate: Invalid package ID + " + id);
-        return res.status(400).send("Invalid package ID");
+        return res.status(404).send("No package found");
       }
 
       packageToRate = await PackageModel.findOne({ _id: id }).exec();
@@ -125,7 +125,7 @@ packageRouter.get(
     // Ensure valid ID
     if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("GET /package/:id: Invalid package ID + " + id);
-      return res.status(400).send("Invalid package ID");
+      return res.status(404).send("No package found");
     }
 
     // Search the database for this package
@@ -172,7 +172,7 @@ packageRouter.put(
 
       if (!mongoose.isObjectIdOrHexString(id)) {
         logger.debug("PUT /package/:id: Invalid package ID + " + id);
-        return res.status(400).send("Invalid package ID");
+        return res.status(404).send("No package found");
       }
 
       packageInfo = req.body; // Get user-inputted package details
@@ -272,7 +272,7 @@ packageRouter.delete(
     // Ensure valid ID
     if (!mongoose.isObjectIdOrHexString(id)) {
       logger.debug("DELETE /package/:id: Invalid package ID + " + id);
-      return res.status(400).send("Invalid package ID");
+      return res.status(404).send("No package found");
     }
 
     const query = PackageModel.where({
