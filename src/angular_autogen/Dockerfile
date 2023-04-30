@@ -8,13 +8,15 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install && npm install ts-node -g
+RUN npm install
+RUN npm install -g @angular/cli
 
 # Copy application code
 COPY . .
 
 # Expose port
-EXPOSE 3000
+EXPOSE $PORT
+EXPOSE 4200
 
-# Start API backend
-CMD ["bash", "-c", "ts-node src/app.ts"]
+# Start Angular frontend
+CMD ["ng", "serve", "--host 0.0.0.0", "--disable-host-check true", "--port $PORT"]
