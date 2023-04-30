@@ -15,8 +15,8 @@ export async function connectToMongo() {
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
   // Set the following environment variables
-  const USERNAME: string = process.env.MONGODB_USERNAME || "";
-  const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
+  const USERNAME: string = process.env.MONGODB_USERNAME || "brian";
+  const PASSWORD: string = process.env.MONGODB_PASSWORD || "64ba20XbTNElNJPw";
 
   // Keep this as "database"
   // We connect to the database, which will hold a bunch of collections
@@ -123,4 +123,16 @@ export async function deleteFileFromMongo(id: mongoose.Types.ObjectId) {
   } catch (err) {
     logger.debug("deleteFileFromMongo: No file to delete in mongo");
   }
+}
+
+export async function deleteAllFilesFromMongo() {
+  await connectToMongo();
+
+  logger.info("deleteAllFilesFromMongo(): Deleting all files from MongoDB");
+
+  (await bucket.find({}).toArray()).forEach((file) => {
+    bucket.delete(file._id);
+  });
+
+  logger.info("deleteAllFilesFromMongo(): Deleted all files from MongoDB");
 }

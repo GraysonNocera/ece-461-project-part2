@@ -1,5 +1,9 @@
-/src/api/**
-/src/server_stub/openapi_server/**
-/src/server_stub_node/**
-/src/angular_autogen/**
-/src/server_stub_python/**
+/src/angular_autogen
+/src/artifacts
+/src/config
+/src/controller
+/src/middleware
+/src/model
+/src/rate
+/src/route
+/src/service

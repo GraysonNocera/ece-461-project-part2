@@ -3,6 +3,7 @@ import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
 import { graphAPIfetch, gql_query } from "./graphql_json";
+import { logger } from "../logging";
 // const jq = require("node-jq");
 // var stream = require("stream");
 // const ndjson = require("ndjson");
@@ -51,7 +52,7 @@ function getData(): string {
 
 function cleanData(data): string[] {
   const wordList = data.split("\n");
-  // console.log(wordList)
+  // logger.log(wordList)
   //https://www.tutorialsteacher.com/typescript/for-loop\
   for (let i = 0; i < wordList.length; i++) {
     wordList[i] = wordList[i]
@@ -84,23 +85,22 @@ function sortOutput(output, netscores): string[] {
 }
 
 async function main() {
+  logger.info("Running rate script...")
+
   //   var objs: URLOBJ[] = [];
   let data = process.argv[2];
   if (data.includes(".txt")) {
     data = getData();
   }
   // let data = getData();
-  // console.log(data);
+  // logger.log(data);
   let wordList = cleanData(data);
-  console.log(
-    "URL NET_SCORE VERSION_PINNING_SCORE RAMP_UP_SCORE CORRECTNESS_SCORE BUS_FACTOR_SCORE RESPONSIVE_MAINTAINER_SCORE LICENSE_SCORE ENGR_SCORE"
-  );
   var netscores: Array<number> = [];
   var outputStrings: Array<string> = [];
 
   for (let i = 0; i < wordList.length; i++) {
     // let netscore = 0;
-    // console.log(wordList[i]);
+    // logger.log(wordList[i]);
 
     let website: string = wordList[i].split("/")[0];
     let user: string = wordList[i].split("/")[1];
@@ -134,14 +134,14 @@ async function main() {
       try {
         await runPythonScript("get_clone", user, repo);
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
       try {
         let gql: string = gql_query(user, repo);
         await graphAPIfetch(gql, repo);
         // await runPythonScript("get_graph", user, repo);
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
       try {
         await runPythonScript("get_pinned", user, repo);
@@ -161,14 +161,15 @@ async function main() {
         //then I am converting it to 2 decimal places and the plus sign converts it back to a number
         temp = +Number(pinned).toFixed(2);
         output = output + " " + temp;
-        netscore += temp * 0.1;
+
+        netscore += Math.min(temp, 1) * 0.1;
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
 
       try {
         // await runPythonScript("get_downloads", user, repo);
-        // console.log(`${result}`);
+        // logger.log(`${result}`);
         let repo_2: string = repo;
         // .system("cloc --by-percent cm --sum-one --yaml " + repo)
         repo_2 = '"' + repo + '"'; // prep directory for cloc command
@@ -198,20 +199,20 @@ async function main() {
           output = output + " " + Math.min(1, percent / 100 + 0.33);
           netscore += Math.min(1, percent / 100 + 0.33) * 0.2;
         } catch (err) {
-          console.error(err);
+          logger.error(err);
         }
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
       try {
         await runPythonScript("get_issues", user, repo);
-        // console.log(`${result}`);
+        // logger.log(`${result}`);
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
           `/jsons/issues${user}.json`
         ));
-        // console.log(jsonstring);`
+        // logger.log(jsonstring);`
         issues = +jsonstring.split(":")[1];
 
         let temp = 0;
@@ -223,21 +224,22 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.2;
+        // netscore += temp * 0.2;
+        netscore = Math.min(temp, 1) * 0.2;
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
 
       try {
         await runPythonScript("get_contributors", user, repo);
-        // console.log(`${result}`);
+        // logger.log(`${result}`);
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
           // "../",
           `/jsons/contributors${user}.json`
         ));
-        // console.log(jsonstring);
+        // logger.log(jsonstring);
         contributors = +jsonstring.split(":")[1];
 
         let temp = 0;
@@ -249,23 +251,25 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.15;
+        netscore += Math.min(temp, 1) * 0.15;
+        // netscore += temp * 0.15;
 
-        // console.log((forks*2).toString());
+        // logger.log((forks*2).toString());
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
 
       try {
+        logger.info("Getting forks of the repo...")
         await runPythonScript("get_forks", user, repo);
-        // console.log(`${result}`);
+        // logger.log(`${result}`);
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
           // "../",
           `/jsons/forks${user}.json`
         ));
-        // console.log(jsonstring);
+        // logger.log(jsonstring);
         forks = +jsonstring.split(":")[1];
         let temp = 0;
         if (Number(forks) == null || Number(forks) < 100) {
@@ -276,31 +280,37 @@ async function main() {
           temp = 1;
         }
         output = output + " " + temp;
-        netscore += temp * 0.1;
+        // netscore += temp * 0.1;
+        netscore += Math.min(temp, 1) * 0.1;
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
 
       try {
+        logger.info("Rate: Getting license...")
         await runPythonScript("get_license", user, repo);
-        // console.log(`${result}`);
+        // logger.log(`${result}`);
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
           // "../",
           `/jsons/license${user}.json`
         ));
-        // console.log(jsonstring);
+        // logger.log(jsonstring);
         license = +jsonstring.split(":")[1];
         output = output + " " + Number(license);
-        netscore += Number(license) * 0.2;
+        // netscore += Number(license) * 0.2;
+
+        logger.info("Rate: Got license score " + Number(license))
+        netscore = Math.min(Number(license), 1) * 0.2;
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
 
       try {
+        logger.info("Rate: Getting engr...")
         await runPythonScript("get_engr", user, repo);
-        // console.log(`${result}`);
+        // logger.log(`${result}`);
         const path = require("path");
         let jsonstring: string = require(path.join(
           __dirname,
@@ -308,26 +318,30 @@ async function main() {
           // "../",
           `/jsons/engr${user}.json`
         ));
-        // console.log(jsonstring);
+        // logger.log(jsonstring);
         engr = +jsonstring.split(":")[1];
         let temp: number = +Number(engr).toFixed(2);
         output = output + " " + temp;
-        netscore += temp * 0.1;
+        // netscore += temp * 0.1;
+        netscore += Math.min(temp, 1) * 0.1;
+        logger.info(`Rate: Got engr score ${temp}, netscore is now ${netscore}`)
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
 
       try {
+        logger.info("Rate: Removing repo...")
         await runPythonScript("rm_repo", user, repo);
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
       // console.log(URL + " " + netscore.toString() + output)
       netscore = Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
     } else {
-      // console.log(URL + ": -1, Can only accept github URLs.");
+      // logger.log(URL + ": -1, Can only accept github URLs.");
+      logger.info("Rate: " + URL + ": -1, Can only accept github URLs or npm URLs.")
       netscores.push(-1);
       outputStrings.push(
         URL + ": -1, Can only accept github URLs or npm URLs."
@@ -337,16 +351,16 @@ async function main() {
       outputStrings.push(URL + " " + netscore.toString() + output);
     }
   }
-  // console.log(netscores.sort(function(a, b){return a - b}).reverse())
+  // logger.log(netscores.sort(function(a, b){return a - b}).reverse())
   let finalOutputStrings = sortOutput(outputStrings, netscores);
-  // console.log(finalOutputStrings);
+  // logger.log(finalOutputStrings);
 
   emptyDirSync("src/rate/jsons");
 
   var json: string[] = [];
   for (let i = 0; i < finalOutputStrings.length; i++) {
     let stringgie = finalOutputStrings[i].split(" ");
-    // console.log(
+    // logger.log(
     //   `${stringgie[0]} ${stringgie[1]} ${stringgie[2]} ${stringgie[3]} ${stringgie[4]} ${stringgie[5]} ${stringgie[6]} ${stringgie[7]} ${stringgie[8]}`
     // );
     let temp = JSON.stringify({
@@ -374,11 +388,11 @@ async function main() {
     });
     writeFile(__dirname + "/score.json", temp, function (err) {
       if (err) throw err;
-      //console.log("complete");
+      //logger.log("complete");
     });
   }
 
-  // console.log(json)
+  // logger.log(json)
 }
 
 main();
