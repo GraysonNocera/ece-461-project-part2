@@ -86,6 +86,7 @@ export class PostsComponent {
       })
       .then((data) => {
         console.log('Received response:', data);
+        localStorage.setItem('base_64_package', JSON.stringify(data, null, 2));
         this.newPost = JSON.stringify(data, null, 2);
       })
       .catch((error) => {

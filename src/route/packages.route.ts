@@ -32,7 +32,9 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
     arr.forEach((packageQuery) => {
       let { error, value } = PackageQueryValidation.validate(packageQuery);
       if (error) {
-        throw new Error("Invalid package query");
+        logger.info("Invalid package query" + error);
+        
+        throw new Error("Invalid package query for POST /packages  " + packageQuery);
       }
     });
 
@@ -78,18 +80,20 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
 
 // Regex to get the version numbers from a string like this:
 // Exact (1.2.3) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
-// Return a list of whatever is in the parentheses
+// Return a list of the version numbers
 // The output of this would be ["1.2.3", "1.2.3-2.1.0", "^1.2.3", "~1.2.0"] (include the ^, ~, etc)
+
 function getVersions(versionString: string): string[] {
   logger.info("Version string: " + versionString);
 
-  const regex = /\((.*?)\)/g;
+  const regex = /((?:~|\^)?\d+\.\d+\.\d+(?:-\d+\.\d+\.\d+)*)/;
   const matches = versionString.match(regex);
   if (matches === null) {
     return [];
   }
   return matches.map((match) => match.slice(1, -1));
 }
+
 
 async function getAllPackages(packages: any[], offset: number): Promise<any[]> {
   logger.info("Getting all packages");
