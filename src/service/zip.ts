@@ -115,16 +115,17 @@ export async function unzipContent(content: string) {
     let files = zip.getEntries();
     let folder = files[0].entryName;
     let parentDir = "";
-    if (folder.endsWith("/")) {
+    if (folder.includes("/")) {
+      folder = folder.split("/")[0];
       parentDir = folder;
-      await Promise.all(
-        files.map((file) => {
-          if (!file.entryName.startsWith(folder)) {
-            parentDir = "";
-          }
-        })
-      );
+      files.forEach((file) => {
+        if (!file.entryName.startsWith(folder)) {
+          parentDir = "";
+        }
+      });
     }
+
+    logger.info("Base path to repo: " + path.join(basePath, parentDir));
 
     return path.join(basePath, parentDir);
   } catch (err) {
@@ -252,3 +253,7 @@ export async function deleteBase64File(base64FilePath: string) {
 
   logger.info("deleteBase64File: Deleted base64 file");
 }
+
+
+let content: string = fsSync.readFileSync(path.join(__dirname, "..", "..", "testing", "autograder.txt")).toString()
+unzipContent(content)
