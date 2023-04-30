@@ -23,6 +23,7 @@ function defineServer() {
 
   // Define placeholder endpoint for root route
   app.get("/", (req, res, next) => {
+    logger.info("health check: server is up!")
     res.send("respond with a resource");
   });
 
