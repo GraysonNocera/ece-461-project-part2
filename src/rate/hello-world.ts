@@ -323,7 +323,7 @@ async function main() {
         console.error(error);
       }
       // console.log(URL + " " + netscore.toString() + output)
-      netscore = Math.round(netscore * 100) / 100;
+      netscore = Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
     } else {
@@ -332,7 +332,7 @@ async function main() {
       outputStrings.push(
         URL + ": -1, Can only accept github URLs or npm URLs."
       );
-      netscore = Math.round(netscore * 100) / 100;
+      netscore = Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
     }
