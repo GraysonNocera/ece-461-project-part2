@@ -13,6 +13,7 @@ import { Validate } from "../middleware/validate";
 import { deleteFileFromMongo, uploadFileToMongo } from "../config/config";
 import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
+import fs from "fs";
 import express from "express";
 import path from "path";
 let safe = require("safe-regex");
@@ -204,6 +205,8 @@ packageRouter.put(
         }
 
         // Update contents with new contents
+        // As of right now, I'm not sure if we should handle the user setting multiple
+        // fields as an error or if we should just update one of them. Waiting on piazza response
         if (packageInfo.data.Content) {
           let fileName: string = `${package_received.metadata.Name}.txt`;
           let filePath: string = path.join(
@@ -214,15 +217,18 @@ packageRouter.put(
           );
           package_received.data.Content = fileName;
 
+          // Write content to a text file
+          fs.writeFileSync(filePath, packageInfo.data.Content);
+
           uploadFileToMongo(
             filePath,
             new mongoose.Types.ObjectId(package_received.metadata.ID)
           );
         }
-        if (packageInfo.data.URL) {
+        else if (packageInfo.data.URL) {
           package_received.data.URL = packageInfo.data.URL;
         }
-        if (packageInfo.data.JSProgram) {
+        else if (packageInfo.data.JSProgram) {
           package_received.data.JSProgram = packageInfo.data.JSProgram;
         }
 
@@ -233,7 +239,7 @@ packageRouter.put(
         logger.info("PUT /package/:id: Saved package: " + package_received.toObject());
 
         // If status is 200, ok. Send 404 if package doesn't exist.
-        return res.status(200).send(package_received.toObject());
+        return res.status(200).send("Version is updated.");
       } catch (error) {
         logger.debug("PUT /package/:id: " + error);
         return res.status(404).send("Invalid JSON");
