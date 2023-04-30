@@ -15,7 +15,8 @@ RUN npm install -g @angular/cli
 COPY . .
 
 # Expose port
+EXPOSE $PORT
 EXPOSE 4200
 
 # Start Angular frontend
-CMD ["ng", "serve", "--host 0.0.0.0"]
+CMD ["ng", "serve", "--host 0.0.0.0", "--disable-host-check true", "--port $PORT"]
