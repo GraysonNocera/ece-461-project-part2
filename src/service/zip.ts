@@ -253,7 +253,3 @@ export async function deleteBase64File(base64FilePath: string) {
 
   logger.info("deleteBase64File: Deleted base64 file");
 }
-
-
-let content: string = fsSync.readFileSync(path.join(__dirname, "..", "..", "testing", "autograder.txt")).toString()
-unzipContent(content)
