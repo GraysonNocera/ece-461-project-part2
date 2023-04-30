@@ -2,9 +2,9 @@ name: Build/Test Project
 
 on:
   push:
-    branches: [ "CI" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "CI" ]
+    branches: [ "main" ]
 
 jobs:
   build-and-test:
@@ -25,38 +25,32 @@ jobs:
           npm install --save-dev ts-jest @types/jest @angular/router typescript@4.5.4
           npm install axios ts-node @types/axios @types/node winston @types/winston --save
 
-      - name: Install cloc
-        run: |
-          sudo apt-get update
-          sudo apt-get install cloc -y
+      - name: Linter
+        run: npm run lint
+
+#      - name: Build
+#        run: |
+#          chmod +x ./run
+#          ./run build
+#          echo "Contents of dist directory:"
+#          ls -al dist
+#          ./run testing/part1test.txt
           
-#       - name: Linter
-#         run: npm run lint
-
-      - name: Build
-        run: |
-          chmod +x ./run
-          ./run build
-
-      - name: Test
+      - name: Set MongoDB Env Vars and Start API
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          MONGODB_USERNAME: brian
+          MONGODB_PASSWORD: 64ba20XbTNElNJPw
         run: |
-          chmod +x ./run
-          ./run Test.txt
+          echo Environment variables for MongoDB set. Username is $MONGODB_USERNAME
+          npx ts-node src/app.ts &
+          sleep 10
 
-      - name: Start API
-        run: |
-          tsc --project tsconfig.json
-          node dist/app.js &
-
-      - name: Run API tests
-        run: | 
-          tsc testing/apitests.ts
-          npm test -- --verbose
+      - name: Comprehensive API Endpoint Tests
+        run: npm test -- --verbose --testPathPattern=testing/comprehensiveendpoints.test.ts
 
       - name: Find and Kill API Process
-        run: ps aux | grep 'ts-node src/api/app.ts' | grep -v grep | awk '{print $2}' | xargs -r kill
+        run: |
+          ps aux | grep 'ts-node src/api/app.ts' | grep -v grep | awk '{print $2}' | xargs -r kill
 
   deploy:
     needs: build-and-test
