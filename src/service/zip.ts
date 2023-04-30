@@ -115,16 +115,17 @@ export async function unzipContent(content: string) {
     let files = zip.getEntries();
     let folder = files[0].entryName;
     let parentDir = "";
-    if (folder.endsWith("/")) {
+    if (folder.includes("/")) {
+      folder = folder.split("/")[0];
       parentDir = folder;
-      await Promise.all(
-        files.map((file) => {
-          if (!file.entryName.startsWith(folder)) {
-            parentDir = "";
-          }
-        })
-      );
+      files.forEach((file) => {
+        if (!file.entryName.startsWith(folder)) {
+          parentDir = "";
+        }
+      });
     }
+
+    logger.info("Base path to repo: " + path.join(basePath, parentDir));
 
     return path.join(basePath, parentDir);
   } catch (err) {
@@ -190,15 +191,20 @@ export async function getPackageJSON(basePath: string): Promise<Object> {
 
   logger.info("getPackageJSON: Getting url from content base64 string");
 
-  let package_json_path: string = path.join(basePath, "package.json");
-  let package_json_contents: string = await fs.readFile(
-    package_json_path,
-    "utf8"
-  );
+  try {
+    let package_json_path: string = path.join(basePath, "package.json");
+    let package_json_contents: string = await fs.readFile(
+      package_json_path,
+      "utf8"
+    );
 
-  let package_json_object = await getPackageJSONObject(package_json_contents);
+    let package_json_object = await getPackageJSONObject(package_json_contents);
 
-  return package_json_object;
+    return package_json_object;
+  } catch (err) {
+    logger.debug("getPackageJSON: Could not get package.json");
+    return {};
+  }
 }
 
 async function getPackageJSONObject(package_json_contents: string) {
