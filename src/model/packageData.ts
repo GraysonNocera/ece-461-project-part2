@@ -54,5 +54,5 @@ export const PackageDataUploadValidation = Joi.object({
   Content: Joi.string().allow(null).allow(""),
   URL: Joi.string().allow(null).allow(""),
   JSProgram: Joi.string().allow(null).allow(""),
-  Readme: Joi.string(),
+  Readme: Joi.string().allow(null).allow(""),
 }).or("Content", "URL");
