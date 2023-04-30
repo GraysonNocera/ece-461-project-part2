@@ -204,6 +204,11 @@ packageRouter.put(
             );
         }
 
+        if (!onlyOneFieldSet(packageInfo.data)) {
+          logger.debug("PUT /package/:id: More than one field set");
+          return res.status(400).send("More than one field set");
+        }
+
         // Update contents with new contents
         // As of right now, I'm not sure if we should handle the user setting multiple
         // fields as an error or if we should just update one of them. Waiting on piazza response
@@ -367,5 +372,15 @@ packageRouter.post(
     }
   }
 );
+
+function onlyOneFieldSet(obj: any): boolean {
+  let count = 0;
+  for (let key in obj) {
+    if (obj[key]) {
+      count++;
+    }
+  }
+  return count == 1;
+}
 
 // module.exports = packageRouter;
