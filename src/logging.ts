@@ -13,7 +13,7 @@ if (fs.existsSync(logFile)) {
     }
 
     // Move log file to directory with timestamp
-    const timestamp = new Date().toISOString().replace(/:/g, "-");
+    const timestamp = new Date().toLocaleString('en-US', { timeZone: "America/New_York" }).replace(/\//g, "-").replace(" ", "");
     fs.renameSync(
       logFile,
       path.join(logFolder, `${timestamp}.log`)
