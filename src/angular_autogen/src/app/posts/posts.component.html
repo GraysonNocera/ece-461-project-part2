@@ -2,10 +2,11 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=0.8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0.8">
   <title>Access Registry API</title>
 </head>
+
 
 <body>
   <main>
@@ -29,7 +30,8 @@
       </div>
     </div>
 
-    <br />
+    <br>
+
     <label for="API Request URL">API Request URL: The Base URL is already defined and you just need to
       type in the rest of the path:</label>
     <textarea id="API Request URL" style="border: solid 2px black" rows="1" #postInput
@@ -45,6 +47,58 @@
       <h2>Server Response:</h2>
       <pre>{{ newPost }}</pre>
     </div>
+
+    <br><br>
+
+
+    <h2>Add or Remove User</h2>
+    <button id="Add/Remove User" (click)="togglePopup()" aria-label="Add Or Remove Users"
+      [style.display]="popupVisible ? 'none' : 'block'">Add/Remove User</button>
+    <div id="popup-container" class="popup" [style.display]="popupVisible ? 'block' : 'none'">
+      <form>
+
+        <div class="input-group">
+          <label for="new-username">New Username:</label>
+          <input type="text" id="new-username" name="new-username" required aria-label="New username input field">
+        </div>
+
+        <div class="input-group">
+          <label for="new-user-password">New Password:</label>
+          <input type="password" id="new-user-password" name="new-user-password" required
+            aria-label="new-user-password input field">
+        </div>
+
+        <div class="input-group">
+          <label>Select Privileges For New User:</label> <br>
+
+          <div style="display: flex; align-items: center;">
+            <label for="write-privilege">Write Privileges</label>
+            <input type="checkbox" id="write-privilege" name="privileges[]" value="write">
+          </div>
+
+          <div style="display: flex; align-items: center;">
+            <label for="download-privilege">Download Privileges</label>
+            <input type="checkbox" id="download-privilege" name="privileges[]" value="download">
+          </div>
+          <div style="display: flex; align-items: center;">
+            <label for="admin-privilege">Admin Privileges</label>
+            <input type="checkbox" id="admin-privilege" name="privileges[]" value="admin">
+          </div>
+
+          <div style="display: flex; align-items: center;">
+            <label for="search-privilege">Search Privileges</label>
+            <input type="checkbox" id="search-privilege" name="privileges[]" value="search">
+          </div>
+
+        </div>
+        <div class="button-container">
+          <button type="submit" id="submit-changes-button" (click)="create_user()" aria-label="Submit changes button">Submit</button>
+          <button type="button" id="cancel-button" (click)="togglePopup()" aria-label="Cancel button"
+            style="margin-left: 30px;"> Cancel </button>
+        </div>
+      </form>
+    </div>
+
   </main>
 </body>
 

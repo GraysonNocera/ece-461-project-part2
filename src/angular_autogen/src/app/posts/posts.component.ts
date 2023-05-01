@@ -8,11 +8,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./posts.component.scss'],
 })
 export class PostsComponent {
-  constructor(public PostService: PostService) {}
+  constructor(public PostService: PostService) { }
 
   newPost = '';
   isLoggedIn = false;
   apiUrl = 'http://35.223.191.75:3000/';
+  popupVisible = false;
 
   addPost(postInput: HTMLTextAreaElement) {
     const authToken = localStorage.getItem('jwtToken_461_API');
@@ -115,4 +116,68 @@ export class PostsComponent {
     localStorage.removeItem('jwtToken_461_API');
     this.isLoggedIn = false;
   }
+
+  togglePopup() {
+    this.popupVisible = !this.popupVisible;
+  }
+
+  create_user(): void {
+    this.popupVisible = !this.popupVisible;
+    const usernameInput = document.getElementById('new-username') as HTMLInputElement;
+    const passwordInput = document.getElementById('new-user-password') as HTMLInputElement;
+    const writePrivilegeInput = document.getElementById('write-privilege') as HTMLInputElement;
+    const downloadPrivilegeInput = document.getElementById('download-privilege') as HTMLInputElement;
+    const adminPrivilegeInput = document.getElementById('admin-privilege') as HTMLInputElement;
+    const searchPrivilegeInput = document.getElementById('search-privilege') as HTMLInputElement;
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    const privileges = [];
+
+    if (writePrivilegeInput.checked) {
+      privileges.push('write');
+    }
+    if (downloadPrivilegeInput.checked) {
+      privileges.push('download');
+    }
+    if (adminPrivilegeInput.checked) {
+      privileges.push('admin');
+    }
+    if (searchPrivilegeInput.checked) {
+      privileges.push('search');
+    }
+
+    const requestBody = {
+      User: {
+        name: username,
+        isAdmin: privileges.includes('admin'),
+        isUpload: privileges.includes('write'),
+        isDownload: privileges.includes('download'),
+        isSearch: privileges.includes('search')
+      },
+      Secret: { password },
+    };
+
+    alert ("Creating user: \n" + JSON.stringify(requestBody, null, 2));
+
+    fetch('/user', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
+      .then(response => {
+        if (!response.ok) {
+          alert ('Error creating account: \n' + response.status);
+          throw new Error('Network response was not ok');
+        }
+
+        alert ('Account successfully created');
+      })
+      .catch(error => {
+        alert ('Error creating account');
+      });
+  }
 }
+
