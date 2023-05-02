@@ -118,6 +118,7 @@ export const postPackage = async (
   }
 
   if (await isNameInDb(packageToUpload.metadata.Name)) {
+    logger.info("POST /package: Package not uploaded, name exists");
     deleteUnzippedFolder(basePath);
     return res.status(409).send("Package exists already.");
   }
@@ -138,9 +139,12 @@ export const postPackage = async (
     }
 
     // Save rating
+    logger.info("POST /package: Saving rating")
     let rateEntry = new PackageRatingModel(rating);
     rateEntry._id = packageToUpload._id;
-    rateEntry.save();
+    rateEntry.save().then((result) => {
+      logger.info("POST /package: Saved rating: " + result);
+    });
   }
 
   let filePath: string = path.join(
@@ -153,6 +157,7 @@ export const postPackage = async (
 
   if (didUploadURL) {
     // Use URL to get the Content, also writes Content to a file
+    logger.info("POST /package: Getting content from URL: " + github_url)
     packageToUpload.data.Content = await getContentFromUrl(github_url);
 
     basePath = await unzipContent(packageToUpload.data.Content);
@@ -164,6 +169,7 @@ export const postPackage = async (
       return res.status(400).send("Invalid Content or URL");
     }
   } else {
+    logger.info("POST /package: Writing file to " + filePath + " from content");
     fs.writeFileSync(filePath, packageToUpload.data.Content);
   }
 

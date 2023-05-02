@@ -12,7 +12,7 @@ package-lock.json
 # *.log
 
 # Some bug in Grayson's OS or something not sure
-**/*2*
+* 2.*
 
 # Ignore the score.json file and jsons/ output of rate module
 **/score.json

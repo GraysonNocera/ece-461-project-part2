@@ -32,7 +32,9 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
     arr.forEach((packageQuery) => {
       let { error, value } = PackageQueryValidation.validate(packageQuery);
       if (error) {
-        throw new Error("Invalid package query");
+        logger.info("Invalid package query" + error);
+        
+        throw new Error("Invalid package query for POST /packages  " + packageQuery);
       }
     });
 
@@ -72,24 +74,31 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   } catch {
     // Request body is not valid JSON
     logger.info("Invalid JSON for POST /packages");
-    return res.status(400).send("Invalid JSON");
+    return res.status(400).send("Invalid Request Body");
   }
 });
 
 // Regex to get the version numbers from a string like this:
 // Exact (1.2.3) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
-// Return a list of whatever is in the parentheses
+// Return a list of the version numbers
 // The output of this would be ["1.2.3", "1.2.3-2.1.0", "^1.2.3", "~1.2.0"] (include the ^, ~, etc)
+
 function getVersions(versionString: string): string[] {
   logger.info("Version string: " + versionString);
 
-  const regex = /\((.*?)\)/g;
-  const matches = versionString.match(regex);
+  const regex = /^(~|\^)?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+  var matches = versionString.match(regex);
   if (matches === null) {
-    return [];
+    const bounded_version_regex = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)-(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$/;
+    matches = versionString.match(bounded_version_regex);
+    if (matches === null) {
+      return [];
+    }
   }
+
   return matches.map((match) => match.slice(1, -1));
 }
+
 
 async function getAllPackages(packages: any[], offset: number): Promise<any[]> {
   logger.info("Getting all packages");
