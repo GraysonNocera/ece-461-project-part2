@@ -157,9 +157,7 @@ packageRouter.get(
           .send(package_received.toObject({ remove: "URL" }));
       });
     } else {
-      return res
-        .status(401)
-        .send("You don't have the right permissions to do this request");
+      return res.status(401).send("Invalid permissions to perform this action");
     }
   }
 );
@@ -265,7 +263,7 @@ packageRouter.put(
     } else {
       return res
         .status(401)
-        .send("You don't have the right permissions to do this request");
+        .send("Invalid permissions to perform requested action");
     }
   }
 );
@@ -386,7 +384,7 @@ packageRouter.post(
     } else {
       return res
         .status(401)
-        .send("You don't have the right permissions to do this request");
+        .send("Invalid permissions to perform requested actions");
     }
   }
 );
