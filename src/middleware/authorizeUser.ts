@@ -74,6 +74,7 @@ export const authorizeUser = async (
               }
               res.locals.auth = true;
               res.locals.username = test.data.User.name;
+              match = 1; 
               logger.info("auth success");
               next();
             }
