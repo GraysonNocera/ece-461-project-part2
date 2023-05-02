@@ -121,39 +121,46 @@ packageRouter.get(
 
     let id: string = req?.params?.id;
     let package_received: any;
-
-    // Ensure valid ID
-    if (!mongoose.isObjectIdOrHexString(id)) {
-      logger.debug("GET /package/:id: Invalid package ID + " + id);
-      return res.status(404).send("No package found");
-    }
-
-    // Search the database for this package
-    const query = PackageModel.where({
-      _id: new mongoose.Types.ObjectId(id),
-    });
-    package_received = await query.findOne();
-    if (!package_received) {
-      logger.debug("GET /package/:id: Package does not exist");
-      return res.status(404).send("Package does not exist.");
-    }
-
-    logger.info("Found package: " + package_received?.toObject());
-
-    // Load the content from mongo
-    downloadFileFromMongo(package_received._id, (content, error) => {
-      if (error) {
-        logger.debug("Error downloading file from mongo: " + error);
-        return res.status(404).send("Invalid content");
+    if (res.locals.download) {
+      // Ensure valid ID
+      if (!mongoose.isObjectIdOrHexString(id)) {
+        logger.debug("GET /package/:id: Invalid package ID + " + id);
+        return res.status(404).send("No package found");
       }
 
-      logger.info("Downloaded content");
+      // Search the database for this package
+      const query = PackageModel.where({
+        _id: new mongoose.Types.ObjectId(id),
+      });
+      package_received = await query.findOne();
+      if (!package_received) {
+        logger.debug("GET /package/:id: Package does not exist");
+        return res.status(404).send("Package does not exist.");
+      }
 
-      package_received.data.Content = content;
+      logger.info("Found package: " + package_received?.toObject());
 
-      logger.info("Returning package: " + package_received?.toObject());
-      return res.status(200).send(package_received.toObject({ remove: "URL" }));
-    });
+      // Load the content from mongo
+      downloadFileFromMongo(package_received._id, (content, error) => {
+        if (error) {
+          logger.debug("Error downloading file from mongo: " + error);
+          return res.status(404).send("Invalid content");
+        }
+
+        logger.info("Downloaded content");
+
+        package_received.data.Content = content;
+
+        logger.info("Returning package: " + package_received?.toObject());
+        return res
+          .status(200)
+          .send(package_received.toObject({ remove: "URL" }));
+      });
+    } else {
+      return res
+        .status(401)
+        .send("You don't have the right permissions to do this request");
+    }
   }
 );
 
@@ -167,92 +174,98 @@ packageRouter.put(
     let id: string;
     let auth: string;
     let packageInfo: Package;
-    try {
-      id = req?.params?.id;
-
-      if (!mongoose.isObjectIdOrHexString(id)) {
-        logger.debug("PUT /package/:id: Invalid package ID + " + id);
-        return res.status(404).send("No package found");
-      }
-
-      packageInfo = req.body; // Get user-inputted package details
-
-      logger.info("PUT /package/:id: received package " + packageInfo);
-
-      const query = PackageModel.where({ _id: id });
-
+    if (res.locals.upload) {
       try {
-        const package_received = await query.findOne();
-        // Package doesn't exist, return 404
-        if (!package_received) {
-          logger.debug("PUT /package/:id: Packaged don't exist");
-          res.status(404).send("Package does not exist");
-          return;
+        id = req?.params?.id;
+
+        if (!mongoose.isObjectIdOrHexString(id)) {
+          logger.debug("PUT /package/:id: Invalid package ID + " + id);
+          return res.status(404).send("No package found");
         }
 
-        if (
-          package_received.metadata.Name != packageInfo.metadata.Name ||
-          package_received.metadata.Version != packageInfo.metadata.Version ||
-          package_received.metadata.ID != packageInfo.metadata.ID
-        ) {
-          logger.debug("PUT /package/:id: Package metadata does not match");
+        packageInfo = req.body; // Get user-inputted package details
 
-          return res
-            .status(400)
-            .send(
-              "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
+        logger.info("PUT /package/:id: received package " + packageInfo);
+
+        const query = PackageModel.where({ _id: id });
+
+        try {
+          const package_received = await query.findOne();
+          // Package doesn't exist, return 404
+          if (!package_received) {
+            logger.debug("PUT /package/:id: Packaged don't exist");
+            res.status(404).send("Package does not exist");
+            return;
+          }
+
+          if (
+            package_received.metadata.Name != packageInfo.metadata.Name ||
+            package_received.metadata.Version != packageInfo.metadata.Version ||
+            package_received.metadata.ID != packageInfo.metadata.ID
+          ) {
+            logger.debug("PUT /package/:id: Package metadata does not match");
+
+            return res
+              .status(400)
+              .send(
+                "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
+              );
+          }
+
+          if (!onlyOneFieldSet(packageInfo.data)) {
+            logger.debug("PUT /package/:id: More than one field set");
+            return res.status(400).send("More than one field set");
+          }
+
+          // Update contents with new contents
+          // As of right now, I'm not sure if we should handle the user setting multiple
+          // fields as an error or if we should just update one of them. Waiting on piazza response
+          if (packageInfo.data.Content) {
+            let fileName: string = `${package_received.metadata.Name}.txt`;
+            let filePath: string = path.join(
+              __dirname,
+              "..",
+              "artifacts",
+              fileName
             );
-        }
+            package_received.data.Content = fileName;
 
-        if (!onlyOneFieldSet(packageInfo.data)) {
-          logger.debug("PUT /package/:id: More than one field set");
-          return res.status(400).send("More than one field set");
-        }
+            // Write content to a text file
+            fs.writeFileSync(filePath, packageInfo.data.Content);
 
-        // Update contents with new contents
-        // As of right now, I'm not sure if we should handle the user setting multiple
-        // fields as an error or if we should just update one of them. Waiting on piazza response
-        if (packageInfo.data.Content) {
-          let fileName: string = `${package_received.metadata.Name}.txt`;
-          let filePath: string = path.join(
-            __dirname,
-            "..",
-            "artifacts",
-            fileName
+            uploadFileToMongo(
+              filePath,
+              new mongoose.Types.ObjectId(package_received.metadata.ID)
+            );
+          } else if (packageInfo.data.URL) {
+            package_received.data.URL = packageInfo.data.URL;
+          } else if (packageInfo.data.JSProgram) {
+            package_received.data.JSProgram = packageInfo.data.JSProgram;
+          }
+
+          logger.info("PUT /package/:id: Saving package");
+
+          package_received.save();
+
+          logger.info(
+            "PUT /package/:id: Saved package: " + package_received.toObject()
           );
-          package_received.data.Content = fileName;
 
-          // Write content to a text file
-          fs.writeFileSync(filePath, packageInfo.data.Content);
-
-          uploadFileToMongo(
-            filePath,
-            new mongoose.Types.ObjectId(package_received.metadata.ID)
-          );
+          // If status is 200, ok. Send 404 if package doesn't exist.
+          return res.status(200).send("Version is updated.");
+        } catch (error) {
+          logger.debug("PUT /package/:id: " + error);
+          return res.status(404).send("Invalid JSON");
         }
-        else if (packageInfo.data.URL) {
-          package_received.data.URL = packageInfo.data.URL;
-        }
-        else if (packageInfo.data.JSProgram) {
-          package_received.data.JSProgram = packageInfo.data.JSProgram;
-        }
-
-        logger.info("PUT /package/:id: Saving package");
-
-        package_received.save();
-
-        logger.info("PUT /package/:id: Saved package: " + package_received.toObject());
-
-        // If status is 200, ok. Send 404 if package doesn't exist.
-        return res.status(200).send("Version is updated.");
-      } catch (error) {
-        logger.debug("PUT /package/:id: " + error);
-        return res.status(404).send("Invalid JSON");
+      } catch {
+        // Request body is not valid JSON
+        logger.debug("Invalid JSON for PUT /package/:id");
+        return res.status(400).send("Invalid JSON");
       }
-    } catch {
-      // Request body is not valid JSON
-      logger.debug("Invalid JSON for PUT /package/:id");
-      return res.status(400).send("Invalid JSON");
+    } else {
+      return res
+        .status(401)
+        .send("You don't have the right permissions to do this request");
     }
   }
 );
@@ -268,9 +281,8 @@ packageRouter.delete(
     let id: string = req?.params?.id;
 
     logger.info("DELETE /package/:id: Deleting package " + id);
-
-    // Ensure valid ID
     if (!mongoose.isObjectIdOrHexString(id)) {
+      // Ensure valid ID
       logger.debug("DELETE /package/:id: Invalid package ID + " + id);
       return res.status(404).send("No package found");
     }
@@ -306,69 +318,75 @@ packageRouter.post(
     let auth: string;
     let packageMetadata: PackageMetadata;
     let return_data: Object;
-    try {
-      // regex will be in the body of the request; Example request:
-      // {
-      //   "Regex": "string"
-      // }
-      // logger.info("Got regex: " + regex);
+    if (res.locals.search) {
+      try {
+        // regex will be in the body of the request; Example request:
+        // {
+        //   "Regex": "string"
+        // }
+        // logger.info("Got regex: " + regex);
 
-      regex_body = req.body.PackageRegEx;
-      let isSafe = safe(new RegExp(regex_body));
-      if (!isSafe) {
-        logger.debug("POST /package/byRegEx: Regex is not safe");
-        return res.status(400).send("Regex is not safe");
+        regex_body = req.body.PackageRegEx;
+        let isSafe = safe(new RegExp(regex_body));
+        if (!isSafe) {
+          logger.debug("POST /package/byRegEx: Regex is not safe");
+          return res.status(400).send("Regex is not safe");
+        }
+
+        logger.info("Got regex body: " + regex_body);
+
+        // Get the package from the database using the regex
+        const regex = new RegExp(regex_body, "i");
+        const packages = await PackageModel.find({
+          "metadata.Name": regex,
+        }).exec();
+
+        // EXAMPLE RESPONSE:
+        // [
+        //   {
+        //     "Version": "1.2.3",
+        //     "Name": "Underscore"
+        //   },
+        //   {
+        //     "Version": "1.2.3-2.1.0",
+        //     "Name": "Lodash"
+        //   },
+        //   {
+        //     "Version": "^1.2.3",
+        //     "Name": "Re
+        //   }
+        // ]
+
+        logger.info("Got packages: " + packages);
+        logger.info("Preparing return_data");
+
+        // According to YML spec, return only name and version
+        return_data = packages.map((pkg) => {
+          return {
+            Name: pkg.metadata.Name,
+            Version: pkg.metadata.Version,
+          };
+        });
+
+        logger.info("Sending status");
+
+        // If status is 200, ok. Send 404 if package doesn't exist.
+        if (packages.length > 0) {
+          logger.info("Sending return_data: " + return_data);
+          return res.status(200).send(return_data);
+        } else {
+          logger.info("Sending 404, no packaged found");
+          return res.status(404).send("No package found under this regex.");
+        }
+      } catch {
+        // Request body is not valid JSON
+        logger.info("Invalid JSON for POST /RegEx/{regex}");
+        return res.status(400).send("Invalid JSON");
       }
-
-      logger.info("Got regex body: " + regex_body);
-
-      // Get the package from the database using the regex
-      const regex = new RegExp(regex_body, "i");
-      const packages = await PackageModel.find({
-        "metadata.Name": regex,
-      }).exec();
-
-      // EXAMPLE RESPONSE:
-      // [
-      //   {
-      //     "Version": "1.2.3",
-      //     "Name": "Underscore"
-      //   },
-      //   {
-      //     "Version": "1.2.3-2.1.0",
-      //     "Name": "Lodash"
-      //   },
-      //   {
-      //     "Version": "^1.2.3",
-      //     "Name": "Re
-      //   }
-      // ]
-
-      logger.info("Got packages: " + packages);
-      logger.info("Preparing return_data");
-
-      // According to YML spec, return only name and version
-      return_data = packages.map((pkg) => {
-        return {
-          Name: pkg.metadata.Name,
-          Version: pkg.metadata.Version,
-        };
-      });
-
-      logger.info("Sending status");
-
-      // If status is 200, ok. Send 404 if package doesn't exist.
-      if (packages.length > 0) {
-        logger.info("Sending return_data: " + return_data);
-        return res.status(200).send(return_data);
-      } else {
-        logger.info("Sending 404, no packaged found");
-        return res.status(404).send("No package found under this regex.");
-      }
-    } catch {
-      // Request body is not valid JSON
-      logger.info("Invalid JSON for POST /RegEx/{regex}");
-      return res.status(400).send("Invalid JSON");
+    } else {
+      return res
+        .status(401)
+        .send("You don't have the right permissions to do this request");
     }
   }
 );
