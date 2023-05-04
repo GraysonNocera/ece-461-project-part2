@@ -1,0 +1,385 @@
+info: connectToMongo(): Connecting to MongoDB...
+info: Starting up the API server...
+info: API server listening on port 3000
+info: connectToMongo(): Connected to MongoDB
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isUpload":true,"isDownload":true,"isSearch":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isUpload":true,"isDownload":true,"isSearch":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
+info: req{"User":{"name":"ece30861defaultadminuser"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true},"Secret":{"password":"peen"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Invalid user name or passwords
+debug: authorizeUser: Invalid password, peen != ee8eb0437b289df8e5786687473ae2b81dc4533b00b837b7b31ac4c292f89c5f
+info: req[{"Name":"express","Version":"Exact (4.4.4)"},{"Name":"express","Version":"Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"},{"Name":"react","Version":"Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"}]
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: POST /packages
+info: package offset: 1
+info: POST /packages: Received [object Object],[object Object],[object Object]
+info: Version string: Exact (4.4.4)
+info: Versions to search: .4.,.4.
+info: Name: express
+info: Getting packages by version and name: .4. express
+info: Getting packages by version and name: .4. express
+info: Version string: Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+info: Versions to search: .0.,.0.
+info: Name: express
+info: Getting packages by version and name: .0. express
+info: Getting packages by version and name: .0. express
+info: Version string: Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+info: Versions to search: .0.,.0.
+info: Name: react
+info: Getting packages by version and name: .0. react
+info: Getting packages by version and name: .0. react
+info: Packages: 
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + 123456789
+info: req{"metadata":{"Name":"","Version":"","ID":""},"data":{"Content":"","URL":"","JSProgram":""}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: PUT /package/:id
+debug: PUT /package/:id: Invalid package ID + undefined
+info: req{"metadata":{"Name":"test_package","Version":"1.0.0","ID":"1234"},"data":{"Content":"test","URL":"test","JSProgram":"test"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: PUT /package/:id
+debug: PUT /package/:id: Invalid package ID + 123456789
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + byName
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: POST /package/byRegEx/{regex}
+info: Got regex body: undefined
+info: Got packages: 
+info: Preparing return_data
+info: Sending status
+info: Sending 404, no packaged found
+info: req{"PackageRegEx":"(?!.*[A-Za-z]).*"}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: POST /package/byRegEx/{regex}
+info: Got regex body: (?!.*[A-Za-z]).*
+info: Got packages: 
+info: Preparing return_data
+info: Sending status
+info: Sending 404, no packaged found
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + rate
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: GET /package/:id/rate
+debug: GET /package/:id/rate: Invalid package ID + nonexisting-id
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: DELETE /package/:id
+info: DELETE /package/:id: Deleting package nonexisting-id
+debug: DELETE /package/:id: Invalid package ID + nonexisting-id
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgyODAxLCJleHAiOjE2ODI5MTg4MDF9.SbmCnrkWj1E4IX4Piwaz8WB8RZKarKBLvW1LF9meW-o
+info: auth success
+info: DELETE /reset
+info: Request body: [object Object]
+info: Resetting registry
+info: connectToMongo(): Connecting to MongoDB...
+info: connectToMongo(): Connected to MongoDB
+info: deleteAllFilesFromMongo(): Deleting all files from MongoDB
+info: deleteAllFilesFromMongo(): Deleted all files from MongoDB
+info: Registry is reset
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer 123456789
+debug: authorizeUser: error: JsonWebTokenError: jwt malformed
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer
+debug: authorizeUser: error: JsonWebTokenError: jwt malformed
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isUpload":true,"isDownload":true,"isSearch":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isUpload":true,"isDownload":true,"isSearch":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
+info: req{"User":{"name":"ece30861defaultadminuser"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true},"Secret":{"password":"peen"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Invalid user name or passwords
+debug: authorizeUser: Invalid password, peen != ee8eb0437b289df8e5786687473ae2b81dc4533b00b837b7b31ac4c292f89c5f
+info: req[{"Name":"express","Version":"Exact (4.4.4)"},{"Name":"express","Version":"Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"},{"Name":"react","Version":"Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"}]
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: POST /packages
+info: package offset: 1
+info: POST /packages: Received [object Object],[object Object],[object Object]
+info: Version string: Exact (4.4.4)
+info: Versions to search: .4.,.4.
+info: Name: express
+info: Getting packages by version and name: .4. express
+info: Getting packages by version and name: .4. express
+info: Version string: Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+info: Versions to search: .0.,.0.
+info: Name: express
+info: Getting packages by version and name: .0. express
+info: Getting packages by version and name: .0. express
+info: Version string: Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+info: Versions to search: .0.,.0.
+info: Name: react
+info: Getting packages by version and name: .0. react
+info: Getting packages by version and name: .0. react
+info: Packages: 
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + 123456789
+info: req{"metadata":{"Name":"test_package","Version":"1.0.0","ID":"1234"},"data":{"Content":"test","URL":"test","JSProgram":"test"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: PUT /package/:id
+debug: PUT /package/:id: Invalid package ID + 123456789
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + byName
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: POST /package/byRegEx/{regex}
+info: Got regex body: undefined
+info: Got packages: 
+info: Preparing return_data
+info: Sending status
+info: Sending 404, no packaged found
+info: req{"PackageRegEx":"(?!.*[A-Za-z]).*"}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: POST /package/byRegEx/{regex}
+info: Got regex body: (?!.*[A-Za-z]).*
+info: Got packages: 
+info: Preparing return_data
+info: Sending status
+info: Sending 404, no packaged found
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + rate
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: GET /package/:id/rate
+debug: GET /package/:id/rate: Invalid package ID + nonexisting-id
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: DELETE /package/:id
+info: DELETE /package/:id: Deleting package nonexisting-id
+debug: DELETE /package/:id: Invalid package ID + nonexisting-id
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzMjgwLCJleHAiOjE2ODI5MTkyODB9.URdpvIofP3USzJHX-Rp6VswrrSo5njDHTepBGHA1kic
+info: auth success
+info: DELETE /reset
+info: Request body: [object Object]
+info: Resetting registry
+info: connectToMongo(): Connecting to MongoDB...
+info: connectToMongo(): Connected to MongoDB
+info: deleteAllFilesFromMongo(): Deleting all files from MongoDB
+info: deleteAllFilesFromMongo(): Deleted all files from MongoDB
+info: Registry is reset
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer 123456789
+debug: authorizeUser: error: JsonWebTokenError: jwt malformed
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer
+debug: authorizeUser: error: JsonWebTokenError: jwt malformed
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isUpload":true,"isDownload":true,"isSearch":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isUpload":true,"isDownload":true,"isSearch":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
+info: req{"User":{"name":"ece30861defaultadminuser"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true},"Secret":{"password":"peen"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Invalid user name or passwords
+debug: authorizeUser: Invalid password, peen != ee8eb0437b289df8e5786687473ae2b81dc4533b00b837b7b31ac4c292f89c5f
+info: req[{"Name":"express","Version":"Exact (4.4.4)"},{"Name":"express","Version":"Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"},{"Name":"react","Version":"Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"}]
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: POST /packages
+info: package offset: 1
+info: POST /packages: Received [object Object],[object Object],[object Object]
+info: Version string: Exact (4.4.4)
+info: Versions to search: .4.,.4.
+info: Name: express
+info: Getting packages by version and name: .4. express
+info: Getting packages by version and name: .4. express
+info: Version string: Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+info: Versions to search: .0.,.0.
+info: Name: express
+info: Getting packages by version and name: .0. express
+info: Getting packages by version and name: .0. express
+info: Version string: Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)
+info: Versions to search: .0.,.0.
+info: Name: react
+info: Getting packages by version and name: .0. react
+info: Getting packages by version and name: .0. react
+info: Packages: 
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + 123456789
+info: req{"metadata":{"Name":"test_package","Version":"1.0.0","ID":"1234"},"data":{"Content":"test","URL":"test","JSProgram":"test"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: PUT /package/:id
+debug: PUT /package/:id: Invalid package ID + 123456789
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + byName
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement.
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: POST /package/byRegEx/{regex}
+info: Got regex body: undefined
+info: Got packages: 
+info: Preparing return_data
+info: Sending status
+info: Sending 404, no packaged found
+info: req{"PackageRegEx":"(?!.*[A-Za-z]).*"}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: POST /package/byRegEx/{regex}
+info: Got regex body: (?!.*[A-Za-z]).*
+info: Got packages: 
+info: Preparing return_data
+info: Sending status
+info: Sending 404, no packaged found
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: GET /package/:id
+debug: GET /package/:id: Invalid package ID + rate
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: GET /package/:id/rate
+debug: GET /package/:id/rate: Invalid package ID + nonexisting-id
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: DELETE /package/:id
+info: DELETE /package/:id: Deleting package nonexisting-id
+debug: DELETE /package/:id: Invalid package ID + nonexisting-id
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzVXBsb2FkIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1NlYXJjaCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgyODgzNDgyLCJleHAiOjE2ODI5MTk0ODJ9.jDZP1NCVajDfu73V7lqXRVFQFHLM0PgVI0pAI43IKNA
+info: auth success
+info: DELETE /reset
+info: Request body: [object Object]
+info: Resetting registry
+info: connectToMongo(): Connecting to MongoDB...
+info: connectToMongo(): Connected to MongoDB
+info: deleteAllFilesFromMongo(): Deleting all files from MongoDB
+info: deleteAllFilesFromMongo(): Deleted all files from MongoDB
+info: Registry is reset
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer 123456789
+debug: authorizeUser: error: JsonWebTokenError: jwt malformed
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+debug: authorizeUser: Missing field(s) in the AuthenticationRequest or it is not formed properly
+info: req{}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received bearer
+debug: authorizeUser: error: JsonWebTokenError: jwt malformed

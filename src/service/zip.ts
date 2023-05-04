@@ -73,20 +73,9 @@ export async function getContentFromUrl(url: string): Promise<string | null> {
     `${details.repoName}.zip`
   );
 
-  let txtFilePath: string = path.join(
-    __dirname,
-    "..",
-    "artifacts",
-    `${details.repoName}.txt`
-  );
-
   logger.info("getContentFromUrl: Converting zip file to base64 string");
   let content = await zipToBase64(zipFilePath);
 
-  logger.info(
-    "getContentFromUrl: Writing base64 string to file " + txtFilePath
-  );
-  fs.writeFile(txtFilePath, content);
   fs.rm(zipFilePath);
 
   return content;

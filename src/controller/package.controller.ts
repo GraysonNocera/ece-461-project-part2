@@ -128,7 +128,7 @@ export const postPackage = async (
 
       // For now, nothing passes this, so I'm commenting it out
       if (!verify(PackageRatingUploadValidation, rating)) {
-        logger.info("POST /package: Package not uploaded, disqualified rating");
+        logger.info("POST /package: Package not uploaded, disqualified rating, returning 424");
         res
           .status(424)
           .send("Package is not uploaded due to the disqualified rating.");
