@@ -75,8 +75,9 @@ export const postPackage = async (req: Request, res: Response) => {
         return res.status(400).send("Invalid Content or URL");
       }
 
-      const { package_json, url, basePath } = urlFromContent;
-      packageToUpload.data.URL = url;
+      basePath = urlFromContent.basePath;
+      packageToUpload.data.URL = urlFromContent.url;
+      package_json = urlFromContent.package_json;
     }
 
     github_url = packageToUpload.data.URL.startsWith(
