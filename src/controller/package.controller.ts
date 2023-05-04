@@ -223,31 +223,6 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param name: string name of package
 
   let apiUrl = "";
-  // // chekcing if url is gh or npm
-  // if (url.startsWith("https://www.npmjs.com/package/")) {
-  //   const packageName = url.split("/").pop();
-  //   try {
-  //     const npmResponse = await axios.get(
-  //       `https://registry.npmjs.org/${packageName}`
-  //     );
-  //     const repositoryUrl = npmResponse.data.repository.url;
-
-  //     // maybe check here that the url is *actually* a gh url?
-  //     apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
-  //       repositoryUrl.split("/")[4]
-  //     }/releases`;
-  //   } catch (error) {
-  //     logger.debug("Error fetching GitHub URL from npm URL:", error);
-  //     return "1.0.0"; // default
-  //   }
-  // } else if (url.startsWith("https://github.com/")) {
-  //   apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
-  //     url.split("/")[4]
-  //   }/releases`;
-  // } else {
-  //   logger.info("Invalid URL provided");
-  //   return "1.0.0"; // default
-  // }
 
   if (!isGitHubUrl(url)) {
     logger.info("Invalid URL provided");
