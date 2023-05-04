@@ -1,12 +1,9 @@
-import { readFileSync, writeFile, writeFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
 import { graphAPIfetch, gql_query } from "./graphql_json";
 import { logger } from "../logging";
-// const jq = require("node-jq");
-// var stream = require("stream");
-// const ndjson = require("ndjson");
 
 interface URLOBJ {
   URL: string;
@@ -134,14 +131,14 @@ async function main(url: string) {
       try {
         await runPythonScript("get_clone", user, repo);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       try {
         let gql: string = gql_query(user, repo);
         await graphAPIfetch(gql, repo);
         // await runPythonScript("get_graph", user, repo);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       try {
         logger.info("Rate: Getting pinned metric...")
@@ -167,7 +164,7 @@ async function main(url: string) {
 
         logger.info("Rate: got pinned metric of " + temp + " for " + repo + " and netscore is " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -276,7 +273,7 @@ async function main(url: string) {
         // logger.log((forks*2).toString());
         logger.info("Rate: Got contributors (bus factor) metric of " + temp + " and netscore of " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -304,7 +301,7 @@ async function main(url: string) {
         netscore += Math.min(temp, 1) * 0.1;
         logger.info("Rate: Got forks metric of " + Math.min(temp, 1) + "netscore is now " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -325,7 +322,7 @@ async function main(url: string) {
         logger.info("Rate: Got license score " + Number(license) + ", netscore is now " + netscore);
         netscore += Math.min(Number(license), 1) * 0.2;
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -347,14 +344,14 @@ async function main(url: string) {
         netscore += Math.min(temp, 1) * 0.05;
         logger.info(`Rate: Got engr score ${temp}, netscore is now ${netscore}`)
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
         logger.info("Rate: Removing repo...")
         await runPythonScript("rm_repo", user, repo);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       // console.log(URL + " " + netscore.toString() + output)
       netscore = Math.min(Math.round(netscore * 100) / 100, 1);
