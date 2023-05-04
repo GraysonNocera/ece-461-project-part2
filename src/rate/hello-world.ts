@@ -344,7 +344,7 @@ async function main() {
         let temp: number = +Number(engr).toFixed(2);
         output = output + " " + temp;
         // netscore += temp * 0.1;
-        netscore += Math.min(temp, 1) * 0.1;
+        netscore += Math.min(temp, 1) * 0.05;
         logger.info(`Rate: Got engr score ${temp}, netscore is now ${netscore}`)
       } catch (error) {
         logger.error(error);
