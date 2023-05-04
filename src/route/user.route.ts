@@ -27,7 +27,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
         );
         return res.status(200).send("User profile successfuly deleted");
       }
-    } else if (res.locals.username == req.body.User.name) {
+    } else if ((res.locals.username == req.body.User.name) && (req.body.User.name != "ece30861defaultadminuser") ) {
       const query = ProfileModel.find();
       query.or([
         {
