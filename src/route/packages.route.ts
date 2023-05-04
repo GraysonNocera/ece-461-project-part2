@@ -53,6 +53,8 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
           if (packageQuery.Name == "*") {
             logger.info("Searching for all packages");
             packages = await getAllPackages(packages, offset);
+
+            logger.info("Packages: " + packages + " length: " + packages.length + " offset: " + offset + " returning 200");
             return res.status(200).send(packages);
           }
 
@@ -71,12 +73,12 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
         })
       );
 
-      logger.info("Packages: " + packages);
+      logger.info("Packages: " + packages + " length: " + packages.length + " offset: " + offset + " returning 200");
 
       return res.status(200).send(packages);
     } catch {
       // Request body is not valid JSON
-      logger.info("Invalid JSON for POST /packages");
+      logger.info("Invalid JSON for POST /packages, returning 400");
       return res.status(400).send("Invalid Request Body");
     }
   } else {

@@ -40,17 +40,17 @@ resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       deleteAllFilesFromMongo();
       await defaultuser.save();
 
-      logger.info("Registry is reset");
+      logger.info("Registry is reset, returning 200");
       return res.status(200).send("Registry is reset");
     }
 
-    logger.info("User is not admin");
+    logger.info("User is not admin, returning 401");
     return res
       .status(401)
       .send("You do not have permission to reset the registry.");
   } catch (error) {
     // Request body is not valid JSON
-    logger.info("Invalid JSON for DELETE /reset");
+    logger.info("Invalid JSON for DELETE /reset, returning 400");
     return res.status(400).send("Invalid JSON");
   }
 });

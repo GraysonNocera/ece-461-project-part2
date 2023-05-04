@@ -2,6 +2,7 @@ info: connectToMongo(): Connecting to MongoDB...
 info: Starting up the API server...
 info: API server listening on port 3000
 info: connectToMongo(): Connected to MongoDB
+<<<<<<< Updated upstream
 info: req{}
 info: authorizeUser: Authorizing user...
 info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgzMTY4NDEyLCJleHAiOjE2ODMyMDQ0MTJ9.qxBrRpnm2uz_bbDacPeflnczwy_FRRrNyxb6Ekl7dp0
@@ -106,3 +107,39 @@ info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRh
 info: auth success
 info: GET /package/:id/rate
 debug: GET /package/:id/rate: Package does not exist
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
+=======
+info: req{"URL":"https://github.com/facebook/react"}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgzMTY1MzY2LCJleHAiOjE2ODMyMDEzNjZ9.l6Jyd3iQX5Wgj3YiR3jWfQULGMrPaa6PDJG2DFxrZCw
+info: auth success
+info: Validate: Validating request body
+info: postPackage: POST /package endpoint hit
+info: postPackage: didUploadURL: true
+info: getMetadata: Getting metadata from package
+info: getMetadata: Getting metadata from URL
+info: getGitRepoDetails: Extracted username: facebook and repoName: react
+info: getVersionFromURL: latest release: 
+info: Successfully got metadata from package: name: react version: v18.2.0
+info: Checking if package name is in database
+info: ratePackage: Running rate script on url https://github.com/facebook/react...
+info: Running rate script...
+info: ratePackage: Package received rating 1
+info: POST /package: verifying rating
+info: verify: Verifying object against schema...
+debug: verify: Object does not meet schema requirements.
+info: POST /package: Package not uploaded, disqualified rating
+>>>>>>> Stashed changes

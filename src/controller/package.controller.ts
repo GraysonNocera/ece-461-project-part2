@@ -47,10 +47,10 @@ export const postPackage = async (
     });
 
     if (packageToUpload.data.Content && packageToUpload.data.URL) {
-      logger.info("postPackage: Package has both Content and URL");
+      logger.info("postPackage: Package has both Content and URL, returning 400");
       return res.status(400).send("Invalid request data");
     } else if (!packageToUpload.data.Content && !packageToUpload.data.URL) {
-      logger.info("postPackage: Package has neither Content nor URL");
+      logger.info("postPackage: Package has neither Content nor URL, returning 400");
       return res.status(400).send("Invalid request data");
     }
 
@@ -67,7 +67,7 @@ export const postPackage = async (
     if (package_query_results) {
       logger.info(
         "POST /package: Package already exists, got package: " +
-          package_query_results
+          package_query_results + ", returning 409"
       );
       return res.status(409).send("Package exists already.");
     }
@@ -82,7 +82,7 @@ export const postPackage = async (
         packageToUpload.data.URL = package_json["homepage"];
         if (!packageToUpload.data.URL) {
           logger.debug(
-            "POST /package: Package not uploaded, no homepage field"
+            "POST /package: Package not uploaded, no homepage field, returning 400"
           );
           deleteUnzippedFolder(basePath);
           return res.status(400).send("Invalid Content (could not find url)");
@@ -93,7 +93,7 @@ export const postPackage = async (
         );
       } catch (error) {
         logger.debug(
-          "POST /package: Package not uploaded, no homepage field or no package.json"
+          "POST /package: Package not uploaded, no homepage field or no package.json, returning 400"
         );
         deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content");
@@ -108,19 +108,19 @@ export const postPackage = async (
 
     packageToUpload.metadata = await getMetadata(github_url, package_json);
     if (!packageToUpload.metadata) {
-      logger.info("POST /package: Package not uploaded, invalid metadata");
+      logger.info("POST /package: Package not uploaded, invalid metadata, returning 400");
       deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content or URL");
     }
 
     if (packageToUpload.metadata.Name == "*") {
-      logger.info("POST /package: Package not uploaded, invalid name");
+      logger.info("POST /package: Package not uploaded, invalid name, returning 400");
       deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content or URL");
     }
 
     if (await isNameInDb(packageToUpload.metadata.Name)) {
-      logger.info("POST /package: Package not uploaded, name exists");
+      logger.info("POST /package: Package not uploaded, name exists, returning 409");
       deleteUnzippedFolder(basePath);
       return res.status(409).send("Package exists already.");
     }
@@ -166,7 +166,7 @@ export const postPackage = async (
       logger.info("POST /package: Got content from URL: " + basePath);
 
       if (!packageToUpload.data.Content) {
-        logger.info("POST /package: Package not uploaded, invalid content");
+        logger.info("POST /package: Package not uploaded, invalid content, returning 400");
         deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content or URL");
       }
@@ -209,8 +209,10 @@ export const postPackage = async (
     // deleteBase64File(filePath);
     deleteUnzippedFolder(basePath);
 
+    logger.info("POST /package: Returning package: " + packageToUpload.toObject() + " with status 201");
     return res.status(201).send(packageToUpload.toObject());
   } else {
+    logger.info("POST /package: Package not uploaded, invalid permissions, returning 401");
     res.status(401).send("Invalid permissions to perform requested action");
   }
 };
@@ -221,31 +223,6 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
   // :param name: string name of package
 
   let apiUrl = "";
-  // // chekcing if url is gh or npm
-  // if (url.startsWith("https://www.npmjs.com/package/")) {
-  //   const packageName = url.split("/").pop();
-  //   try {
-  //     const npmResponse = await axios.get(
-  //       `https://registry.npmjs.org/${packageName}`
-  //     );
-  //     const repositoryUrl = npmResponse.data.repository.url;
-
-  //     // maybe check here that the url is *actually* a gh url?
-  //     apiUrl = `https://api.github.com/repos/${repositoryUrl.split("/")[3]}/${
-  //       repositoryUrl.split("/")[4]
-  //     }/releases`;
-  //   } catch (error) {
-  //     logger.debug("Error fetching GitHub URL from npm URL:", error);
-  //     return "1.0.0"; // default
-  //   }
-  // } else if (url.startsWith("https://github.com/")) {
-  //   apiUrl = `https://api.github.com/repos/${url.split("/")[3]}/${
-  //     url.split("/")[4]
-  //   }/releases`;
-  // } else {
-  //   logger.info("Invalid URL provided");
-  //   return "1.0.0"; // default
-  // }
 
   if (!isGitHubUrl(url)) {
     logger.info("Invalid URL provided");
