@@ -4,6 +4,7 @@ import * as cp from "child_process";
 const { spawn } = require("child_process");
 import { graphAPIfetch, gql_query } from "./graphql_json";
 import { logger } from "../logging";
+import { ratePackage } from "../service/rate";
 // const jq = require("node-jq");
 // var stream = require("stream");
 // const ndjson = require("ndjson");
@@ -409,4 +410,7 @@ async function main() {
   // logger.log(json)
 }
 
-main();
+
+export async function getRating() {
+  main();
+}

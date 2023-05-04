@@ -85,7 +85,7 @@ packageRouter.get(
         return res.status(200).send(existingRating.toObject());
       }
 
-      rating = ratePackage(packageToRate.data.URL);
+      rating = await ratePackage(packageToRate.data.URL);
 
       if (!verify(PackageRatingChokedValidation, rating)) {
         logger.info("POST /package: Package not uploaded, disqualified rating");
