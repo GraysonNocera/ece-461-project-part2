@@ -81,6 +81,6 @@ export const PackageRatingUploadValidation = Joi.object({
   RampUp: Joi.number().min(0.5).required(),
   ResponsiveMaintainer: Joi.number().min(0.5).required(),
   LicenseScore: Joi.number().min(0.5).required(),
-  GoodPinningPractice: Joi.number().min(0.5).required(),
-  GoodEngineeringPractice: Joi.number().min(0.5).required(),
+  GoodPinningPractice: Joi.number().min(-1).required(),
+  GoodEngineeringPractice: Joi.number().min(-1).required(),
 });

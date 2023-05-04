@@ -1,12 +1,9 @@
-import { readFileSync, writeFile } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
 import { graphAPIfetch, gql_query } from "./graphql_json";
 import { logger } from "../logging";
-// const jq = require("node-jq");
-// var stream = require("stream");
-// const ndjson = require("ndjson");
 
 interface URLOBJ {
   URL: string;
@@ -85,18 +82,19 @@ function sortOutput(output, netscores): string[] {
 }
 
 async function main(url: string) {
-  logger.info("Running rate script...")
+  logger.info(`Running rate script on ${url}...`)
 
-  //   var objs: URLOBJ[] = [];
   let data = url;
   if (data.includes(".txt")) {
     data = getData();
   }
+
   // let data = getData();
   // logger.log(data);
   let wordList = cleanData(data);
   var netscores: Array<number> = [];
   var outputStrings: Array<string> = [];
+  var netscore = 0;
 
   for (let i = 0; i < wordList.length; i++) {
     // let netscore = 0;
@@ -118,7 +116,6 @@ async function main(url: string) {
 
     let URL = data.split("\n")[i];
     let output = "";
-    let netscore = 0;
 
     if (website == "npmjs") {
       //find github url and update user and repo values to be able to run code
@@ -134,14 +131,14 @@ async function main(url: string) {
       try {
         await runPythonScript("get_clone", user, repo);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       try {
         let gql: string = gql_query(user, repo);
         await graphAPIfetch(gql, repo);
         // await runPythonScript("get_graph", user, repo);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       try {
         logger.info("Rate: Getting pinned metric...")
@@ -165,9 +162,9 @@ async function main(url: string) {
 
         netscore += Math.min(temp, 1) * 0.1;
 
-        logger.info("Rate: got pinned metric of " + temp + " for " + repo + "and netscore is " + netscore);
+        logger.info("Rate: got pinned metric of " + temp + " for " + repo + " and netscore is " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -214,10 +211,10 @@ async function main(url: string) {
               netscore
           );
         } catch (err) {
-          logger.error(err);
+          logger.error("Rate: " + err);
         }
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       try {
         logger.info("Rate: Getting issues metric (correctness)...")
@@ -232,20 +229,20 @@ async function main(url: string) {
         issues = +jsonstring.split(":")[1];
 
         let temp = 0;
-        if (Number(issues) == null || Number(issues) < 100) {
+        if (Number(issues) == null || Number(issues) < 25) {
           temp = 0;
-        } else if (Number(issues) > 100 && Number(issues) < 200) {
+        } else if (Number(issues) > 25 && Number(issues) < 200) {
           temp = 0.5;
         } else {
           temp = 1;
         }
         output = output + " " + temp;
         // netscore += temp * 0.2;
-        netscore = Math.min(temp, 1) * 0.2;
+        netscore += Math.min(temp, 1) * 0.2;
 
         logger.info("Rate: Got issues (correctness) metric of " + temp + " and netscore of " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -262,9 +259,9 @@ async function main(url: string) {
         contributors = +jsonstring.split(":")[1];
 
         let temp = 0;
-        if (Number(contributors) == null || Number(contributors) < 5) {
+        if (Number(contributors) == null || Number(contributors) < 2) {
           temp = 0;
-        } else if (Number(contributors) > 5 && Number(contributors) < 25) {
+        } else if (Number(contributors) >= 2 && Number(contributors) < 25) {
           temp = 0.5;
         } else {
           temp = 1;
@@ -276,7 +273,7 @@ async function main(url: string) {
         // logger.log((forks*2).toString());
         logger.info("Rate: Got contributors (bus factor) metric of " + temp + " and netscore of " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -292,9 +289,9 @@ async function main(url: string) {
         // logger.log(jsonstring);
         forks = +jsonstring.split(":")[1];
         let temp = 0;
-        if (Number(forks) == null || Number(forks) < 100) {
+        if (Number(forks) == null || Number(forks) < 10) {
           temp = 0;
-        } else if (Number(forks) > 100 && Number(forks) < 200) {
+        } else if (Number(forks) >= 10 && Number(forks) < 200) {
           temp = 0.5;
         } else {
           temp = 1;
@@ -304,7 +301,7 @@ async function main(url: string) {
         netscore += Math.min(temp, 1) * 0.1;
         logger.info("Rate: Got forks metric of " + Math.min(temp, 1) + "netscore is now " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -323,9 +320,9 @@ async function main(url: string) {
         // netscore += Number(license) * 0.2;
 
         logger.info("Rate: Got license score " + Number(license) + ", netscore is now " + netscore);
-        netscore = Math.min(Number(license), 1) * 0.2;
+        netscore += Math.min(Number(license), 1) * 0.2;
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -347,14 +344,14 @@ async function main(url: string) {
         netscore += Math.min(temp, 1) * 0.05;
         logger.info(`Rate: Got engr score ${temp}, netscore is now ${netscore}`)
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
         logger.info("Rate: Removing repo...")
         await runPythonScript("rm_repo", user, repo);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       // console.log(URL + " " + netscore.toString() + output)
       netscore = Math.min(Math.round(netscore * 100) / 100, 1);
@@ -386,7 +383,7 @@ async function main(url: string) {
     // );
     let temp = JSON.stringify({
       //URL: Number(stringgie[0]),
-      NetScore: !Number.isNaN(Number(stringgie[2])) ? Number(stringgie[2]) : -1,
+      NetScore: !Number.isNaN(Number(netscore)) ? Number(netscore) : -1,
       BusFactor: !Number.isNaN(Number(stringgie[5]))
         ? Number(stringgie[5])
         : -1,
@@ -400,17 +397,15 @@ async function main(url: string) {
       LicenseScore: !Number.isNaN(Number(stringgie[7]))
         ? Number(stringgie[7])
         : -1,
-      GoodPinningPractice: !Number.isNaN(Number(stringgie[1]))
-        ? Number(stringgie[1])
+      GoodPinningPractice: !Number.isNaN(Number(stringgie[2]))
+        ? Number(stringgie[2])
         : -1,
       GoodEngineeringPractice: !Number.isNaN(Number(stringgie[8]))
         ? Number(stringgie[8])
         : -1,
     });
-    writeFile(__dirname + "/score.json", temp, function (err) {
-      if (err) throw err;
-      //logger.log("complete");
-    });
+
+    writeFileSync(__dirname + "/score.json", temp);
   }
 
   // logger.log(json)
@@ -418,5 +413,5 @@ async function main(url: string) {
 
 
 export async function getRating(url: string) {
-  main(url);
+  await main(url);
 }
