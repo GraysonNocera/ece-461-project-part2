@@ -87,7 +87,9 @@ packageRouter.get(
       rating = await ratePackage(packageToRate.data.URL);
 
       if (!verify(PackageRatingChokedValidation, rating)) {
-        logger.info("POST /package: Package not uploaded, disqualified rating, returning 500");
+        logger.info(
+          "POST /package: Package not uploaded, disqualified rating, returning 500"
+        );
         return res
           .status(500)
           .send(
@@ -123,7 +125,9 @@ packageRouter.get(
     if (res.locals.download) {
       // Ensure valid ID
       if (!mongoose.isObjectIdOrHexString(id)) {
-        logger.debug("GET /package/:id: Invalid package ID + " + id + " returning 404");
+        logger.debug(
+          "GET /package/:id: Invalid package ID + " + id + " returning 404"
+        );
         return res.status(404).send("No package found");
       }
 
@@ -142,7 +146,9 @@ packageRouter.get(
       // Load the content from mongo
       downloadFileFromMongo(package_received._id, (content, error) => {
         if (error) {
-          logger.debug("Error downloading file from mongo: " + error + " returning 404");
+          logger.debug(
+            "Error downloading file from mongo: " + error + " returning 404"
+          );
           return res.status(404).send("Invalid content");
         }
 
@@ -150,13 +156,19 @@ packageRouter.get(
 
         package_received.data.Content = content;
 
-        logger.info("Returning package: " + package_received?.toObject() + " returning 200");
+        logger.info(
+          "Returning package: " +
+            package_received?.toObject() +
+            " returning 200"
+        );
         return res
           .status(200)
           .send(package_received.toObject({ remove: "URL" }));
       });
     } else {
-      logger.debug("GET /package/:id: Invalid permissions to perform this action, returning 401");
+      logger.debug(
+        "GET /package/:id: Invalid permissions to perform this action, returning 401"
+      );
       return res.status(401).send("Invalid permissions to perform this action");
     }
   }
@@ -172,102 +184,114 @@ packageRouter.put(
     let id: string;
     let auth: string;
     let packageInfo: Package;
-    if (res.locals.upload) {
-      try {
-        id = req?.params?.id;
 
-        if (!mongoose.isObjectIdOrHexString(id)) {
-          logger.debug("PUT /package/:id: Invalid package ID " + id + " returning 404");
-          return res.status(404).send("No package found");
-        }
-
-        packageInfo = req?.body; // Get user-inputted package details
-
-        logger.info("PUT /package/:id: received package " + packageInfo);
-
-        const query = PackageModel.where({ _id: id });
-
-        try {
-          const package_received = await query.findOne();
-
-          // Package doesn't exist, return 404
-          if (!package_received) {
-            logger.debug("PUT /package/:id: Packaged don't exist");
-            res.status(404).send("Package does not exist");
-            return;
-          }
-
-          if (
-            package_received.metadata.Name != packageInfo.metadata.Name ||
-            package_received.metadata.Version != packageInfo.metadata.Version ||
-            package_received.metadata.ID != packageInfo.metadata.ID
-          ) {
-            logger.debug("PUT /package/:id: Package metadata does not match, returning 400");
-
-            return res
-              .status(400)
-              .send(
-                "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
-              );
-          }
-
-          // Handle multiple fields being set as an error
-          if (!onlyOneFieldSet(packageInfo.data)) {
-            logger.debug("PUT /package/:id: More than one field set, returning 400");
-            return res.status(400).send("More than one field set");
-          }
-
-          // Update contents with new contents
-          if (packageInfo.data.Content) {
-            let fileName: string = `${package_received.metadata.Name}.txt`;
-            package_received.data.Content = fileName;
-
-            uploadFileToMongo(
-              packageInfo.data.Content,
-              new mongoose.Types.ObjectId(package_received.metadata.ID)
-            );
-          } else if (packageInfo.data.URL) {
-            package_received.data.Content = await getContentFromUrl(packageInfo.data.URL || "") || "";
-            if (!package_received.data.Content) {
-              logger.debug("PUT /package/:id: Invalid URL, returning 400");
-              return res.status(400).send("Invalid URL");
-            }
-
-            package_received.data.URL = packageInfo.data.URL;
-
-            // Upload content to mongo
-            uploadFileToMongo(
-              package_received.data.Content,
-              new mongoose.Types.ObjectId(package_received.metadata.ID)
-            );
-          } else if (packageInfo.data.JSProgram) {
-            package_received.data.JSProgram = packageInfo.data.JSProgram;
-          }
-
-          logger.info("PUT /package/:id: Saving package");
-
-          package_received.save();
-
-          logger.info(
-            "PUT /package/:id: Saved package: " + package_received.toObject() + " returning 200"
-          );
-
-          // If status is 200, ok. Send 404 if package doesn't exist.
-          return res.status(200).send("Version is updated.");
-        } catch (error) {
-          logger.debug("PUT /package/:id: " + error + " returning 404");
-          return res.status(404).send("Invalid JSON");
-        }
-      } catch {
-        // Request body is not valid JSON
-        logger.debug("Invalid JSON for PUT /package/:id, returning 400");
-        return res.status(400).send("Invalid JSON");
-      }
-    } else {
-      logger.debug("PUT /package/:id: Invalid permissions to perform this action, returning 401");
+    if (!res.locals.upload) {
+      logger.debug(
+        "PUT /package/:id: Invalid permissions to perform this action, returning 401"
+      );
       return res
         .status(401)
         .send("Invalid permissions to perform requested action");
+    }
+
+    try {
+      id = req?.params?.id;
+
+      if (!mongoose.isObjectIdOrHexString(id)) {
+        logger.debug(
+          "PUT /package/:id: Invalid package ID " + id + " returning 404"
+        );
+        return res.status(404).send("No package found");
+      }
+
+      packageInfo = req?.body; // Get user-inputted package details
+
+      logger.info("PUT /package/:id: received package " + packageInfo);
+
+      const query = PackageModel.where({ _id: id });
+
+      try {
+        const package_received = await query.findOne();
+
+        // Package doesn't exist, return 404
+        if (!package_received) {
+          logger.debug("PUT /package/:id: Packaged don't exist");
+          res.status(404).send("Package does not exist");
+          return;
+        }
+
+        if (
+          package_received.metadata.Name != packageInfo.metadata.Name ||
+          package_received.metadata.Version != packageInfo.metadata.Version ||
+          package_received.metadata.ID != packageInfo.metadata.ID
+        ) {
+          logger.debug(
+            "PUT /package/:id: Package metadata does not match, returning 400"
+          );
+
+          return res
+            .status(400)
+            .send(
+              "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
+            );
+        }
+
+        // Handle multiple fields being set as an error
+        if (!onlyOneFieldSet(packageInfo.data)) {
+          logger.debug(
+            "PUT /package/:id: More than one field set, returning 400"
+          );
+          return res.status(400).send("More than one field set");
+        }
+
+        // Update contents with new contents
+        if (packageInfo.data.Content) {
+          let fileName: string = `${package_received.metadata.Name}.txt`;
+          package_received.data.Content = fileName;
+
+          uploadFileToMongo(
+            packageInfo.data.Content,
+            new mongoose.Types.ObjectId(package_received.metadata.ID)
+          );
+        } else if (packageInfo.data.URL) {
+          package_received.data.Content =
+            (await getContentFromUrl(packageInfo.data.URL || "")) || "";
+          if (!package_received.data.Content) {
+            logger.debug("PUT /package/:id: Invalid URL, returning 400");
+            return res.status(400).send("Invalid URL");
+          }
+
+          package_received.data.URL = packageInfo.data.URL;
+
+          // Upload content to mongo
+          uploadFileToMongo(
+            package_received.data.Content,
+            new mongoose.Types.ObjectId(package_received.metadata.ID)
+          );
+        } else if (packageInfo.data.JSProgram) {
+          package_received.data.JSProgram = packageInfo.data.JSProgram;
+        }
+
+        logger.info("PUT /package/:id: Saving package");
+
+        package_received.save();
+
+        logger.info(
+          "PUT /package/:id: Saved package: " +
+            package_received.toObject() +
+            " returning 200"
+        );
+
+        // If status is 200, ok. Send 404 if package doesn't exist.
+        return res.status(200).send("Version is updated.");
+      } catch (error) {
+        logger.debug("PUT /package/:id: " + error + " returning 404");
+        return res.status(404).send("Invalid JSON");
+      }
+    } catch {
+      // Request body is not valid JSON
+      logger.debug("Invalid JSON for PUT /package/:id, returning 400");
+      return res.status(400).send("Invalid JSON");
     }
   }
 );
@@ -283,15 +307,21 @@ packageRouter.delete(
 
     logger.info("DELETE /package/:id: Deleting package " + id + " from mongo");
     if (!mongoose.isObjectIdOrHexString(id)) {
-      logger.debug("DELETE /package/:id: Invalid package ID " + id + " returning 404");
+      logger.debug(
+        "DELETE /package/:id: Invalid package ID " + id + " returning 404"
+      );
       return res.status(404).send("No package found");
     }
 
-    let package_received = await PackageModel.deleteOne({_id: new mongoose.Types.ObjectId(id)}).exec();
+    let package_received = await PackageModel.deleteOne({
+      _id: new mongoose.Types.ObjectId(id),
+    }).exec();
 
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
-      logger.debug("DELETE /package/:id: Package does not exist, returning 404");
+      logger.debug(
+        "DELETE /package/:id: Package does not exist, returning 404"
+      );
       return res.status(404).send("Package does not exist.");
     }
 
@@ -314,11 +344,12 @@ packageRouter.post(
     let return_data: Object;
     if (res.locals.search) {
       try {
-
         regex_body = req.body.PackageRegEx;
         let isSafe = safe(new RegExp(regex_body));
         if (!isSafe) {
-          logger.debug("POST /package/byRegEx: Regex is not safe, returning 400");
+          logger.debug(
+            "POST /package/byRegEx: Regex is not safe, returning 400"
+          );
           return res.status(400).send("Regex is not safe");
         }
 
@@ -345,7 +376,9 @@ packageRouter.post(
 
         // If status is 200, ok. Send 404 if package doesn't exist.
         if (packages.length > 0) {
-          logger.info("Sending return_data: " + return_data + " with status 200");
+          logger.info(
+            "Sending return_data: " + return_data + " with status 200"
+          );
           return res.status(200).send(return_data);
         } else {
           logger.info("Sending 404, no packaged found, returning 404");
@@ -357,7 +390,9 @@ packageRouter.post(
         return res.status(400).send("Invalid JSON");
       }
     } else {
-      logger.debug("POST /package/byRegEx: Invalid permissions to perform this action, returning 401");
+      logger.debug(
+        "POST /package/byRegEx: Invalid permissions to perform this action, returning 401"
+      );
       return res
         .status(401)
         .send("Invalid permissions to perform requested actions");
