@@ -178,4 +178,3 @@ export class PostsComponent {
     this.sendRequest (this.apiUrl + 'user', headers, 'POST', JSON.stringify(requestBody));
   }
 }
-
