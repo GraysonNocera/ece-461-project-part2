@@ -181,7 +181,7 @@ packageRouter.put(
           return res.status(404).send("No package found");
         }
 
-        packageInfo = req.body; // Get user-inputted package details
+        packageInfo = req?.body; // Get user-inputted package details
 
         logger.info("PUT /package/:id: received package " + packageInfo);
 
@@ -189,6 +189,7 @@ packageRouter.put(
 
         try {
           const package_received = await query.findOne();
+
           // Package doesn't exist, return 404
           if (!package_received) {
             logger.debug("PUT /package/:id: Packaged don't exist");
@@ -210,14 +211,13 @@ packageRouter.put(
               );
           }
 
+          // Handle multiple fields being set as an error
           if (!onlyOneFieldSet(packageInfo.data)) {
             logger.debug("PUT /package/:id: More than one field set, returning 400");
             return res.status(400).send("More than one field set");
           }
 
           // Update contents with new contents
-          // As of right now, I'm not sure if we should handle the user setting multiple
-          // fields as an error or if we should just update one of them. Waiting on piazza response
           if (packageInfo.data.Content) {
             let fileName: string = `${package_received.metadata.Name}.txt`;
             package_received.data.Content = fileName;
@@ -279,20 +279,15 @@ packageRouter.delete(
   async (req: Request, res: Response) => {
     logger.info("DELETE /package/:id");
 
-    let package_received;
     let id: string = req?.params?.id;
 
     logger.info("DELETE /package/:id: Deleting package " + id + " from mongo");
     if (!mongoose.isObjectIdOrHexString(id)) {
-      // Ensure valid ID
       logger.debug("DELETE /package/:id: Invalid package ID " + id + " returning 404");
       return res.status(404).send("No package found");
     }
 
-    const query = PackageModel.where({
-      _id: new mongoose.Types.ObjectId(id),
-    });
-    package_received = await query.deleteOne();
+    let package_received = await PackageModel.deleteOne({_id: new mongoose.Types.ObjectId(id)}).exec();
 
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
@@ -315,18 +310,10 @@ packageRouter.post(
   async (req: Request, res: Response) => {
     logger.info("POST /package/byRegEx/{regex}");
 
-    // let regex: string;
     let regex_body: string;
-    let auth: string;
-    let packageMetadata: PackageMetadata;
     let return_data: Object;
     if (res.locals.search) {
       try {
-        // regex will be in the body of the request; Example request:
-        // {
-        //   "Regex": "string"
-        // }
-        // logger.info("Got regex: " + regex);
 
         regex_body = req.body.PackageRegEx;
         let isSafe = safe(new RegExp(regex_body));
@@ -342,22 +329,6 @@ packageRouter.post(
         const packages = await PackageModel.find({
           "metadata.Name": regex,
         }).exec();
-
-        // EXAMPLE RESPONSE:
-        // [
-        //   {
-        //     "Version": "1.2.3",
-        //     "Name": "Underscore"
-        //   },
-        //   {
-        //     "Version": "1.2.3-2.1.0",
-        //     "Name": "Lodash"
-        //   },
-        //   {
-        //     "Version": "^1.2.3",
-        //     "Name": "Re
-        //   }
-        // ]
 
         logger.info("Got packages: " + packages);
         logger.info("Preparing return_data");
@@ -395,6 +366,10 @@ packageRouter.post(
 );
 
 function onlyOneFieldSet(obj: any): boolean {
+  // Check if only one field is set
+  // :param obj: Object to check
+  // :return: True if only one field is set, False otherwise
+
   let count = 0;
   for (let key in obj) {
     if (obj[key]) {

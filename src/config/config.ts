@@ -1,4 +1,3 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
 import mongoose from "mongoose";
 import { logger } from "../logging";
 import * as fs from "fs";
@@ -15,8 +14,8 @@ export async function connectToMongo() {
   logger.info("connectToMongo(): Connecting to MongoDB...");
 
   // Set the following environment variables
-  const USERNAME: string = process.env.MONGODB_USERNAME || "brian";
-  const PASSWORD: string = process.env.MONGODB_PASSWORD || "64ba20XbTNElNJPw";
+  const USERNAME: string = process.env.MONGODB_USERNAME || "";
+  const PASSWORD: string = process.env.MONGODB_PASSWORD || "";
 
   // Keep this as "database"
   // We connect to the database, which will hold a bunch of collections
@@ -48,96 +47,50 @@ export async function disconnectFromMongo() {
   logger.info("disconnectFromMongo(): Disconnected from MongoDB");
 }
 
-/*
 export async function uploadFileToMongo(
-  filePath: string,
+  content: string,
   id: mongoose.Types.ObjectId
 ) {
-  // Uploads a file to MongoDB, assumes there is a txt file at filePath
-  // It removes the file aftewards
+  let filePath: string = path.join(__dirname, "..", "artifacts", `${id}.txt`);
 
+  // Ensure that the file exists at the specified path
+  if (!fs.existsSync(filePath)) {
+    fs.writeFileSync(filePath, content);
+  }
+
+  // Get the base file name from the file path
   let fileName: string = path.basename(filePath);
 
   // If this is PUT /package, the package already exists, so we must delete it
   try {
     await bucket.delete(id);
+    logger.info("uploadFileToMongo: Deleted existing file with ID " + id);
   } catch (err) {
-    logger.debug("uploadFileToMongo: No file to delete in mongo");
+    logger.debug("uploadFileToMongo: No file to delete in mongo with ID " + id);
   }
 
   logger.info("uploadFileToMongo: Uploading file to MongoDB: " + fileName);
-  try {
-    let stream = bucket.openUploadStreamWithId(id, fileName);
-    logger.debug(stream);
-    stream.id = id;
 
-    fs.createReadStream(filePath)
-      .pipe(stream)
-      .on("error", function (error) {
-        logger.debug("uploadFileToMongo: Error in inserting file: " + error);
-      })
-      .on("finish", function () {
-        logger.info(
-          "uploadFileToMongo: File Inserted into mongo, deleting it locally"
-        );
-        deleteBase64File(filePath);
-      });
-  } catch (error) {
-    logger.debug("error:" + error);
-  }
+  // Create a new stream to upload the file to MongoDB
+  let stream = bucket.openUploadStreamWithId(id, fileName);
+  stream.id = id;
 
+  // Pipe the file data to the stream
+  fs.createReadStream(filePath)
+    .pipe(stream)
+    .on("error", function (error) {
+      logger.info("uploadFileToMongo: Error in inserting file: " + error);
+      throw error;
+    })
+    .on("finish", function () {
+      logger.info(
+        "uploadFileToMongo: File Inserted into mongo with ID " +
+          id +
+          ", deleting it locally"
+      );
+      deleteBase64File(filePath);
+    });
 }
-
-*/
-
-export async function uploadFileToMongo(
-  content: string,
-  id: mongoose.Types.ObjectId
-) {
-  try {
-    let filePath: string = path.join(__dirname, "..", "artifacts", `${id}.txt`);
-
-    // Ensure that the file exists at the specified path
-    if (!fs.existsSync(filePath)) {
-      fs.writeFileSync(filePath, content);
-    }
-
-    // Get the base file name from the file path
-    let fileName: string = path.basename(filePath);
-
-    // If this is PUT /package, the package already exists, so we must delete it
-    try {
-      await bucket.delete(id);
-      logger.info("uploadFileToMongo: Deleted existing file with ID " + id);
-    } catch (err) {
-      logger.debug("uploadFileToMongo: No file to delete in mongo with ID " + id);
-    }
-
-    logger.info("uploadFileToMongo: Uploading file to MongoDB: " + fileName);
-
-    // Create a new stream to upload the file to MongoDB
-    let stream = bucket.openUploadStreamWithId(id, fileName);
-    stream.id = id;
-
-    // Pipe the file data to the stream
-    fs.createReadStream(filePath)
-      .pipe(stream)
-      .on("error", function (error) {
-        logger.info("uploadFileToMongo: Error in inserting file: " + error);
-        throw error;
-      })
-      .on("finish", function () {
-        logger.info(
-          "uploadFileToMongo: File Inserted into mongo with ID " + id + ", deleting it locally"
-        );
-        deleteBase64File(filePath);
-      });
-  } catch (error) {
-    logger.info("uploadFileToMongo: Error in uploading file to MongoDB: " + error);
-    throw error;
-  }
-}
-
 
 export async function downloadFileFromMongo(
   id: mongoose.Types.ObjectId,
