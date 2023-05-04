@@ -4,12 +4,13 @@ import * as cp from "child_process";
 import { readFileSync } from "fs";
 import * as path from "path";
 import Joi from "joi";
-import { getRating } from "../rate/hello-world";
 
-export async function ratePackage(url: string): Promise<PackageRating> {
+export function ratePackage(url: string): PackageRating {
   logger.info("ratePackage: Running rate script on url " + url + "...");
 
-  await getRating();
+  let terminal_command = `ts-node src/rate/hello-world.ts ${url}`;
+
+  cp.execSync(terminal_command);
   const test_file = readFileSync(
     path.join(__dirname, "../", "rate/score.json"),
     "utf8"

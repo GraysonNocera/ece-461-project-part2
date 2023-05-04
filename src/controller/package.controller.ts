@@ -127,7 +127,7 @@ export const postPackage = async (
 
     // Package not updated due to disqualified rating: status 423
     if (didUploadURL) {
-      rating = await ratePackage(packageToUpload.data.URL);
+      rating = ratePackage(packageToUpload.data.URL);
 
       logger.info("POST /package: verifying rating");
 
