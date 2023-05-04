@@ -23,7 +23,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       let test = await query.deleteOne();
       if (test.acknowledged) {
         logger.info(
-          "DELETE /user: User profile successfuly deleted, got result: " + test
+          "DELETE /user: User profile successfuly deleted, got result: " + test + " returning 200"
         );
         return res.status(200).send("User profile successfuly deleted");
       }
@@ -37,13 +37,13 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
       let test = await query.deleteOne();
       if (test.acknowledged) {
         logger.info(
-          "DELETE /user: User profile successfuly deleted, got result: " + test
+          "DELETE /user: User profile successfuly deleted, got result: " + test + " returning 200"
         );
         return res.status(200).send("User profile successfuly deleted");
       }
     } else {
       logger.debug(
-        "DELETE /user: User is not admin or the user trying to delete their account"
+        "DELETE /user: User is not admin or the user trying to delete their account, returning 401"
       );
       return res
         .status(401)
@@ -52,7 +52,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 
     // add in stuff for checking admin if not admin check if user is the same as the profile trying to be deleted if not any of that then return no rights
   } catch (error) {
-    logger.info("Internal Error");
+    logger.info("Internal Error, returning 400");
     return res
       .status(400)
       .send("There are missing fields in new user profile or internal error ");
@@ -77,17 +77,17 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
       
       await account.save();
 
-      logger.info("POST /user: Account successfully created");
+      logger.info("POST /user: Account successfully created, returning 200");
       return res.status(200).send("Account successfully created");
     } else {
-      logger.debug("POST /user: User is not admin");
+      logger.debug("POST /user: User is not admin, returning 401");
 
       return res
         .status(401)
         .send("You don't have proper permissions to add an account");
     }
   } catch (error) {
-    logger.info("Internal Error");
+    logger.info("Internal Error, returning 400");
     return res
       .status(400)
       .send("There are missing fields in new user profile or internal error ");

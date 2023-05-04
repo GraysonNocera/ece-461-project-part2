@@ -13,9 +13,7 @@ import { Validate } from "../middleware/validate";
 import { deleteFileFromMongo, uploadFileToMongo } from "../config/config";
 import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
-import fs from "fs";
 import express from "express";
-import path from "path";
 import { getContentFromUrl } from "../service/zip";
 let safe = require("safe-regex");
 
@@ -81,7 +79,7 @@ packageRouter.get(
       existingRating = await PackageRatingModel.findOne({ _id: id }).exec();
       if (existingRating) {
         logger.info(
-          "GET /package/:id/rate: Package already rated, returning existing rating"
+          "GET /package/:id/rate: Package already rated, returning existing rating (status 200)"
         );
         return res.status(200).send(existingRating.toObject());
       }
@@ -89,7 +87,7 @@ packageRouter.get(
       rating = await ratePackage(packageToRate.data.URL);
 
       if (!verify(PackageRatingChokedValidation, rating)) {
-        logger.info("POST /package: Package not uploaded, disqualified rating");
+        logger.info("POST /package: Package not uploaded, disqualified rating, returning 500");
         return res
           .status(500)
           .send(
@@ -107,7 +105,7 @@ packageRouter.get(
       return res.status(200).send(rating);
     } catch {
       // Request body is not valid JSON
-      logger.info("Invalid JSON for GET /package/:id/rate");
+      logger.info("Invalid JSON for GET /package/:id/rate, returning 400");
       return res.status(400).send("Invalid JSON");
     }
   }
@@ -125,7 +123,7 @@ packageRouter.get(
     if (res.locals.download) {
       // Ensure valid ID
       if (!mongoose.isObjectIdOrHexString(id)) {
-        logger.debug("GET /package/:id: Invalid package ID + " + id);
+        logger.debug("GET /package/:id: Invalid package ID + " + id + " returning 404");
         return res.status(404).send("No package found");
       }
 
@@ -135,7 +133,7 @@ packageRouter.get(
       });
       package_received = await query.findOne();
       if (!package_received) {
-        logger.debug("GET /package/:id: Package does not exist");
+        logger.debug("GET /package/:id: Package does not exist, returning 404");
         return res.status(404).send("Package does not exist.");
       }
 
@@ -144,7 +142,7 @@ packageRouter.get(
       // Load the content from mongo
       downloadFileFromMongo(package_received._id, (content, error) => {
         if (error) {
-          logger.debug("Error downloading file from mongo: " + error);
+          logger.debug("Error downloading file from mongo: " + error + " returning 404");
           return res.status(404).send("Invalid content");
         }
 
@@ -152,12 +150,13 @@ packageRouter.get(
 
         package_received.data.Content = content;
 
-        logger.info("Returning package: " + package_received?.toObject());
+        logger.info("Returning package: " + package_received?.toObject() + " returning 200");
         return res
           .status(200)
           .send(package_received.toObject({ remove: "URL" }));
       });
     } else {
+      logger.debug("GET /package/:id: Invalid permissions to perform this action, returning 401");
       return res.status(401).send("Invalid permissions to perform this action");
     }
   }
@@ -178,7 +177,7 @@ packageRouter.put(
         id = req?.params?.id;
 
         if (!mongoose.isObjectIdOrHexString(id)) {
-          logger.debug("PUT /package/:id: Invalid package ID + " + id);
+          logger.debug("PUT /package/:id: Invalid package ID " + id + " returning 404");
           return res.status(404).send("No package found");
         }
 
@@ -202,7 +201,7 @@ packageRouter.put(
             package_received.metadata.Version != packageInfo.metadata.Version ||
             package_received.metadata.ID != packageInfo.metadata.ID
           ) {
-            logger.debug("PUT /package/:id: Package metadata does not match");
+            logger.debug("PUT /package/:id: Package metadata does not match, returning 400");
 
             return res
               .status(400)
@@ -212,7 +211,7 @@ packageRouter.put(
           }
 
           if (!onlyOneFieldSet(packageInfo.data)) {
-            logger.debug("PUT /package/:id: More than one field set");
+            logger.debug("PUT /package/:id: More than one field set, returning 400");
             return res.status(400).send("More than one field set");
           }
 
@@ -230,7 +229,7 @@ packageRouter.put(
           } else if (packageInfo.data.URL) {
             package_received.data.Content = await getContentFromUrl(packageInfo.data.URL || "") || "";
             if (!package_received.data.Content) {
-              logger.debug("PUT /package/:id: Invalid URL");
+              logger.debug("PUT /package/:id: Invalid URL, returning 400");
               return res.status(400).send("Invalid URL");
             }
 
@@ -250,21 +249,22 @@ packageRouter.put(
           package_received.save();
 
           logger.info(
-            "PUT /package/:id: Saved package: " + package_received.toObject()
+            "PUT /package/:id: Saved package: " + package_received.toObject() + " returning 200"
           );
 
           // If status is 200, ok. Send 404 if package doesn't exist.
           return res.status(200).send("Version is updated.");
         } catch (error) {
-          logger.debug("PUT /package/:id: " + error);
+          logger.debug("PUT /package/:id: " + error + " returning 404");
           return res.status(404).send("Invalid JSON");
         }
       } catch {
         // Request body is not valid JSON
-        logger.debug("Invalid JSON for PUT /package/:id");
+        logger.debug("Invalid JSON for PUT /package/:id, returning 400");
         return res.status(400).send("Invalid JSON");
       }
     } else {
+      logger.debug("PUT /package/:id: Invalid permissions to perform this action, returning 401");
       return res
         .status(401)
         .send("Invalid permissions to perform requested action");
@@ -282,10 +282,10 @@ packageRouter.delete(
     let package_received;
     let id: string = req?.params?.id;
 
-    logger.info("DELETE /package/:id: Deleting package " + id);
+    logger.info("DELETE /package/:id: Deleting package " + id + " from mongo");
     if (!mongoose.isObjectIdOrHexString(id)) {
       // Ensure valid ID
-      logger.debug("DELETE /package/:id: Invalid package ID + " + id);
+      logger.debug("DELETE /package/:id: Invalid package ID " + id + " returning 404");
       return res.status(404).send("No package found");
     }
 
@@ -296,14 +296,14 @@ packageRouter.delete(
 
     // Package doesn't exist, return 404
     if (!package_received.deletedCount) {
-      logger.debug("DELETE /package/:id: Package does not exist");
+      logger.debug("DELETE /package/:id: Package does not exist, returning 404");
       return res.status(404).send("Package does not exist.");
     }
 
     // Remove the Content
     deleteFileFromMongo(new mongoose.Types.ObjectId(id));
 
-    logger.info("DELETE /package/:id: Package is deleted");
+    logger.info("DELETE /package/:id: Package is deleted, returning 200");
     return res.status(200).send("Package is deleted.");
   }
 );
@@ -331,7 +331,7 @@ packageRouter.post(
         regex_body = req.body.PackageRegEx;
         let isSafe = safe(new RegExp(regex_body));
         if (!isSafe) {
-          logger.debug("POST /package/byRegEx: Regex is not safe");
+          logger.debug("POST /package/byRegEx: Regex is not safe, returning 400");
           return res.status(400).send("Regex is not safe");
         }
 
@@ -374,18 +374,19 @@ packageRouter.post(
 
         // If status is 200, ok. Send 404 if package doesn't exist.
         if (packages.length > 0) {
-          logger.info("Sending return_data: " + return_data);
+          logger.info("Sending return_data: " + return_data + " with status 200");
           return res.status(200).send(return_data);
         } else {
-          logger.info("Sending 404, no packaged found");
+          logger.info("Sending 404, no packaged found, returning 404");
           return res.status(404).send("No package found under this regex.");
         }
       } catch {
         // Request body is not valid JSON
-        logger.info("Invalid JSON for POST /RegEx/{regex}");
+        logger.info("Invalid JSON for POST /RegEx/{regex}, returning 400");
         return res.status(400).send("Invalid JSON");
       }
     } else {
+      logger.debug("POST /package/byRegEx: Invalid permissions to perform this action, returning 401");
       return res
         .status(401)
         .send("Invalid permissions to perform requested actions");

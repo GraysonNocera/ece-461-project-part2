@@ -25,17 +25,17 @@ authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
     };
     // authToken = { Token: authData.Secret.password };
     if (res.locals.auth) {
-      logger.info("Authentication successful");
-      res.status(200).send(authToken.Token);
+      logger.info("Authentication successful, returning 200");
+      return res.status(200).send(authToken.Token);
     } else {
-      logger.info("Authentication failed");
-      res.status(403).send("Authentication Failed");
+      logger.info("Authentication failed, returning 403");
+      return res.status(403).send("Authentication Failed");
     }
   } catch (error) {
     // Request body is not valid JSON
     logger.info("PUT /authenticate: " + error);
-    logger.info("Invalid JSON for PUT /authenticate");
-    res.status(500).send("Internal Server Error");
+    logger.info("Invalid JSON for PUT /authenticate, returning 500");
+    return res.status(500).send("Internal Server Error");
   }
 });
 
