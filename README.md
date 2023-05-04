@@ -45,6 +45,6 @@ Measure based on how many pull requests with a reviewer's approval have been mer
 #### Net Score
 Based on the above metrics, the net score will be their weighted sum on a scale from 0 to 1 inclusive using the following formula:  
   
-```(0.15 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.15 ∗ rU) + (0.1 ∗ rM) + (0.1 * vP) + (0.1 * eP)= nS```  
+```(0.15 ∗ bF) + (0.2 ∗ L) + (0.2 ∗ C) + (0.15 ∗ rU) + (0.1 ∗ rM) + (0.1 * vP) + (0.05 * eP)= nS```  
   
 where ```bF``` is the bus factor; ```L``` is license; ```C``` is correctness; ```rU``` is ramp up; ```rM``` is responsive Maintainer; ```vP``` is version pinning; ```eP``` is engineering process;  and ```nS``` is the net score of the package overall.
