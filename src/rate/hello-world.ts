@@ -202,10 +202,17 @@ async function main() {
           }
           data = data.substring(loc + "comment: ".length, data.length);
           percent = parseFloat(data.split("\n")[0]);
-          output = output + " " + Math.min(1, percent / 100 + 0.33);
-          netscore += Math.min(1, percent / 100 + 0.33) * 0.2;
+          output = output + " " + Math.min(1, percent / 100 + 0.4);
+          netscore += Math.min(1, percent / 100 + 0.4) * 0.2;
 
-          logger.info("Rate: got percentage of comments (ramp up) score of " + Math.min(1, percent / 100 + 0.33) + " with a percentage of " + percent + " and net score of " + netscore);
+          logger.info(
+            "Rate: got percentage of comments (ramp up) score of " +
+              Math.min(1, percent / 100 + 0.4) +
+              " with a percentage of " +
+              percent +
+              " and net score of " +
+              netscore
+          );
         } catch (err) {
           logger.error(err);
         }
