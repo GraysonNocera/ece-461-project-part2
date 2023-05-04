@@ -65,3 +65,10 @@ textarea {
 button:hover {
   background-color: #555;
 }
+
+input[type="checkbox"] {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+

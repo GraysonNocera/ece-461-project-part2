@@ -8,11 +8,13 @@ import { Router } from '@angular/router';
   styleUrls: ['./posts.component.scss'],
 })
 export class PostsComponent {
-  constructor(public PostService: PostService) {}
+  constructor(public PostService: PostService) { }
 
   newPost = '';
   isLoggedIn = false;
   apiUrl = 'http://35.223.191.75:3000/';
+  popupVisible = false;
+  http_method = 'GET';
 
   addPost(postInput: HTMLTextAreaElement) {
     const authToken = localStorage.getItem('jwtToken_461_API');
@@ -22,7 +24,7 @@ export class PostsComponent {
       'X-Authorization': `Bearer ${authToken}`,
     });
 
-    this.sendRequest(requestUrl, requestHeaders);
+    this.sendRequest(requestUrl, requestHeaders, this.http_method);
   }
 
   authenticate(username: string, password: string) {
@@ -63,7 +65,7 @@ export class PostsComponent {
         });
         this.isLoggedIn = true;
         alert('Authentication Successful');
-        this.sendRequest(requestUrl, requestHeaders);
+        this.sendRequest(requestUrl, requestHeaders, this.http_method);
       })
       .catch((error) => {
         alert('Authentication Failed');
@@ -71,7 +73,7 @@ export class PostsComponent {
       });
   }
 
-  sendRequest(requestUrl: string, requestHeaders: Headers) {
+  sendRequest(requestUrl: string, requestHeaders: Headers, http_method: string, request_body?: string) {
     alert('Sending Request at ' + requestUrl);
     console.log(
       'Making request to URL:',
@@ -79,7 +81,11 @@ export class PostsComponent {
       'with headers:',
       requestHeaders
     );
-    fetch(requestUrl, { headers: requestHeaders })
+    fetch(requestUrl, { 
+      method: http_method,
+      headers: requestHeaders,
+      body : request_body || this.newPost 
+    })
       .then((response) => {
         if (!response.ok) {
           alert('Request Failed');
@@ -121,5 +127,54 @@ export class PostsComponent {
     alert('Logging Out');
     localStorage.removeItem('jwtToken_461_API');
     this.isLoggedIn = false;
+  }
+
+  togglePopup() {
+    this.popupVisible = !this.popupVisible;
+  }
+
+  create_user(): void {
+    this.popupVisible = !this.popupVisible;
+    const usernameInput = document.getElementById('new-username') as HTMLInputElement;
+    const passwordInput = document.getElementById('new-user-password') as HTMLInputElement;
+    const writePrivilegeInput = document.getElementById('write-privilege') as HTMLInputElement;
+    const downloadPrivilegeInput = document.getElementById('download-privilege') as HTMLInputElement;
+    const adminPrivilegeInput = document.getElementById('admin-privilege') as HTMLInputElement;
+    const searchPrivilegeInput = document.getElementById('search-privilege') as HTMLInputElement;
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+    const privileges = [];
+
+    if (writePrivilegeInput.checked) {
+      privileges.push('write');
+    }
+    if (downloadPrivilegeInput.checked) {
+      privileges.push('download');
+    }
+    if (adminPrivilegeInput.checked) {
+      privileges.push('admin');
+    }
+    if (searchPrivilegeInput.checked) {
+      privileges.push('search');
+    }
+
+    const requestBody = {
+      User: {
+        name: username,
+        isAdmin: privileges.includes('admin'),
+        isUpload: privileges.includes('write'),
+        isDownload: privileges.includes('download'),
+        isSearch: privileges.includes('search')
+      },
+      Secret: { password },
+    };
+
+    alert ("Creating user: \n" + JSON.stringify(requestBody, null, 2));
+
+    var headers = new Headers({
+      'Content-Type': 'application/json'});
+
+    this.sendRequest (this.apiUrl + 'user', headers, 'POST', JSON.stringify(requestBody));
   }
 }

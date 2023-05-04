@@ -84,11 +84,11 @@ function sortOutput(output, netscores): string[] {
   return finalOutput;
 }
 
-async function main() {
+async function main(url: string) {
   logger.info("Running rate script...")
 
   //   var objs: URLOBJ[] = [];
-  let data = process.argv[2];
+  let data = url;
   if (data.includes(".txt")) {
     data = getData();
   }
@@ -416,4 +416,7 @@ async function main() {
   // logger.log(json)
 }
 
-main();
+
+export async function getRating(url: string) {
+  main(url);
+}
