@@ -106,3 +106,10 @@ info: authorizeUser: Auth received eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRh
 info: auth success
 info: GET /package/:id/rate
 debug: GET /package/:id/rate: Package does not exist
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
