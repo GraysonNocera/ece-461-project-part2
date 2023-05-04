@@ -14,7 +14,11 @@ import { deleteFileFromMongo, uploadFileToMongo } from "../config/config";
 import mongoose from "mongoose";
 import { downloadFileFromMongo } from "../config/config";
 import express from "express";
-import { getContentFromUrl } from "../service/zip";
+import {
+  deleteUnzippedFolder,
+  getContentFromUrl,
+  getUrlFromContent,
+} from "../service/zip";
 let safe = require("safe-regex");
 
 export const packageRouter: Router = express.Router();
@@ -184,6 +188,7 @@ packageRouter.put(
     let id: string;
     let auth: string;
     let packageInfo: Package;
+    let basePath: string = "";
 
     if (!res.locals.upload) {
       logger.debug(
@@ -194,105 +199,93 @@ packageRouter.put(
         .send("Invalid permissions to perform requested action");
     }
 
-    try {
-      id = req?.params?.id;
+    id = req?.params?.id;
 
-      if (!mongoose.isObjectIdOrHexString(id)) {
-        logger.debug(
-          "PUT /package/:id: Invalid package ID " + id + " returning 404"
-        );
-        return res.status(404).send("No package found");
-      }
-
-      packageInfo = req?.body; // Get user-inputted package details
-
-      logger.info("PUT /package/:id: received package " + packageInfo);
-
-      const query = PackageModel.where({ _id: id });
-
-      try {
-        const package_received = await query.findOne();
-
-        // Package doesn't exist, return 404
-        if (!package_received) {
-          logger.debug("PUT /package/:id: Packaged don't exist");
-          res.status(404).send("Package does not exist");
-          return;
-        }
-
-        if (
-          package_received.metadata.Name != packageInfo.metadata.Name ||
-          package_received.metadata.Version != packageInfo.metadata.Version ||
-          package_received.metadata.ID != packageInfo.metadata.ID
-        ) {
-          logger.debug(
-            "PUT /package/:id: Package metadata does not match, returning 400"
-          );
-
-          return res
-            .status(400)
-            .send(
-              "There is missing field(s) in the PackageID/AuthenticationToken or it is formed improperly, or the AuthenticationToken is invalid."
-            );
-        }
-
-        // Handle multiple fields being set as an error
-        if (!onlyOneFieldSet(packageInfo.data)) {
-          logger.debug(
-            "PUT /package/:id: More than one field set, returning 400"
-          );
-          return res.status(400).send("More than one field set");
-        }
-
-        // Update contents with new contents
-        if (packageInfo.data.Content) {
-          let fileName: string = `${package_received.metadata.Name}.txt`;
-          package_received.data.Content = fileName;
-
-          uploadFileToMongo(
-            packageInfo.data.Content,
-            new mongoose.Types.ObjectId(package_received.metadata.ID)
-          );
-        } else if (packageInfo.data.URL) {
-          package_received.data.Content =
-            (await getContentFromUrl(packageInfo.data.URL || "")) || "";
-          if (!package_received.data.Content) {
-            logger.debug("PUT /package/:id: Invalid URL, returning 400");
-            return res.status(400).send("Invalid URL");
-          }
-
-          package_received.data.URL = packageInfo.data.URL;
-
-          // Upload content to mongo
-          uploadFileToMongo(
-            package_received.data.Content,
-            new mongoose.Types.ObjectId(package_received.metadata.ID)
-          );
-        } else if (packageInfo.data.JSProgram) {
-          package_received.data.JSProgram = packageInfo.data.JSProgram;
-        }
-
-        logger.info("PUT /package/:id: Saving package");
-
-        package_received.save();
-
-        logger.info(
-          "PUT /package/:id: Saved package: " +
-            package_received.toObject() +
-            " returning 200"
-        );
-
-        // If status is 200, ok. Send 404 if package doesn't exist.
-        return res.status(200).send("Version is updated.");
-      } catch (error) {
-        logger.debug("PUT /package/:id: " + error + " returning 404");
-        return res.status(404).send("Invalid JSON");
-      }
-    } catch {
-      // Request body is not valid JSON
-      logger.debug("Invalid JSON for PUT /package/:id, returning 400");
-      return res.status(400).send("Invalid JSON");
+    if (!mongoose.isObjectIdOrHexString(id)) {
+      logger.debug(`PUT /package/:id: Invalid package ID ${id} returning 404`);
+      return res.status(404).send("No package found");
     }
+
+    packageInfo = req?.body; // Get user-inputted package details
+
+    logger.info("PUT /package/:id: received package " + packageInfo);
+
+    // Handle multiple fields being set as an error
+    if (!onlyOneFieldSet(packageInfo.data)) {
+      logger.debug("PUT /package/:id: More than one field set, returning 400");
+      return res.status(400).send("More than one field set");
+    }
+
+    const package_received = await PackageModel.findOne({ _id: id }).exec();
+    // Package doesn't exist, return 404
+    if (!package_received) {
+      logger.debug("PUT /package/:id: Packaged don't exist");
+      res.status(404).send("Package does not exist");
+      return;
+    }
+
+    if (
+      package_received.metadata.Name != packageInfo.metadata.Name ||
+      package_received.metadata.Version != packageInfo.metadata.Version ||
+      package_received.metadata.ID != packageInfo.metadata.ID
+    ) {
+      logger.debug("PUT /package/:id: Metadata doesn't match, returning 400");
+
+      return res.status(400).send("Metadata does not match.");
+    }
+
+    // Update contents with new contents
+    if (packageInfo.data.Content) {
+      let temp: string = packageInfo.data.Content;
+      let fileName: string = `${package_received.metadata.Name}.txt`;
+      package_received.data.Content = fileName;
+
+      uploadFileToMongo(
+        packageInfo.data.Content,
+        new mongoose.Types.ObjectId(package_received.metadata.ID)
+      );
+
+      package_received.data.Content = temp;
+
+      const urlFromContent = await getUrlFromContent(packageInfo.data.Content);
+      if (!urlFromContent) {
+        logger.debug("PUT /package/:id: Invalid content, returning 400");
+        return res.status(400).send("Invalid content");
+      }
+
+      package_received.data.URL = urlFromContent.url;
+      basePath = urlFromContent.basePath;
+
+      deleteUnzippedFolder(basePath);
+    } else if (packageInfo.data.URL) {
+      package_received.data.Content =
+        (await getContentFromUrl(packageInfo.data.URL || "")) || "";
+
+      if (!package_received.data.Content) {
+        logger.debug("PUT /package/:id: Invalid URL, returning 400");
+        return res.status(400).send("Invalid URL");
+      }
+
+      package_received.data.URL = packageInfo.data.URL;
+
+      // Upload content to mongo
+      uploadFileToMongo(
+        package_received.data.Content,
+        new mongoose.Types.ObjectId(package_received.metadata.ID)
+      );
+    } else if (packageInfo.data.JSProgram) {
+      package_received.data.JSProgram = packageInfo.data.JSProgram;
+    }
+
+    logger.info("PUT /package/:id: Saving package");
+    package_received.save();
+
+    logger.info(
+      `PUT /package/:id: Saved package ${package_received.toObject()} returning 200`
+    );
+
+    // If status is 200, ok. Send 404 if package doesn't exist.
+    return res.status(200).send("Version is updated.");
   }
 );
 
