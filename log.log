@@ -113,3 +113,10 @@ info: authorizeUser: auth success
 info: PUT /authenticate
 info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
 info: Authentication successful
+info: req{"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: authorizeUser: Authorizing user...
+info: authorizeUser: Auth received 
+info: authorizeUser: auth success
+info: PUT /authenticate
+info: Auth data: {"User":{"name":"ece30861defaultadminuser","isAdmin":true,"isSearch":true,"isDownload":true,"isUpload":true},"Secret":{"password":"correcthorsebatterystaple123(!__+@**(A'\"`;DROP TABLE packages;"}}
+info: Authentication successful
