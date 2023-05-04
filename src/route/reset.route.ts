@@ -12,7 +12,7 @@ export const resetRouter: Router = express.Router();
 
 // Create a package when DELETE /reset is schema
 resetRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
-  logger.info("DELETE /reset");
+  logger.info("\nDELETE /reset");
 
   try {
     logger.info("Request body: " + req.headers);

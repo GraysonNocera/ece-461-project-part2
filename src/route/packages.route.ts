@@ -11,7 +11,7 @@ export const packagesRouter: Router = express.Router();
 
 // Create a package when POST /packages is called
 packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
-  logger.info("POST /packages");
+  logger.info("\nPOST /packages");
 
   let offset: number;
   let packages: any[] = [];
@@ -32,7 +32,7 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
       // Manually validate each package query
       arr.forEach((packageQuery) => {
         let { error, value } = PackageQueryValidation.validate(packageQuery);
-        if (error) {
+        if (error || packageQuery["ID"] != null) {
           logger.info("Invalid package query" + error);
 
           throw new Error(

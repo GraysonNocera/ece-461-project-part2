@@ -9,6 +9,11 @@ import { packagesRouter } from "./route/packages.route";
 import { resetRouter } from "./route/reset.route";
 import { userRouter } from "./route/user.route";
 import { connectToMongo, disconnectFromMongo } from "./config/config";
+import { readFileSync } from "fs";
+import { createServer } from "https";
+import { join } from "path";
+import { homedir } from "os";
+
 var cors = require("cors");
 // define app
 
@@ -38,12 +43,17 @@ function defineServer() {
 
 function startServer(app) {
   const port: Number = Number(process.env.PORT || 3000);
+  let server;
+  const httpsOptions = {
+		key: readFileSync (join(homedir(), ".certs/ca.key")),
+		cert: readFileSync (join(homedir(), ".certs/ca.crt"))
+	};
 
-  app = app.listen(port, () => {
-    logger.info("API server listening on port 3000");
+  server = createServer(httpsOptions, app);
+
+  server.listen(port, () => {
+    logger.info("API server listening on port " + port);
   });
-
-  return app;
 }
 
 function main() {
@@ -52,7 +62,7 @@ function main() {
 
   // Define and start the server
   let app = defineServer();
-  app = startServer(app);
+  startServer(app);
 }
 
 // Run main conditionally if it is not a module import

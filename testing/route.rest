@@ -51,6 +51,7 @@ DELETE http://localhost:3000/package/byName/testName
 
 // Search through database for pacakages fitting a query
 POST http://localhost:3000/packages
+X-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXIiOnsibmFtZSI6ImVjZTMwODYxZGVmYXVsdGFkbWludXNlciIsImlzQWRtaW4iOnRydWUsImlzU2VhcmNoIjp0cnVlLCJpc0Rvd25sb2FkIjp0cnVlLCJpc1VwbG9hZCI6dHJ1ZX0sIlNlY3JldCI6eyJwYXNzd29yZCI6ImNvcnJlY3Rob3JzZWJhdHRlcnlzdGFwbGUxMjMoIV9fK0AqKihBJ1wiYDtEUk9QIFRBQkxFIHBhY2thZ2VzOyJ9fSwiaWF0IjoxNjgzMTg4NjI2LCJleHAiOjE2ODMyMjQ2MjZ9.r2-FjB0CAlZs3E_s7qIDcAhX4f5NvmjT6ZAUVraQz9I
 Content-Type: application/json
 
 [
@@ -60,7 +61,8 @@ Content-Type: application/json
     },
     {
         "Name": "express",
-        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)"
+        "Version": "Exact (1.0.0) Bounded range (1.2.3-2.1.0) Carat (^1.2.3) Tilde (~1.2.0)",
+        "ID": null
     },
     {
         "Name": "react",

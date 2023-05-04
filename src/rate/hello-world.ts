@@ -199,12 +199,12 @@ async function main(url: string) {
           }
           data = data.substring(loc + "comment: ".length, data.length);
           percent = parseFloat(data.split("\n")[0]);
-          output = output + " " + Math.min(1, percent / 100 + 0.4);
-          netscore += Math.min(1, percent / 100 + 0.4) * 0.2;
+          output = output + " " + Math.min(1, percent / 100 + 0.45);
+          netscore += Math.min(1, percent / 100 + 0.45) * 0.2;
 
           logger.info(
             "Rate: got percentage of comments (ramp up) score of " +
-              Math.min(1, percent / 100 + 0.4) +
+              Math.min(1, percent / 100 + 0.45) +
               " with a percentage of " +
               percent +
               " and net score of " +
@@ -299,7 +299,7 @@ async function main(url: string) {
         output = output + " " + temp;
         // netscore += temp * 0.1;
         netscore += Math.min(temp, 1) * 0.1;
-        logger.info("Rate: Got forks metric of " + Math.min(temp, 1) + "netscore is now " + netscore);
+        logger.info("Rate: Got forks metric of " + Math.min(temp, 1) + " netscore is now " + netscore);
       } catch (error) {
         logger.error("Rate: " + error);
       }
@@ -319,8 +319,8 @@ async function main(url: string) {
         output = output + " " + Number(license);
         // netscore += Number(license) * 0.2;
 
-        logger.info("Rate: Got license score " + Number(license) + ", netscore is now " + netscore);
         netscore += Math.min(Number(license), 1) * 0.2;
+        logger.info("Rate: Got license score " + Number(license) + ", netscore is now " + netscore);
       } catch (error) {
         logger.error("Rate: " + error);
       }
@@ -357,6 +357,8 @@ async function main(url: string) {
       netscore = Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
+
+      logger.info(`Rate: Final netscore is ${netscore}`)
     } else {
       // logger.log(URL + ": -1, Can only accept github URLs.");
       logger.info("Rate: " + URL + ": -1, Can only accept github URLs or npm URLs.")
@@ -364,7 +366,7 @@ async function main(url: string) {
       outputStrings.push(
         URL + ": -1, Can only accept github URLs or npm URLs."
       );
-      netscore = Math.min(Math.round(netscore * 100) / 100, 1);
+      netscore += Math.min(Math.round(netscore * 100) / 100, 1);
       netscores.push(netscore);
       outputStrings.push(URL + " " + netscore.toString() + output);
     }
