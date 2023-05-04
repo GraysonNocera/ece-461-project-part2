@@ -62,6 +62,8 @@ paths:
         "400":
           description: There is missing field(s) in the PackageQuery/AuthenticationToken
             or it is formed improperly, or the AuthenticationToken is invalid.
+        "401":
+          description: Invalid permissions to perform requested action.
         "413":
           description: Too many packages returned.
       operationId: PackagesList
@@ -103,7 +105,7 @@ paths:
           $ref: "#/components/schemas/AuthenticationToken"
         in: header
         required: true
-  "/package/{id}":
+  /package/{id}:
     get:
       parameters:
         - name: id
@@ -156,6 +158,8 @@ paths:
         "400":
           description: There is missing field(s) in the PackageID/AuthenticationToken or
             it is formed improperly, or the AuthenticationToken is invalid.
+        "401":
+          description: Invalid permissions to perform requested action.
         "404":
           description: Package does not exist.
       operationId: PackageRetrieve
@@ -181,6 +185,8 @@ paths:
         "400":
           description: There is missing field(s) in the PackageID/AuthenticationToken or
             it is formed improperly, or the AuthenticationToken is invalid.
+        "401":
+          description: Invalid permissions to perform requested action.
         "404":
           description: Package does not exist.
       operationId: PackageUpdate
@@ -287,6 +293,8 @@ paths:
           description: There is missing field(s) in the PackageData/AuthenticationToken or
             it is formed improperly (e.g. Content and URL are both set), or the
             AuthenticationToken is invalid.
+        "401":
+          description: Invalid permissions to perform requested action.
         "409":
           description: Package exists already.
         "424":
@@ -299,7 +307,7 @@ paths:
           $ref: "#/components/schemas/AuthenticationToken"
         in: header
         required: true
-  "/package/{id}/rate":
+  /package/{id}/rate:
     get:
       responses:
         "200":
@@ -514,6 +522,8 @@ paths:
         "400":
           description: There is missing field(s) in the PackageRegEx/AuthenticationToken
             or it is formed improperly, or the AuthenticationToken is invalid.
+        "401":
+          description: Invalid permissions to perform requested action.
         "404":
           description: No package found under this regex.
       operationId: PackageByRegExGet
