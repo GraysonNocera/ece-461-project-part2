@@ -17,64 +17,70 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
   let packages: any[] = [];
   let verionsToSearch: string[];
   let arr: PackageQuery[] = [];
-  try {
-    if (typeof req.query?.offset != "string") {
-      offset = 1;
-    } else {
-      offset = parseInt(req.query?.offset) || 1;
-    }
-
-    logger.info("package offset: " + offset);
-
-    arr = req.body;
-
-    // Manually validate each package query
-    arr.forEach((packageQuery) => {
-      let { error, value } = PackageQueryValidation.validate(packageQuery);
-      if (error) {
-        logger.info("Invalid package query" + error);
-        
-        throw new Error("Invalid package query for POST /packages  " + packageQuery);
+  if (res.locals.search) {
+    try {
+      if (typeof req.query?.offset != "string") {
+        offset = 1;
+      } else {
+        offset = parseInt(req.query?.offset) || 1;
       }
-    });
 
-    logger.info("POST /packages: Received " + arr);
+      logger.info("package offset: " + offset);
 
-    await Promise.all(
-      arr.map(async (packageQuery) => {
-        verionsToSearch = getVersions(packageQuery.Version || "");
+      arr = req.body;
 
-        logger.info("Versions to search: " + verionsToSearch);
-        logger.info("Name: " + packageQuery.Name);
+      // Manually validate each package query
+      arr.forEach((packageQuery) => {
+        let { error, value } = PackageQueryValidation.validate(packageQuery);
+        if (error) {
+          logger.info("Invalid package query" + error);
 
-        if (packageQuery.Name == "*") {
-          logger.info("Searching for all packages");
-          packages = await getAllPackages(packages, offset);
-          return res.status(200).send(packages);
+          throw new Error(
+            "Invalid package query for POST /packages  " + packageQuery
+          );
         }
+      });
 
-        // For each version to search, search the database for a package
-        // with that version number and name
-        await Promise.all(
-          verionsToSearch.map(async (version) => {
-            packages = await getPackagesByVersionName(
-              version,
-              packageQuery.Name,
-              packages,
-              offset
-            );
-          })
-        );
-      })
-    );
+      logger.info("POST /packages: Received " + arr);
 
-    logger.info("Packages: " + packages);
+      await Promise.all(
+        arr.map(async (packageQuery) => {
+          verionsToSearch = getVersions(packageQuery.Version || "");
 
-    return res.status(200).send(packages);
-  } catch {
-    // Request body is not valid JSON
-    logger.info("Invalid JSON for POST /packages");
-    return res.status(400).send("Invalid Request Body");
+          logger.info("Versions to search: " + verionsToSearch);
+          logger.info("Name: " + packageQuery.Name);
+
+          if (packageQuery.Name == "*") {
+            logger.info("Searching for all packages");
+            packages = await getAllPackages(packages, offset);
+            return res.status(200).send(packages);
+          }
+
+          // For each version to search, search the database for a package
+          // with that version number and name
+          await Promise.all(
+            verionsToSearch.map(async (version) => {
+              packages = await getPackagesByVersionName(
+                version,
+                packageQuery.Name,
+                packages,
+                offset
+              );
+            })
+          );
+        })
+      );
+
+      logger.info("Packages: " + packages);
+
+      return res.status(200).send(packages);
+    } catch {
+      // Request body is not valid JSON
+      logger.info("Invalid JSON for POST /packages");
+      return res.status(400).send("Invalid Request Body");
+    }
+  } else {
+    res.status(401).send("Invalid permissions to perform requested action");
   }
 });
 
