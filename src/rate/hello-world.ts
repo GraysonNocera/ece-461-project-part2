@@ -1,4 +1,4 @@
-import { readFileSync, writeFile } from "fs";
+import { readFileSync, writeFile, writeFileSync } from "fs";
 import { emptyDirSync } from "fs-extra";
 import * as cp from "child_process";
 const { spawn } = require("child_process");
@@ -85,13 +85,13 @@ function sortOutput(output, netscores): string[] {
 }
 
 async function main(url: string) {
-  logger.info("Running rate script...")
+  logger.info(`Running rate script on ${url}...`)
 
-  //   var objs: URLOBJ[] = [];
   let data = url;
   if (data.includes(".txt")) {
     data = getData();
   }
+
   // let data = getData();
   // logger.log(data);
   let wordList = cleanData(data);
@@ -165,7 +165,7 @@ async function main(url: string) {
 
         netscore += Math.min(temp, 1) * 0.1;
 
-        logger.info("Rate: got pinned metric of " + temp + " for " + repo + "and netscore is " + netscore);
+        logger.info("Rate: got pinned metric of " + temp + " for " + repo + " and netscore is " + netscore);
       } catch (error) {
         logger.error(error);
       }
@@ -214,10 +214,10 @@ async function main(url: string) {
               netscore
           );
         } catch (err) {
-          logger.error(err);
+          logger.error("Rate: " + err);
         }
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
       try {
         logger.info("Rate: Getting issues metric (correctness)...")
@@ -245,7 +245,7 @@ async function main(url: string) {
 
         logger.info("Rate: Got issues (correctness) metric of " + temp + " and netscore of " + netscore);
       } catch (error) {
-        logger.error(error);
+        logger.error("Rate: " + error);
       }
 
       try {
@@ -407,10 +407,8 @@ async function main(url: string) {
         ? Number(stringgie[8])
         : -1,
     });
-    writeFile(__dirname + "/score.json", temp, function (err) {
-      if (err) throw err;
-      //logger.log("complete");
-    });
+
+    writeFileSync(__dirname + "/score.json", temp);
   }
 
   // logger.log(json)
@@ -418,5 +416,5 @@ async function main(url: string) {
 
 
 export async function getRating(url: string) {
-  main(url);
+  await main(url);
 }
