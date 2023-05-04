@@ -74,6 +74,7 @@ userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
         },
         Secret: { password: hashedPassword },
       });
+      
       await account.save();
 
       logger.info("POST /user: Account successfully created");
