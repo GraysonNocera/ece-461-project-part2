@@ -9,7 +9,7 @@ const express = require("express");
 export const userRouter: Router = express.Router();
 
 userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
-  logger.info("DELETE /user");
+  logger.info("\nDELETE /user");
   try {
     if (res.locals.isAdmin) {
       // const query = PackageModel.where({ _id: id });
@@ -60,7 +60,7 @@ userRouter.delete("/", authorizeUser, async (req: Request, res: Response) => {
 });
 
 userRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
-  logger.info("POST /user");
+  logger.info("\nPOST /user");
   try {
     if (res.locals.isAdmin) {
       const hashedPassword = hashPassword(req.body.Secret.password);

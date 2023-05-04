@@ -33,7 +33,7 @@ packageRouter.get(
   authorizeUser,
   async (req: Request, res: Response) => {
     logger.info(
-      "GET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement."
+      "\nGET /package/byName/{name}: This will not be implemented because we are not doing this additional requirement."
     );
     return res.status(400).send("Not implementing this requirement.");
   }
@@ -44,7 +44,7 @@ packageRouter.delete(
   authorizeUser,
   (req: Request, res: Response) => {
     logger.info(
-      "DELETE /package/byName/{name}: This will not be implemented because we are not doing this additional requirement."
+      "\nDELETE /package/byName/{name}: This will not be implemented because we are not doing this additional requirement."
     );
     return res.status(400).send("Not implementing this requirement.");
   }
@@ -55,7 +55,7 @@ packageRouter.get(
   "/:id/rate",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("GET /package/:id/rate");
+    logger.info("\nGET /package/:id/rate");
 
     let id: string;
     let rating: PackageRating;
@@ -116,7 +116,7 @@ packageRouter.get(
   "/:id",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("GET /package/:id");
+    logger.info("\nGET /package/:id");
 
     let id: string = req?.params?.id;
     let package_received: any;
@@ -167,7 +167,7 @@ packageRouter.put(
   "/:id",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("PUT /package/:id");
+    logger.info("\nPUT /package/:id");
 
     let id: string;
     let auth: string;
@@ -277,7 +277,7 @@ packageRouter.delete(
   "/:id",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("DELETE /package/:id");
+    logger.info("\nDELETE /package/:id");
 
     let id: string = req?.params?.id;
 
@@ -308,7 +308,7 @@ packageRouter.post(
   "/byRegEx",
   authorizeUser,
   async (req: Request, res: Response) => {
-    logger.info("POST /package/byRegEx/{regex}");
+    logger.info("\nPOST /package/byRegEx/{regex}");
 
     let regex_body: string;
     let return_data: Object;

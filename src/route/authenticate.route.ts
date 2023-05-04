@@ -10,7 +10,7 @@ export const authRouter: Router = express.Router();
 
 // Create a package when PUT /authenticate is called
 authRouter.put("/", authorizeUser, (req: Request, res: Response) => {
-  logger.info("PUT /authenticate");
+  logger.info("\nPUT /authenticate");
 
   let authData: AuthenticationRequest;
   let authToken: AuthenticationToken;

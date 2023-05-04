@@ -26,7 +26,7 @@ export const postPackage = async (
   res: Response,
   next: NextFunction
 ) => {
-  logger.info("postPackage: POST /package endpoint hit");
+  logger.info("\npostPackage: POST /package endpoint hit");
 
   let packageToUpload;
   let rating: PackageRating;
