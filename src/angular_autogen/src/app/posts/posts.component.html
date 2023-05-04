@@ -10,13 +10,15 @@
 
 <body>
   <main>
+    <div div style="text-align:center">
     <h1>Access Registry API</h1>
+  </div>
     <div class="input-container">
-      <div class="input-group">
+      <div class="input-group" *ngIf="!isLoggedIn">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" aria-label="Username input field" />
       </div>
-      <div class="input-group">
+      <div class="input-group" *ngIf="!isLoggedIn">
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" aria-label="Password input field" />
       </div>
@@ -32,71 +34,78 @@
 
     <br>
 
-    <label for="API Request URL">API Request URL: The Base URL is already defined and you just need to
-      type in the rest of the path:</label>
-    <textarea id="API Request URL" style="border: solid 2px black" rows="1" #postInput
-      aria-label="API request input field"></textarea>
-    <br /><br />
-    <button (click)="addPost(postInput)" aria-label="Send request button">
-      Send Request
-    </button>
-    <br /><br />
-    <div *ngIf="newPost" aria-live="polite">
-      <h2>Request:</h2>
-      <pre>http://35.223.191.75:3000/{{ postInput.value }}</pre>
-      <h2>Server Response:</h2>
-      <pre>{{ newPost }}</pre>
+    <div *ngIf="isLoggedIn">
+
+      <label for="API Request URL">API Request URL: The Base URL is already defined and you just need to
+        type in the rest of the path:</label>
+      <textarea id="API Request URL" style="border: solid 2px black" rows="1" #postInput
+        aria-label="API request input field"></textarea>
+      <br /><br />
+      <button (click)="addPost(postInput)" aria-label="Send request button">
+        Send Request
+      </button>
+      <br /><br />
+      <div *ngIf="newPost" aria-live="polite">
+        <h2>Request:</h2>
+        <pre>http://35.223.191.75:3000/{{ postInput.value }}</pre>
+        <h2>Server Response:</h2>
+        <pre>{{ newPost }}</pre>
+      </div>
+
     </div>
 
     <br><br>
 
+    <div *ngIf="isLoggedIn">
+      <h2>Add or Remove User</h2>
+      <button id="Add/Remove User" (click)="togglePopup()" aria-label="Add Or Remove Users"
+        [style.display]="popupVisible ? 'none' : 'block'">Add/Remove User</button>
+      <div id="popup-container" class="popup" [style.display]="popupVisible ? 'block' : 'none'">
+        <form>
 
-    <h2>Add or Remove User</h2>
-    <button id="Add/Remove User" (click)="togglePopup()" aria-label="Add Or Remove Users"
-      [style.display]="popupVisible ? 'none' : 'block'">Add/Remove User</button>
-    <div id="popup-container" class="popup" [style.display]="popupVisible ? 'block' : 'none'">
-      <form>
-
-        <div class="input-group">
-          <label for="new-username">New Username:</label>
-          <input type="text" id="new-username" name="new-username" required aria-label="New username input field">
-        </div>
-
-        <div class="input-group">
-          <label for="new-user-password">New Password:</label>
-          <input type="password" id="new-user-password" name="new-user-password" required
-            aria-label="new-user-password input field">
-        </div>
-
-        <div class="input-group">
-          <label>Select Privileges For New User:</label> <br>
-
-          <div style="display: flex; align-items: center;">
-            <label for="write-privilege">Write Privileges</label>
-            <input type="checkbox" id="write-privilege" name="privileges[]" value="write">
+          <div class="input-group">
+            <label for="username-to-modify">Username:</label>
+            <input type="text" id="username-to-modify" name="username-to-modify" required aria-label="Enter username of user either being added or deleted">
           </div>
 
-          <div style="display: flex; align-items: center;">
-            <label for="download-privilege">Download Privileges</label>
-            <input type="checkbox" id="download-privilege" name="privileges[]" value="download">
-          </div>
-          <div style="display: flex; align-items: center;">
-            <label for="admin-privilege">Admin Privileges</label>
-            <input type="checkbox" id="admin-privilege" name="privileges[]" value="admin">
+          <div class="input-group">
+            <label for="password-to-modify">Password:</label>
+            <input type="password" id="password-to-modify" name="password-to-modify" required
+              aria-label="Enter password of user either being added or deleted">
           </div>
 
-          <div style="display: flex; align-items: center;">
-            <label for="search-privilege">Search Privileges</label>
-            <input type="checkbox" id="search-privilege" name="privileges[]" value="search">
-          </div>
+          <div class="input-group">
+            <label>Select Privileges For New User:</label> <br>
 
-        </div>
-        <div class="button-container">
-          <button type="submit" id="submit-changes-button" (click)="create_user()" aria-label="Submit changes button">Submit</button>
-          <button type="button" id="cancel-button" (click)="togglePopup()" aria-label="Cancel button"
-            style="margin-left: 30px;"> Cancel </button>
-        </div>
-      </form>
+            <div style="display: flex; align-items: center;">
+              <label for="write-privilege">Write Privileges</label>
+              <input type="checkbox" id="write-privilege" name="privileges[]" value="write">
+            </div>
+
+            <div style="display: flex; align-items: center;">
+              <label for="download-privilege">Download Privileges</label>
+              <input type="checkbox" id="download-privilege" name="privileges[]" value="download">
+            </div>
+            <div style="display: flex; align-items: center;">
+              <label for="admin-privilege">Admin Privileges</label>
+              <input type="checkbox" id="admin-privilege" name="privileges[]" value="admin">
+            </div>
+
+            <div style="display: flex; align-items: center;">
+              <label for="search-privilege">Search Privileges</label>
+              <input type="checkbox" id="search-privilege" name="privileges[]" value="search">
+            </div>
+
+          </div>
+          <div class="button-container">
+            <button type="submit" id="Add-User-button" (click)="modify_user('POST')"
+              aria-label="Add-User button">Add User</button>
+            <button type="submit" id="Remove-User-button" (click)="modify_user('DELETE')" aria-label="Remove-User button" style="margin-left: 30px;"> Remove User </button>
+            <button type="button" id="cancel-button" (click)="togglePopup()" aria-label="Cancel button"
+              style="margin-left: 30px;"> Cancel </button>
+          </div>
+        </form>
+      </div>
     </div>
 
   </main>

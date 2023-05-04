@@ -11,25 +11,23 @@ export class PostsComponent {
   constructor(public PostService: PostService) { }
 
   newPost = '';
-  isLoggedIn = false;
+  isLoggedIn = true;
   apiUrl = 'http://35.223.191.75:3000/';
   popupVisible = false;
   http_method = 'GET';
 
+  package_view = false;
+  packages_view = false;
+
   addPost(postInput: HTMLTextAreaElement) {
     const authToken = localStorage.getItem('jwtToken_461_API');
     const requestUrl = `${this.apiUrl}${postInput.value}`;
-    const requestHeaders = new Headers({
-      'Content-Type': 'application/json',
-      'X-Authorization': `Bearer ${authToken}`,
-    });
 
-    this.sendRequest(requestUrl, requestHeaders, this.http_method);
+    this.sendRequest(requestUrl, this.http_method);
   }
 
   authenticate(username: string, password: string) {
     const authUrl = `${this.apiUrl}authenticate`;
-    alert('Authenticating at ' + authUrl);
     const authRequestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -58,14 +56,8 @@ export class PostsComponent {
       .then((data) => {
         const newAuthToken = data;
         localStorage.setItem('jwtToken_461_API', newAuthToken);
-        const requestUrl = `${this.apiUrl}${this.newPost}`;
-        const requestHeaders = new Headers({
-          'Content-Type': 'application/json',
-          'X-Authorization': `Bearer ${newAuthToken}`,
-        });
         this.isLoggedIn = true;
-        alert('Authentication Successful');
-        this.sendRequest(requestUrl, requestHeaders, this.http_method);
+        // alert('Authentication Successful');
       })
       .catch((error) => {
         alert('Authentication Failed');
@@ -73,18 +65,19 @@ export class PostsComponent {
       });
   }
 
-  sendRequest(requestUrl: string, requestHeaders: Headers, http_method: string, request_body?: string) {
+  sendRequest(requestUrl: string, http_method: string, request_body?: string) {
     alert('Sending Request at ' + requestUrl);
-    console.log(
-      'Making request to URL:',
-      requestUrl,
-      'with headers:',
-      requestHeaders
-    );
-    fetch(requestUrl, { 
+
+    let requestHeaders = new Headers({
+      'Content-Type': 'application/json',
+      'X-Authorization': `Bearer ${localStorage.getItem('jwtToken_461_API')}`
+    });
+
+
+    fetch(requestUrl, {
       method: http_method,
       headers: requestHeaders,
-      body : request_body || this.newPost 
+      body: request_body || this.newPost
     })
       .then((response) => {
         if (!response.ok) {
@@ -120,6 +113,9 @@ export class PostsComponent {
       .value;
     const password = (<HTMLInputElement>document.getElementById('password'))
       .value;
+
+    localStorage.removeItem('jwtToken_461_API');
+
     this.authenticate(username, password);
   }
 
@@ -133,10 +129,10 @@ export class PostsComponent {
     this.popupVisible = !this.popupVisible;
   }
 
-  create_user(): void {
+  modify_user(method:string): void {
     this.popupVisible = !this.popupVisible;
-    const usernameInput = document.getElementById('new-username') as HTMLInputElement;
-    const passwordInput = document.getElementById('new-user-password') as HTMLInputElement;
+    const usernameInput = document.getElementById('username-to-modify') as HTMLInputElement;
+    const passwordInput = document.getElementById('password-to-modify') as HTMLInputElement;
     const writePrivilegeInput = document.getElementById('write-privilege') as HTMLInputElement;
     const downloadPrivilegeInput = document.getElementById('download-privilege') as HTMLInputElement;
     const adminPrivilegeInput = document.getElementById('admin-privilege') as HTMLInputElement;
@@ -170,11 +166,8 @@ export class PostsComponent {
       Secret: { password },
     };
 
-    alert ("Creating user: \n" + JSON.stringify(requestBody, null, 2));
+    // alert("Creating user: \n" + JSON.stringify(requestBody, null, 2));
 
-    var headers = new Headers({
-      'Content-Type': 'application/json'});
-
-    this.sendRequest (this.apiUrl + 'user', headers, 'POST', JSON.stringify(requestBody));
+    this.sendRequest(this.apiUrl + 'user', method, JSON.stringify(requestBody));
   }
 }

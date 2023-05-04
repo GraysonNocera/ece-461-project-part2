@@ -7,10 +7,11 @@ import { PostsComponent } from './posts/posts.component';
 import { FormsModule } from '@angular/forms';
 import { PostService } from './posts/posts.service';
 import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [AppComponent, PostsComponent],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
+  imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule, BrowserAnimationsModule],
   providers: [],
   bootstrap: [AppComponent, PostService],
 })
