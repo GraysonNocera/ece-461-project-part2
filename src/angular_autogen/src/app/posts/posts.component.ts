@@ -37,6 +37,9 @@ export class PostsComponent {
         User: {
           name: username,
           isAdmin: false,
+          isSearch: false,
+          isDownload: false,
+          isUplaod: false,
         },
         Secret: {
           password: password,
@@ -50,7 +53,7 @@ export class PostsComponent {
           alert('Authentication failed.');
           throw new Error('Authentication failed.');
         }
-        return response.json();
+        return response.text();
       })
       .then((data) => {
         const newAuthToken = data;
@@ -88,7 +91,11 @@ export class PostsComponent {
           alert('Request Failed');
           throw new Error('Request failed.');
         }
-        return response.json();
+        try {
+          return response.json();
+        } catch (error) {
+          return response.text();
+        }
       })
       .then((data) => {
         console.log('Received response:', data);
