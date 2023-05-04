@@ -409,4 +409,7 @@ async function main() {
   // logger.log(json)
 }
 
-main();
+
+export async function getRating() {
+  main();
+}
