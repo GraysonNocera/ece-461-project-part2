@@ -16,6 +16,7 @@ import { downloadFileFromMongo } from "../config/config";
 import fs from "fs";
 import express from "express";
 import path from "path";
+import { getContentFromUrl } from "../service/zip";
 let safe = require("safe-regex");
 
 export const packageRouter: Router = express.Router();
@@ -220,23 +221,26 @@ packageRouter.put(
           // fields as an error or if we should just update one of them. Waiting on piazza response
           if (packageInfo.data.Content) {
             let fileName: string = `${package_received.metadata.Name}.txt`;
-            let filePath: string = path.join(
-              __dirname,
-              "..",
-              "artifacts",
-              fileName
-            );
             package_received.data.Content = fileName;
 
-            // Write content to a text file
-            fs.writeFileSync(filePath, packageInfo.data.Content);
-
             uploadFileToMongo(
-              filePath,
+              packageInfo.data.Content,
               new mongoose.Types.ObjectId(package_received.metadata.ID)
             );
           } else if (packageInfo.data.URL) {
+            package_received.data.Content = await getContentFromUrl(packageInfo.data.URL || "") || "";
+            if (!package_received.data.Content) {
+              logger.debug("PUT /package/:id: Invalid URL");
+              return res.status(400).send("Invalid URL");
+            }
+
             package_received.data.URL = packageInfo.data.URL;
+
+            // Upload content to mongo
+            uploadFileToMongo(
+              package_received.data.Content,
+              new mongoose.Types.ObjectId(package_received.metadata.ID)
+            );
           } else if (packageInfo.data.JSProgram) {
             package_received.data.JSProgram = packageInfo.data.JSProgram;
           }
