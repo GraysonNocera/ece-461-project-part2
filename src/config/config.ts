@@ -51,6 +51,13 @@ export async function uploadFileToMongo(
   content: string,
   id: mongoose.Types.ObjectId
 ) {
+  /*
+   * This function uploads a file to MongoDB
+   * 
+   * content: The content of the file to upload
+   * id: The ID of the file to upload
+   */
+
   let filePath: string = path.join(__dirname, "..", "artifacts", `${id}.txt`);
 
   // Ensure that the file exists at the specified path
@@ -131,7 +138,9 @@ export async function deleteFileFromMongo(id: mongoose.Types.ObjectId) {
 }
 
 export async function deleteAllFilesFromMongo() {
-  await connectToMongo();
+  /* 
+    deleteAllFilesFromMongo(): Deletes all files from MongoDB 
+  */
 
   logger.info("deleteAllFilesFromMongo(): Deleting all files from MongoDB");
 
