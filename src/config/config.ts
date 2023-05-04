@@ -91,13 +91,15 @@ export async function uploadFileToMongo(
 */
 
 export async function uploadFileToMongo(
-  filePath: string,
+  content: string,
   id: mongoose.Types.ObjectId
 ) {
   try {
+    let filePath: string = path.join(__dirname, "..", "artifacts", `${id}.txt`);
+
     // Ensure that the file exists at the specified path
     if (!fs.existsSync(filePath)) {
-      throw new Error("File not found at " + filePath);
+      fs.writeFileSync(filePath, content);
     }
 
     // Get the base file name from the file path
