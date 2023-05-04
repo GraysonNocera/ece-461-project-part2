@@ -9,7 +9,7 @@ import { getRating } from "../rate/hello-world";
 export async function ratePackage(url: string): Promise<PackageRating> {
   logger.info("ratePackage: Running rate script on url " + url + "...");
 
-  await getRating();
+  await getRating(url);
   const test_file = readFileSync(
     path.join(__dirname, "../", "rate/score.json"),
     "utf8"
