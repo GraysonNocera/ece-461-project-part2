@@ -22,11 +22,7 @@ import path from "path";
 import axios from "axios";
 let isGitHubUrl = require("is-github-url");
 
-export const postPackage = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const postPackage = async (req: Request, res: Response) => {
   logger.info("\npostPackage: POST /package endpoint hit");
 
   let packageToUpload;
@@ -43,10 +39,10 @@ export const postPackage = async (
     });
 
     if (packageToUpload.data.Content && packageToUpload.data.URL) {
-      logger.info("postPackage: Package has both Content and URL, returning 400");
+      logger.info("postPackage: Package has both Content + URL, returning 400");
       return res.status(400).send("Invalid request data");
     } else if (!packageToUpload.data.Content && !packageToUpload.data.URL) {
-      logger.info("postPackage: Package has neither Content nor URL, returning 400");
+      logger.info("postPackage: Package has no Content nor URL, returning 400");
       return res.status(400).send("Invalid request data");
     }
 
@@ -62,17 +58,20 @@ export const postPackage = async (
     const package_query_results = await query.findOne();
     if (package_query_results) {
       logger.info(
-        "POST /package: Package already exists, got package: " +
-          package_query_results + ", returning 409"
+        `POST /package: Package already exists, got package: ${package_query_results}, returning 409`
       );
       return res.status(409).send("Package exists already.");
     }
 
     // Try to fetch the URL from the package_json
     if (!didUploadURL) {
-      const urlFromContent = await getUrlFromContent(packageToUpload.data.Content);
+      const urlFromContent = await getUrlFromContent(
+        packageToUpload.data.Content
+      );
       if (!urlFromContent) {
-        logger.info("POST /package: Package not uploaded, invalid content, returning 400");
+        logger.info(
+          "POST /package: Package not uploaded, invalid content, returning 400"
+        );
         return res.status(400).send("Invalid Content or URL");
       }
 
@@ -88,19 +87,25 @@ export const postPackage = async (
 
     packageToUpload.metadata = await getMetadata(github_url, package_json);
     if (!packageToUpload.metadata) {
-      logger.info("POST /package: Package not uploaded, invalid metadata, returning 400");
+      logger.info(
+        "POST /package: Package not uploaded, invalid metadata, returning 400"
+      );
       deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content or URL");
     }
 
     if (packageToUpload.metadata.Name == "*") {
-      logger.info("POST /package: Package not uploaded, invalid name, returning 400");
+      logger.info(
+        "POST /package: Package not uploaded, invalid name, returning 400"
+      );
       deleteUnzippedFolder(basePath);
       return res.status(400).send("Invalid Content or URL");
     }
 
     if (await isNameInDb(packageToUpload.metadata.Name)) {
-      logger.info("POST /package: Package not uploaded, name exists, returning 409");
+      logger.info(
+        "POST /package: Package not uploaded, name exists, returning 409"
+      );
       deleteUnzippedFolder(basePath);
       return res.status(409).send("Package exists already.");
     }
@@ -113,7 +118,9 @@ export const postPackage = async (
 
       // For now, nothing passes this, so I'm commenting it out
       if (!verify(PackageRatingUploadValidation, rating)) {
-        logger.info("POST /package: Package not uploaded, disqualified rating, returning 424");
+        logger.info(
+          "POST /package: Package not uploaded, disqualified rating, returning 424"
+        );
         res
           .status(424)
           .send("Package is not uploaded due to the disqualified rating.");
@@ -130,12 +137,7 @@ export const postPackage = async (
     }
 
     let fileName: string = `${packageToUpload.metadata.Name}.txt`;
-    let filePath: string = path.join(
-      __dirname,
-      "..",
-      "artifacts",
-      fileName
-    );
+    let filePath: string = path.join(__dirname, "..", "artifacts", fileName);
 
     if (didUploadURL) {
       // Use URL to get the Content, also writes Content to a file
@@ -146,7 +148,9 @@ export const postPackage = async (
       logger.info("POST /package: Got content from URL: " + basePath);
 
       if (!packageToUpload.data.Content) {
-        logger.info("POST /package: Package not uploaded, invalid content, returning 400");
+        logger.info(
+          "POST /package: Package not uploaded, invalid content, returning 400"
+        );
         deleteUnzippedFolder(basePath);
         return res.status(400).send("Invalid Content or URL");
       }
@@ -187,10 +191,16 @@ export const postPackage = async (
     // Clean up artifacts, we are letting the mongo upload take care of the text file deletion
     deleteUnzippedFolder(basePath);
 
-    logger.info("POST /package: Returning package: " + packageToUpload.toObject() + " with status 201");
+    logger.info(
+      "POST /package: Returning package: " +
+        packageToUpload.toObject() +
+        " with status 201"
+    );
     return res.status(201).send(packageToUpload.toObject());
   } else {
-    logger.info("POST /package: Package not uploaded, invalid permissions, returning 401");
+    logger.info(
+      "POST /package: Package not uploaded, invalid permissions, returning 401"
+    );
     res.status(401).send("Invalid permissions to perform requested action");
   }
 };
