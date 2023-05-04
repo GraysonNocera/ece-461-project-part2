@@ -199,12 +199,12 @@ async function main(url: string) {
           }
           data = data.substring(loc + "comment: ".length, data.length);
           percent = parseFloat(data.split("\n")[0]);
-          output = output + " " + Math.min(1, percent / 100 + 0.4);
-          netscore += Math.min(1, percent / 100 + 0.4) * 0.2;
+          output = output + " " + Math.min(1, percent / 100 + 0.45);
+          netscore += Math.min(1, percent / 100 + 0.45) * 0.2;
 
           logger.info(
             "Rate: got percentage of comments (ramp up) score of " +
-              Math.min(1, percent / 100 + 0.4) +
+              Math.min(1, percent / 100 + 0.45) +
               " with a percentage of " +
               percent +
               " and net score of " +
