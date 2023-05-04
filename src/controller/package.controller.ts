@@ -1,10 +1,7 @@
 import { logger } from "../logging";
 import { PackageMetadata } from "../model/packageMetadata";
 import { Request, Response, NextFunction } from "express";
-import { PackageHistoryEntry } from "../model/packageHistoryEntry";
-import { PackageHistoryEntryModel } from "../model/packageHistoryEntry";
 import {
-  deleteBase64File,
   deleteUnzippedFolder,
   getContentFromUrl,
   getPackageJSON,
@@ -17,11 +14,10 @@ import {
   PackageRatingUploadValidation,
 } from "../model/packageRating";
 import { PackageModel } from "../model/package";
-import { getInfoFromContent, unzipContent } from "../service/zip";
+import { unzipContent } from "../service/zip";
 import { ratePackage, verify } from "../service/rate";
 import { uploadFileToMongo } from "../config/config";
 import path from "path";
-import fs from "fs";
 import axios from "axios";
 let isGitHubUrl = require("is-github-url");
 
@@ -37,7 +33,6 @@ export const postPackage = async (
   let package_json: Object = {};
   let github_url: string;
   let temp: string;
-  let dataFromContent: any = {};
   let didUploadURL: boolean = false;
   let basePath: string = ""; // Base path to the unzipped folder
   if (res.locals.upload) {
@@ -149,13 +144,13 @@ export const postPackage = async (
       });
     }
 
+    let fileName: string = `${packageToUpload.metadata.Name}.txt`;
     let filePath: string = path.join(
       __dirname,
       "..",
       "artifacts",
-      `${packageToUpload.metadata.Name}.txt`
+      fileName
     );
-    let fileName: string = `${packageToUpload.metadata.Name}.txt`;
 
     if (didUploadURL) {
       // Use URL to get the Content, also writes Content to a file
@@ -174,7 +169,6 @@ export const postPackage = async (
       logger.info(
         "POST /package: Writing file to " + filePath + " from content"
       );
-      fs.writeFileSync(filePath, packageToUpload.data.Content);
     }
 
     // Get readme
@@ -206,7 +200,6 @@ export const postPackage = async (
     logger.info("POST /package: Package created successfully");
 
     // Clean up artifacts, we are letting the mongo upload take care of the text file deletion
-    // deleteBase64File(filePath);
     deleteUnzippedFolder(basePath);
 
     logger.info("POST /package: Returning package: " + packageToUpload.toObject() + " with status 201");
@@ -255,23 +248,6 @@ async function getVersionFromURL(url: string, name: string): Promise<string> {
     logger.info("getVersionFromURL: Unable to get version from URL: ", error);
     return "1.0.0"; // default
   }
-}
-
-function buildHistoryEntry(
-  metadata: PackageMetadata,
-  action: "CREATE" | "UPDATE" | "DOWNLOAD" | "RATE"
-): PackageHistoryEntry {
-  // Function description
-  // :param metadata: PackageMetadata
-  // :param action: string
-  // :return: PackageHistoryEntry
-
-  let historyEntry: PackageHistoryEntry = new PackageHistoryEntryModel({});
-  historyEntry.Date = new Date().toISOString();
-  historyEntry.PackageMetadata = metadata;
-  historyEntry.Action = action;
-
-  return historyEntry;
 }
 
 async function getMetadata(
@@ -325,6 +301,5 @@ async function isNameInDb(name: string): Promise<Number | null> {
 // Export all non-exported functions just for testing
 export const exportedForTestingPackageController = {
   getVersionFromURL,
-  buildHistoryEntry,
   getMetadata,
 };
