@@ -50,6 +50,37 @@ async function getPackageZip(owner: string, repo: string) {
   );
 }
 
+export async function getUrlFromContent(content: string): Promise<{package_json: Object, url: string, basePath: string} | null> {
+  // Returns the package data (for use later in getting the version)
+  // Returns the url we found
+  // Returns the basePath of the unzipped folder
+
+  let url: string = "";
+  let basePath = await unzipContent(content);
+  logger.info("postPackage: basePath: " + basePath);
+
+  let package_json = await getPackageJSON(basePath);
+  try {
+    url = package_json["homepage"];
+    if (!url) {
+      deleteUnzippedFolder(basePath);
+      return null;
+    }
+    logger.info(
+      "postPackage: packageToUpload.data.URL from package_json['hompage']: " +
+        url
+    );
+  } catch (error) {
+    logger.debug(
+      "POST /package: Package not uploaded, no homepage field or no package.json, returning 400"
+    );
+    deleteUnzippedFolder(basePath);
+    return null;
+  }
+
+  return {package_json, url, basePath};
+}
+
 export async function getContentFromUrl(url: string): Promise<string | null> {
   // Get content from url
   // :param url: string url
