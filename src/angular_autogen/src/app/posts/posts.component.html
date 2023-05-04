@@ -11,10 +11,10 @@
 <body>
   <main>
     <div div style="text-align:center">
-    <h1>Access Registry API</h1>
-  </div>
-    <div class="input-container">
-      <div class="input-group" *ngIf="!isLoggedIn">
+      <h1>Access Registry API</h1>
+    </div>
+    <div class="input-container" *ngIf="!isLoggedIn">
+      <div class="input-group">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" aria-label="Username input field" />
       </div>
@@ -26,85 +26,122 @@
         <button (click)="login()" aria-label="Login button" *ngIf="!isLoggedIn">
           Login
         </button>
-        <button (click)="logout()" aria-label="Logout button" *ngIf="isLoggedIn">
-          Logout
-        </button>
       </div>
     </div>
 
     <br>
 
-    <div *ngIf="isLoggedIn">
 
-      <label for="API Request URL">API Request URL: The Base URL is already defined and you just need to
-        type in the rest of the path:</label>
-      <textarea id="API Request URL" style="border: solid 2px black" rows="1" #postInput
-        aria-label="API request input field"></textarea>
-      <br /><br />
-      <button (click)="addPost(postInput)" aria-label="Send request button">
-        Send Request
-      </button>
-      <br /><br />
-      <div *ngIf="newPost" aria-live="polite">
-        <h2>Request:</h2>
-        <pre>http://35.223.191.75:3000/{{ postInput.value }}</pre>
-        <h2>Server Response:</h2>
-        <pre>{{ newPost }}</pre>
+    <div class="container" *ngIf="!edit_user_view && !package_view && !packages_view && isLoggedIn">
+      <div class="column" div style="text-align:center">
+        <h2>Edit Users</h2>
+        <div class="button-wrapper">
+          <button id="Add/Remove User" (click)="togglePopup('user_edit')" aria-label="Add Or Remove Users"
+            [style.display]="edit_user_view ? 'none' : 'block'">Add or Remove User</button>
+        </div>
       </div>
-
+      <div class="column" div style="text-align:center">
+        <h2>Package Route</h2>
+        <div class="button-wrapper">
+          <button id="Package-Route" (click)="togglePopup('package')" aria-label="Package Route"
+          [style.display]="package_view ? 'none' : 'block'">/ Package</button>
+        </div>
+      </div>
+      <div class="column" div style="text-align:center">
+        <h2>Packages Route</h2>
+        <div class="button-wrapper">
+          <button id="Packages-Route" (click)="togglePopup('package')" aria-label="Packages Route"
+          [style.display]="packages_view ? 'none' : 'block'">/ Packages</button>
+        </div>
+      </div>
     </div>
 
-    <br><br>
+    <div id="popup-container" class="popup" [style.display]="edit_user_view ? 'block' : 'none'">
+      <form>
+        <div class="input-group">
+          <label for="username-to-modify">Username:</label>
+          <input type="text" id="username-to-modify" name="username-to-modify" required
+            aria-label="Enter username of user either being added or deleted">
+        </div>
 
-    <div *ngIf="isLoggedIn">
-      <h2>Add or Remove User</h2>
-      <button id="Add/Remove User" (click)="togglePopup()" aria-label="Add Or Remove Users"
-        [style.display]="popupVisible ? 'none' : 'block'">Add/Remove User</button>
-      <div id="popup-container" class="popup" [style.display]="popupVisible ? 'block' : 'none'">
-        <form>
+        <div class="input-group">
+          <label for="password-to-modify">Password:</label>
+          <input type="password" id="password-to-modify" name="password-to-modify" required
+            aria-label="Enter password of user either being added or deleted">
+        </div>
 
-          <div class="input-group">
-            <label for="username-to-modify">Username:</label>
-            <input type="text" id="username-to-modify" name="username-to-modify" required aria-label="Enter username of user either being added or deleted">
+        <div class="input-group">
+          <label>Select Privileges For New User:</label> <br>
+
+          <div style="display: flex; align-items: center;">
+            <label for="write-privilege">Write Privileges</label>
+            <input type="checkbox" id="write-privilege" name="privileges[]" value="write">
           </div>
 
-          <div class="input-group">
-            <label for="password-to-modify">Password:</label>
-            <input type="password" id="password-to-modify" name="password-to-modify" required
-              aria-label="Enter password of user either being added or deleted">
+          <div style="display: flex; align-items: center;">
+            <label for="download-privilege">Download Privileges</label>
+            <input type="checkbox" id="download-privilege" name="privileges[]" value="download">
+          </div>
+          <div style="display: flex; align-items: center;">
+            <label for="admin-privilege">Admin Privileges</label>
+            <input type="checkbox" id="admin-privilege" name="privileges[]" value="admin">
           </div>
 
-          <div class="input-group">
-            <label>Select Privileges For New User:</label> <br>
-
-            <div style="display: flex; align-items: center;">
-              <label for="write-privilege">Write Privileges</label>
-              <input type="checkbox" id="write-privilege" name="privileges[]" value="write">
-            </div>
-
-            <div style="display: flex; align-items: center;">
-              <label for="download-privilege">Download Privileges</label>
-              <input type="checkbox" id="download-privilege" name="privileges[]" value="download">
-            </div>
-            <div style="display: flex; align-items: center;">
-              <label for="admin-privilege">Admin Privileges</label>
-              <input type="checkbox" id="admin-privilege" name="privileges[]" value="admin">
-            </div>
-
-            <div style="display: flex; align-items: center;">
-              <label for="search-privilege">Search Privileges</label>
-              <input type="checkbox" id="search-privilege" name="privileges[]" value="search">
-            </div>
-
+          <div style="display: flex; align-items: center;">
+            <label for="search-privilege">Search Privileges</label>
+            <input type="checkbox" id="search-privilege" name="privileges[]" value="search">
           </div>
-          <div class="button-container">
-            <button type="submit" id="Add-User-button" (click)="modify_user('POST')"
-              aria-label="Add-User button">Add User</button>
-            <button type="submit" id="Remove-User-button" (click)="modify_user('DELETE')" aria-label="Remove-User button" style="margin-left: 30px;"> Remove User </button>
-            <button type="button" id="cancel-button" (click)="togglePopup()" aria-label="Cancel button"
-              style="margin-left: 30px;"> Cancel </button>
-          </div>
-        </form>
+
+        </div>
+        <div class="button-container">
+          <button type="submit" id="Add-User-button" (click)="modify_user('POST')"
+            aria-label="Add-User button">Add
+            User</button>
+          <button type="submit" id="Remove-User-button" (click)="modify_user('DELETE')"
+            aria-label="Remove-User button" style="margin-left: 30px;"> Remove User </button>
+          <button type="button" id="cancel-button" (click)="togglePopup('rm_edit_user')" aria-label="Cancel button"
+            style="margin-left: 30px;"> Cancel </button>
+        </div>
+      </form>
+    </div>
+
+
+    <div id="popup-container" class="popup" [style.display]="package_view ? 'block' : 'none'">
+      <form>
+        <div class="input-group">
+          <label for="package-id">Package ID:</label>
+          <input type="text" id="package-id" name="package-id" required
+            aria-label="Enter package ID to rate">
+        </div>
+        <div class="button-container">
+          <button type="submit" id="Rate-Package-By-ID-button" (click)="modify_user('POST')"
+            aria-label="Rate-Package-By-ID button">Rate Package By ID</button>
+        </div>
+        <br>
+        <div class="input-group">
+          <label for="package-id">Package ID:</label>
+          <input type="text" id="package-id" name="package-id" required
+            aria-label="Enter package ID to get">
+        </div>
+        <div class="button-container">
+          <button type="submit" id="Get-Package-By-ID-button" (click)="modify_user('POST')"
+            aria-label="Get-Package-By-ID button">Get Package By ID</button>
+        </div>
+
+      </form>
+    </div>
+
+
+    <div id="popup-container" class="popup" [style.display]="packages_view ? 'block' : 'none'">
+      <form>
+      </form>
+    </div>
+
+    <div class="input-container">
+      <div class="button-container">
+        <button (click)="logout()" aria-label="Logout button" *ngIf="isLoggedIn">
+          Logout
+        </button>
       </div>
     </div>
 

@@ -11,13 +11,15 @@ export class PostsComponent {
   constructor(public PostService: PostService) { }
 
   newPost = '';
-  isLoggedIn = true;
   apiUrl = 'http://35.223.191.75:3000/';
-  popupVisible = false;
   http_method = 'GET';
-
+  
+  
+  popupVisible = false;
+  isLoggedIn = true;
   package_view = false;
   packages_view = false;
+  edit_user_view = false;
 
   addPost(postInput: HTMLTextAreaElement) {
     const authToken = localStorage.getItem('jwtToken_461_API');
@@ -61,6 +63,7 @@ export class PostsComponent {
       })
       .catch((error) => {
         alert('Authentication Failed');
+
         console.error('Error:', error);
       });
   }
@@ -104,6 +107,7 @@ export class PostsComponent {
           console.log(
             'Auth token expired. Prompting user to enter username and password.'
           );
+          this.logout();
         }
       });
   }
@@ -120,13 +124,30 @@ export class PostsComponent {
   }
 
   logout() {
-    alert('Logging Out');
+    // alert('Logging Out');
     localStorage.removeItem('jwtToken_461_API');
     this.isLoggedIn = false;
+    this.package_view = false;
+    this.packages_view = false;
+    this.edit_user_view = false;
   }
 
-  togglePopup() {
-    this.popupVisible = !this.popupVisible;
+  togglePopup(type:string) {
+    if (type === 'user_edit') {
+      this.package_view = false;
+      this.packages_view = false;
+      this.edit_user_view = true;
+    }
+
+    if (type === 'rm_edit_user') {
+      this.edit_user_view = false;
+    }
+
+    if (type === 'package') {
+      this.package_view = true;
+      this.packages_view = false;
+      this.edit_user_view = false;
+    }
   }
 
   modify_user(method:string): void {
