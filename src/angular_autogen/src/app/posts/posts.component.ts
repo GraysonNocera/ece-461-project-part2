@@ -14,6 +14,7 @@ export class PostsComponent {
   isLoggedIn = false;
   apiUrl = 'http://35.223.191.75:3000/';
   popupVisible = false;
+  http_method = 'GET';
 
   addPost(postInput: HTMLTextAreaElement) {
     const authToken = localStorage.getItem('jwtToken_461_API');
@@ -23,7 +24,7 @@ export class PostsComponent {
       'X-Authorization': `Bearer ${authToken}`,
     });
 
-    this.sendRequest(requestUrl, requestHeaders);
+    this.sendRequest(requestUrl, requestHeaders, this.http_method);
   }
 
   authenticate(username: string, password: string) {
@@ -61,7 +62,7 @@ export class PostsComponent {
         });
         this.isLoggedIn = true;
         alert('Authentication Successful');
-        this.sendRequest(requestUrl, requestHeaders);
+        this.sendRequest(requestUrl, requestHeaders, this.http_method);
       })
       .catch((error) => {
         alert('Authentication Failed');
@@ -69,7 +70,7 @@ export class PostsComponent {
       });
   }
 
-  sendRequest(requestUrl: string, requestHeaders: Headers) {
+  sendRequest(requestUrl: string, requestHeaders: Headers, http_method: string, request_body?: string) {
     alert('Sending Request at ' + requestUrl);
     console.log(
       'Making request to URL:',
@@ -77,7 +78,11 @@ export class PostsComponent {
       'with headers:',
       requestHeaders
     );
-    fetch(requestUrl, { headers: requestHeaders })
+    fetch(requestUrl, { 
+      method: http_method,
+      headers: requestHeaders,
+      body : request_body || this.newPost 
+    })
       .then((response) => {
         if (!response.ok) {
           alert('Request Failed');
@@ -160,24 +165,10 @@ export class PostsComponent {
 
     alert ("Creating user: \n" + JSON.stringify(requestBody, null, 2));
 
-    fetch('/user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then(response => {
-        if (!response.ok) {
-          alert ('Error creating account: \n' + response.status);
-          throw new Error('Network response was not ok');
-        }
+    var headers = new Headers({
+      'Content-Type': 'application/json'});
 
-        alert ('Account successfully created');
-      })
-      .catch(error => {
-        alert ('Error creating account');
-      });
+    this.sendRequest (this.apiUrl + 'user', headers, 'POST', JSON.stringify(requestBody));
   }
 }
 
