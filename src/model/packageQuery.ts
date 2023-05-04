@@ -40,4 +40,5 @@ export const PackageQueryModel = mongoose.model<PackageQuery>(
 export const PackageQueryValidation = Joi.object({
   Version: Joi.string(),
   Name: Joi.string().required(),
+  ID: Joi.string().allow(null),
 });

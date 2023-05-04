@@ -32,7 +32,7 @@ packagesRouter.post("/", authorizeUser, async (req: Request, res: Response) => {
       // Manually validate each package query
       arr.forEach((packageQuery) => {
         let { error, value } = PackageQueryValidation.validate(packageQuery);
-        if (error) {
+        if (error || packageQuery["ID"] != null) {
           logger.info("Invalid package query" + error);
 
           throw new Error(
