@@ -6,6 +6,7 @@ import {
   getContentFromUrl,
   getPackageJSON,
   getReadme,
+  getUrlFromContent,
 } from "../service/zip";
 import { getGitRepoDetails, npm_2_git } from "../service/misc";
 import {
@@ -69,30 +70,14 @@ export const postPackage = async (
 
     // Try to fetch the URL from the package_json
     if (!didUploadURL) {
-      basePath = await unzipContent(packageToUpload.data.Content);
-      logger.info("postPackage: basePath: " + basePath);
-
-      package_json = await getPackageJSON(basePath);
-      try {
-        packageToUpload.data.URL = package_json["homepage"];
-        if (!packageToUpload.data.URL) {
-          logger.debug(
-            "POST /package: Package not uploaded, no homepage field, returning 400"
-          );
-          deleteUnzippedFolder(basePath);
-          return res.status(400).send("Invalid Content (could not find url)");
-        }
-        logger.info(
-          "postPackage: packageToUpload.data.URL from package_json['hompage']: " +
-            packageToUpload.data.URL
-        );
-      } catch (error) {
-        logger.debug(
-          "POST /package: Package not uploaded, no homepage field or no package.json, returning 400"
-        );
-        deleteUnzippedFolder(basePath);
-        return res.status(400).send("Invalid Content");
+      const urlFromContent = await getUrlFromContent(packageToUpload.data.Content);
+      if (!urlFromContent) {
+        logger.info("POST /package: Package not uploaded, invalid content, returning 400");
+        return res.status(400).send("Invalid Content or URL");
       }
+
+      const { package_json, url, basePath } = urlFromContent;
+      packageToUpload.data.URL = url;
     }
 
     github_url = packageToUpload.data.URL.startsWith(
